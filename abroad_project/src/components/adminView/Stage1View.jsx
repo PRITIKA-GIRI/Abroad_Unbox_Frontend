@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { data, useNavigate } from "react-router-dom";
 import Nav from "../Nav";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -23,17 +23,18 @@ const Stage1View = () => {
     getStage1Data();
   }, []);
 
-  const handleApprove = async (id,stage)=>{
+  const handleApprove = async (studentId,stage)=>{
     try{
         const response = await axios.post(`${API_BASE_URL}/students/complete-stage/`,{
             'stage':stage,
-            'student_id':id,
+            'student_id':studentId,
         });
         if(response){
             alert("User stage1 approved");
         }
     }catch(error){
         console.log("Failed to approve the user", error);
+        // console.log(data);
     }
   };
 
@@ -77,7 +78,8 @@ const Stage1View = () => {
                   </td>
                   <td className="px-4 py-4 text-nowrap flex gap-3">
                     <div className="flex gap-3">
-                        <button onClick={()=>handleApprove(data.id, data.stage)} className="px-3 py-2 text-white bg-green-800 hover:bg-green-900 rounded-md">Approve</button>
+                        
+                        <button onClick={()=>handleApprove(data.student, data.stage)} className="px-3 py-2 text-white bg-green-800 hover:bg-green-900 rounded-md">Approve</button>
                         <button onClick={()=>handleDecline(data.id)} className="px-3 py-2 text-white bg-red-600 hover:bg-red-700 rounded-md">Decline</button>
                     </div>
                   </td>

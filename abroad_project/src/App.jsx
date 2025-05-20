@@ -18,6 +18,7 @@ import Application from "./components/application/Application";
 import Stage1EditVideo from "./components/application/stages_action/Stage1EditVideo";
 import Stage1View from "./components/adminView/Stage1View";
 import AdminDashboard from "./components/adminView/AdminDashboard";
+import Stage2View from "./components/adminView/Stage2View";
 
 function App() {
   return (
@@ -127,6 +128,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminDashboard />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/stage2/view"
+            element={
+              <AdminRoute>
+                <Stage2View />
               </AdminRoute>
             }
           />
