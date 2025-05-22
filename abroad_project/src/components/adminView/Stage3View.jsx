@@ -3,18 +3,18 @@ import Nav from "../Nav";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import axios from "axios";
 
-const Stage2View = () => {
-  const [stage2Data, setStage2Data] = useState([]);
+const Stage3View = () => {
+  const [stage3Data, setStage3Data] = useState([]);
   const [selectedStudentData, setSelectedStudentData] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
 
-  const getStage2Data = async () => {
+  const getStage3Data = async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/stage-two-submissions-minimal/`
+        `${API_BASE_URL}/stage-three-submissions/minimal/`
       );
       if (response?.data?.results) {
-        setStage2Data(response.data.results);
+        setStage3Data(response.data.results);
       }
     } catch (error) {
       console.log("Failed to fetch the data", error);
@@ -22,15 +22,16 @@ const Stage2View = () => {
   };
 
   useEffect(() => {
-    getStage2Data();
+    getStage3Data();
   }, []);
 
   const handlePopup = async (studentId) => {
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/stage-two-submissions/?student=${studentId}`
+        `${API_BASE_URL}/stage-three-submissions/?student=${studentId}`
       );
       if (res?.data?.length > 0) {
+        console.log("Student data:", res.data[0]);
         setSelectedStudentData(res.data[0]);
         setShowPopup(true);
       }
@@ -54,43 +55,42 @@ const Stage2View = () => {
         }
       );
       if (response) {
-        alert("User stage1 approved");
+        alert("User stage 3 approved");
       }
     } catch (error) {
       console.log("Failed to approve the user", error);
-      // console.log(data);
     }
     try {
       const patchRes = await axios.patch(
-        `${API_BASE_URL}/stage-two-submissions/${submissionId}/`,
+        `${API_BASE_URL}/stage-three-submissions/${submissionId}/`,
         {
           status: "completed",
         }
       );
 
       if (patchRes) {
-        console.log("Stage 2 submission marked as completed");
+        console.log("Stage 3 submission marked as completed");
         closePopup(); // Close the popup
-        getStage2Data(); // Refresh the updated list
+        getStage3Data(); // Refresh the updated list
       }
     } catch (error) {
-      console.error("Failed to update stage 2 submission status", error);
+      console.error("Failed to update stage 3 submission status", error);
     }
   };
 
   const handleDecline = async (id) => {
     try {
       const confirm = window.confirm(
-        "Are you sure you want to decline the stage 1 of this user?"
+        "Are you sure you want to decline the stage 3 of this user?"
       );
       if (!confirm) return;
 
       const response = await axios.delete(
-        `${API_BASE_URL}/stage-one-submissions/${id}/`
+        `${API_BASE_URL}/stage-three-submissions/${id}/`
       );
       if (response) {
-        alert("User's stage 1 declined");
-        getStage1Data();
+        alert("User's stage 3 declined");
+        getStage3Data();
       }
     } catch (error) {
       console.log("Failed to delete the user satge", error);
@@ -101,22 +101,22 @@ const Stage2View = () => {
     <>
       <Nav />
       <div className="w-11/12 p-5 mx-auto mt-5">
-        <h2 className="text-center text-3xl font-bold">Stage 2 Submissions</h2>
+        <h2 className="text-center text-3xl font-bold">Stage 3 Submissions</h2>
 
-        {stage2Data.length > 0 ? (
+        {stage3Data.length > 0 ? (
           <div className="grid grid-cols-5 gap-5">
-            {stage2Data.map((data) => (
+            {stage3Data.map((data) => (
               <div
                 key={data.id}
                 onClick={() => handlePopup(data.student)}
                 className="cursor-pointer bg-[#f1f1f1] p-3 rounded-xl shadow-xl hover:scale-105 transition-transform duration-500"
               >
                 <p className="text-center font-semibold text-2xl">
-                  {data.name}
+                  {data.student__first_name}
                 </p>
                 <p>Submitted Date: {data.submitted_at.split("T")[0]}</p>
                 <p>Stage: Stage {data.stage}</p>
-                <p>Date of Birth: {data.date_of_birth}</p>
+                {/* <p>Date of Birth: {data.date_of_birth}</p> */}
                 <p>Status: {data.status}</p>
               </div>
             ))}
@@ -137,28 +137,44 @@ const Stage2View = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="text-2xl font-bold mb-4 text-center">
-              {selectedStudentData.name}'s Details
+              {selectedStudentData.student_name}'s Details
             </h3>
             <div className="grid grid-cols-2 gap-4">
               {Object.entries(selectedStudentData).map(([key, value]) => {
                 if (value === null || value === "" || value === false)
                   return null;
 
-                // Format keys for readability
                 const formattedKey = key
                   .replace(/_/g, " ")
                   .replace(/\b\w/g, (l) => l.toUpperCase());
 
-                // Format date
-                const formattedValue =
-                  key === "submitted_at" || key === "date_of_birth"
-                    ? value.split("T")[0]
-                    : value;
+                let formattedValue = value;
+
+                // Format date fields
+                if (key === "submitted_at" || key === "date_of_birth") {
+                  formattedValue = value.split("T")[0];
+                }
+
+                // Check if value is a PDF link
+                const isPdf =
+                  typeof value === "string" && value.endsWith(".pdf");
+                const fileName = isPdf ? value.split("/").pop() : null;
 
                 return (
                   <div key={key}>
                     <p className="font-semibold">{formattedKey}</p>
-                    <p>{formattedValue}</p>
+                    {isPdf ? (
+                      <a
+                        href={value}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline break-all"
+                      >
+                        {fileName}
+                      </a>
+                    ) : (
+                      <p>{formattedValue}</p>
+                    )}
                   </div>
                 );
               })}
@@ -201,4 +217,4 @@ const Stage2View = () => {
   );
 };
 
-export default Stage2View;
+export default Stage3View;
