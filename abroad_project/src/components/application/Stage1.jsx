@@ -81,7 +81,7 @@ const Stage1 = () => {
 
   return (
     <div className="flex md:flex-row flex-col">
-      <div className="md:w-1/5 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-aoto md:h-dvh p-2 text-center">
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-aoto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 1:</h2>
         <h2 className="text-xl font-semibold mt-6">Understanding the Basics</h2>
         <p className="font-medium mt-5">

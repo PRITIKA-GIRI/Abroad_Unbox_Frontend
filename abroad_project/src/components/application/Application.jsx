@@ -8,12 +8,12 @@ import axios from "axios";
 import Stage1 from "./Stage1";
 import Stage2 from "./Stage2";
 import Stage3 from "./Stage3";
-import Stage4 from './Stage4';
-import Stage5 from './Stage5';
-import Stage6 from './Stage6';
-import Stage7 from './Stage7';
-import Stage8 from './Stage8';
-import Stage9 from './Stage9';
+import Stage4 from "./Stage4";
+import Stage5 from "./Stage5";
+import Stage6 from "./Stage6";
+import Stage7 from "./Stage7";
+import Stage8 from "./Stage8";
+import Stage9 from "./Stage9";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -54,7 +54,7 @@ function Application() {
   const handleStageClick = (stageNumber, isLocked) => {
     if (isLocked === "unlocked") {
       setActiveStage(parseInt(stageNumber));
-      setIsMenuOpen(false); 
+      setIsMenuOpen(false);
     }
   };
 
@@ -79,7 +79,11 @@ function Application() {
       case 9:
         return <Stage9 />;
       default:
-        return <div><Stage1/></div>;
+        return (
+          <div>
+            <Stage1 />
+          </div>
+        );
     }
   };
 
@@ -108,34 +112,16 @@ function Application() {
       </div>
 
       {/* Stages Navigation */}
-      <div className="w-full mt-3 flex md:flex-row flex-col gap-3 items-center">
-        {stages.map((stage) => (
-          <div key={stage.id} className="w-11/12 md:w-2/3">
-            {/* Desktop */}
-            <div className="hidden md:flex flex-row justify-between items-center text-white font-bold text-xl">
-              <span
-                onClick={() => handleStageClick(stage.stage, stage.is_locked)}
-                className={`w-full p-3 cursor-pointer ${
-                  stage.is_locked === "unlocked"
-                    ? activeStage === parseInt(stage.stage)
-                      ? "bg-green-600"
-                      : "bg-green-800 hover:bg-green-700"
-                    : "bg-gray-400"
-                }`}
-              >
-                Stage {stage.stage}
-              </span>
-              {stage.is_locked !== "unlocked" && (
-                <img src={lock_svg} className="w-8 mr-3" alt="Lock icon" />
-              )}
-            </div>
-
-            {/* Mobile */}
-            {isMenuOpen && (
-              <div className="flex md:hidden justify-between items-center text-white font-bold text-xl">
+      <div className="flex">
+        {/* Left: Stages Navigation */}
+        <div className="w-full md:w-1/6 mt-3 flex md:flex-col flex-col gap-3 items-left">
+          {stages.map((stage) => (
+            <div key={stage.id} className="w-full">
+              {/* Desktop */}
+              <div className="hidden md:flex flex-col justify-between items-center text-white font-bold text-xl">
                 <span
                   onClick={() => handleStageClick(stage.stage, stage.is_locked)}
-                  className={`w-full p-3 cursor-pointer ${
+                  className={`w-full p-3 cursor-pointer flex ${
                     stage.is_locked === "unlocked"
                       ? activeStage === parseInt(stage.stage)
                         ? "bg-green-600"
@@ -143,23 +129,50 @@ function Application() {
                       : "bg-gray-400"
                   }`}
                 >
-                  Stage {stage.stage}
-                </span>
-                {stage.is_locked !== "unlocked" && (
-                  <img src={lock_svg} className="w-8 mr-3" alt="Lock icon" />
+                  Stage {stage.stage} {stage.is_locked !== "unlocked" && (
+                  <img src={lock_svg} className="w-8 ml-10 " alt="Lock icon" />
                 )}
+                </span>
+                {/* {stage.is_locked !== "unlocked" && (
+                  <img src={lock_svg} className="w-8 mr-3" alt="Lock icon" />
+                )} */}
               </div>
-            )}
-          </div>
-        ))}
+
+              {/* Mobile */}
+              {isMenuOpen && (
+                <div className="flex md:hidden justify-between items-center text-white font-bold text-xl">
+                  <span
+                    onClick={() =>
+                      handleStageClick(stage.stage, stage.is_locked)
+                    }
+                    className={`w-full p-3 cursor-pointer ${
+                      stage.is_locked === "unlocked"
+                        ? activeStage === parseInt(stage.stage)
+                          ? "bg-green-600"
+                          : "bg-green-800 hover:bg-green-700"
+                        : "bg-gray-400"
+                    }`}
+                  >
+                    Stage {stage.stage}
+                  </span>
+                  {stage.is_locked !== "unlocked" && (
+                    <img src={lock_svg} className="w-8 mr-3" alt="Lock icon" />
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Right: Stage Component */}
+        <div className="w-full md:w-3/4 p-3 overflow-auto h-dvh">
+          {renderStageComponent()}
+        </div>
       </div>
 
       {/* Stage content */}
-      <div className="w-11/12 mx-auto p-3 flex gap-3">
-        {renderStageComponent()}
-      </div>
 
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 }
