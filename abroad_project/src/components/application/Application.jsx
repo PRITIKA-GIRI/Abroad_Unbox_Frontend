@@ -112,7 +112,7 @@ function Application() {
       </div>
 
       {/* Stages Navigation */}
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         {/* Left: Stages Navigation */}
         <div className="w-full md:w-1/6 mt-3 flex md:flex-col flex-col gap-3 items-left">
           {stages.map((stage) => (
@@ -165,7 +165,7 @@ function Application() {
         </div>
 
         {/* Right: Stage Component */}
-        <div className="w-full md:w-3/4 p-3 overflow-auto h-dvh">
+        <div className="w-full md:w-5/6 p-3 overflow-auto h-dvh">
           {renderStageComponent()}
         </div>
       </div>

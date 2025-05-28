@@ -28,14 +28,51 @@ const emptyEntry = {
     coa_after_scholarship: '',
     us_news_ranking: '',
     niche_ranking: '',
-    location_arling_texas: '',
+    place_name: '',
     settings: '',
     racial_mix: '',
     population: '',
     population_trend: '',
-    job_and_opportunities: ''
+    job_and_opportunities: '',
+    crime: ''
   }
 };
+
+// Define field groups for rendering
+const FIELD_GROUPS = [
+  {
+    title: 'Deadline',
+    fields: ['early_decision', 'early_action', 'regular_decision', 'scholarship_priority']
+  },
+  {
+    title: 'Minimum English Proficiency',
+    fields: ['DET', 'TOEFL', 'IELTS', 'PTE']
+  },
+  {
+    title: 'Minimum GPA',
+    fields: ['gpa_acceptance', 'gpa_scholarship']
+  },
+  {
+    title: 'Minimum SAT',
+    fields: ['sat_acceptance', 'sat_scholarship']
+  },
+  {
+    title: 'Scholarship Requirement',
+    fields: ['gpa_based', 'sat_based', 'need_based', 'holistic_review']
+  },
+  {
+    title: 'Cost',
+    fields: ['tuition', 'living_and_tuition', 'avg_scholarship', 'tuition_after_scholarship', 'coa_after_scholarship']
+  },
+  {
+    title: 'Ranking',
+    fields: ['us_news_ranking', 'niche_ranking', 'major_ranking']
+  },
+  {
+    title: 'Location',
+    fields: ['place_name', 'settings', 'racial_mix', 'population', 'population_trend', 'job_and_opportunities', 'crime']
+  }
+];
 
 const Stage5 = () => {
   const [universities, setUniversities] = useState([]);
@@ -49,9 +86,9 @@ const Stage5 = () => {
       .catch(err => console.error('Error fetching universities:', err));
   }, []);
 
-  // Add another entry
+  // Add another entry (max 20)
   const addMoreUniversity = () => {
-    setEntries(prev => ([ ...prev, { ...emptyEntry } ]));
+    setEntries(prev => prev.length >= 20 ? prev : [...prev, { ...emptyEntry }]);
   };
 
   // Handle changes
@@ -75,31 +112,19 @@ const Stage5 = () => {
 
     setLoading(true);
     try {
-      for (let entry of entries) {
-        let uniToSubmit = '';
-        let otherUni = '';
-        if (entry.university === 'other') {
-          if (!entry.other_university.trim()) throw new Error('Please enter university name');
-          await axios.post(`${API_BASE_URL}/universities/`, { name: entry.other_university.trim() })
-            .catch(() => {});
-          otherUni = entry.other_university.trim();
-        } else {
-          uniToSubmit = entry.university;
-        }
+      // Prepare payload entries array
+      const payloadEntries = entries.map(e => ({
+        university: e.university === 'other' ? '' : e.university,
+        other_university: e.university === 'other' ? e.other_university.trim() : '',
+        ...e.formData
+      }));
 
-        const payload = {
-          student: studentId,
-          entries: entries.map(e => ({
-            university: e.university === 'other' ? '' : e.university,
-            other_university: e.university === 'other' ? e.other_university.trim() : '',
-            ...e.formData
-          }))
-        };
+      const payload = { student: studentId, entries: payloadEntries };
 
-        await axios.post(`${API_BASE_URL}/stage-five-submissions/`, payload, {
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
+      await axios.post(`${API_BASE_URL}/stage-five-submissions/`, payload, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+
       alert('All entries submitted successfully!');
       setEntries([{ ...emptyEntry }]);
     } catch (err) {
@@ -114,30 +139,13 @@ const Stage5 = () => {
     <div className="flex md:flex-row flex-col mx-auto w-full">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 5:</h2>
-        <p className="font-medium mt-5 md:flex hidden">
-          University Finalization
-        </p>
-        <p className="font-medium mt-5 md:flex hidden">
-          Let's finalize on the list of university based on your expectation.
-        </p>
-        <p className="font-medium mt-5 md:flex hidden">
-          Don't apply to very few University, nor too many. There has to be a
-          happy medium when it comes to applying to the university.
-        </p>
-        <p className="font-medium mt-5 md:flex hidden">
-          Also, BE PATIENCE, Most of the university usually takes over few weeks
-          even months to send you I-20. Be sure to followup.
-        </p>
-        <p className="font-medium mt-5 md:flex hidden">
-          We usually recommend 5-10 University for Undergraduate, and 2-5 for
-          the Graduate Students.
-        </p>
-        <p className="font-medium mt-5 md:flex hidden">
-          Also, don't forget every university has their own requirements, they
-          have their own ways of determining scholarship.
-        </p>
+        <p className="font-medium mt-5 md:flex hidden">University Finalization</p>
+        <p className="font-medium mt-5 md:flex hidden">Let's finalize on the list of university based on your expectation.</p>
+        <p className="font-medium mt-5 md:flex hidden">Don't apply to very few University, nor too many. There has to be a happy medium when it comes to applying to the university.</p>
+        <p className="font-medium mt-5 md:flex hidden">Also, BE PATIENCE, Most of the university usually takes over few weeks even months to send you I-20. Be sure to followup.</p>
+        <p className="font-medium mt-5 md:flex hidden">We usually recommend 5-10 University for Undergraduate, and 2-5 for the Graduate Students.</p>
+        <p className="font-medium mt-5 md:flex hidden">Also, don't forget every university has their own requirements, they have their own ways of determining scholarship.</p>
       </div>
-      {/* Sidebar could go here */}
       <div className="w-full md:w-3/4 bg-white h-svh overflow-scroll">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="text-2xl font-semibold text-center bg-gradient-to-r from-white to-blue-300 p-2">
@@ -174,115 +182,21 @@ const Stage5 = () => {
                 />
               )}
 
-              {/* Deadline */}
-              <div className="text-lg font-semibold mb-2">Deadline</div>
-              {['early_decision', 'early_action', 'regular_decision', 'scholarship_priority'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize replace-_ with-space">{field.replace(/_/g, ' ')}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
-                </div>
-              ))}
-
-              {/* English Scores */}
-              <div className="text-lg font-semibold mb-2 mt-4">Minimum English Proficiency</div>
-              {['det', 'toefl', 'ielts', 'pte'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize">{field.toUpperCase()}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
-                </div>
-              ))}
-
-              {/* GPA */}
-              <div className="text-lg font-semibold mb-2 mt-4">Minimum GPA</div>
-              {['gpa_acceptance', 'gpa_scholarship'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize replace-_ with-space">{field.replace(/_/g, ' ')}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
-                </div>
-              ))}
-
-              {/* SAT */}
-              <div className="text-lg font-semibold mb-2 mt-4">Minimum SAT</div>
-              {['sat_acceptance', 'sat_scholarship'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize replace-_ with-space">{field.replace(/_/g, ' ')}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
-                </div>
-              ))}
-
-              {/* Scholarship Requirement */}
-              <div className="text-lg font-semibold mb-2 mt-4">Scholarship Requirement</div>
-              {['need_based', 'holistic_review'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize replace-_ with-space">{field.replace(/_/g, ' ')}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
-                </div>
-              ))}
-
-              {/* Cost */}
-              <div className="text-lg font-semibold mb-2 mt-4">Cost</div>
-              {['tuition', 'living_and_tuition', 'avg_scholarship', 'tuition_after_scholarship', 'coa_after_scholarship'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize replace-_ with-space">{field.replace(/_/g, ' ')}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
-                </div>
-              ))}
-
-              {/* Ranking */}
-              <div className="text-lg font-semibold mb-2 mt-4">Ranking</div>
-              {['us_news_ranking', 'niche_ranking'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize replace-_ with-space">{field.replace(/_/g, ' ')}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
-                </div>
-              ))}
-
-              {/* Location */}
-              <div className="text-lg font-semibold mb-2 mt-4">Location</div>
-              {['location_arling_texas', 'settings', 'racial_mix', 'population', 'population_trend', 'job_and_opportunities'].map(field => (
-                <div key={field} className="flex justify-between mb-2">
-                  <label className="capitalize replace-_ with-space">{field.replace(/_/g, ' ')}:</label>
-                  <input
-                    type="text"
-                    value={entry.formData[field]}
-                    onChange={e => handleEntryChange(idx, field, e.target.value)}
-                    className="border w-1/2 p-1"
-                  />
+              {/* Dynamic fields */}
+              {FIELD_GROUPS.map(group => (
+                <div key={group.title} className="mb-4">
+                  <div className="text-lg font-semibold mb-2 mt-4">{group.title}</div>
+                  {group.fields.map(field => (
+                    <div key={field} className="flex justify-between mb-2">
+                      <label className="capitalize">{field.replace(/_/g, ' ')}:</label>
+                      <input
+                        type="text"
+                        value={entry.formData[field]}
+                        onChange={e => handleEntryChange(idx, field, e.target.value)}
+                        className="border w-1/2 p-1"
+                      />
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
