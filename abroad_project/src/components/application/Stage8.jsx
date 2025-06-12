@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 const Stage8 = () => {
   const [stagesDetail, setStagesDetail] = useState([]);
@@ -9,13 +22,23 @@ const Stage8 = () => {
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState("");
   const [events, setEvents] = useState([]);
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [registeredEvent, setRegisteredEvent] = useState(null);
+  const [sessionData, setSessionData] = useState({limit: null});
+
 
   const fetchEvents = () => {
     axios
       .get(`${API_BASE_URL}/stage-eight-sessions/`)
-      .then(({ data }) => setEvents(data))
+      .then(({ data }) => {
+        setEvents(data);
+        if (data.length > 0) {
+          setSessionData({ limit: data[0].limit });
+        }
+      })
       .catch((err) => console.error("Error fetching events:", err));
   };
+
 
   const studentID = localStorage.getItem("student_id");
 
@@ -46,33 +69,85 @@ const Stage8 = () => {
   };
 
   useEffect(() => {
-      getStages();
-      getStageVideo();
-      fetchEvents();
-    }, []);
+    getStages();
+    getStageVideo();
+    fetchEvents();
+  }, []);
 
   const now = new Date();
-  const upcoming = events.filter(ev => {
-    const [y, m, d] = ev.date.split('-').map(Number);
-    const [h, min] = ev.start_time.split(':').map(Number);
+  const upcoming = events.filter((ev) => {
+    const [y, m, d] = ev.date.split("-").map(Number);
+    const [h, min] = ev.start_time.split(":").map(Number);
     const evDateTime = new Date(y, m - 1, d, h, min);
     return evDateTime >= now;
   });
-  const expired = events.filter(ev => {
-    const [y, m, d] = ev.date.split('-').map(Number);
-    const [h, min] = ev.start_time.split(':').map(Number);
+  const expired = events.filter((ev) => {
+    const [y, m, d] = ev.date.split("-").map(Number);
+    const [h, min] = ev.start_time.split(":").map(Number);
     const evDateTime = new Date(y, m - 1, d, h, min);
     return evDateTime < now;
   });
 
   const formatDate = (dateStr) => {
-    const [y, m, d] = dateStr.split('-');
+    const [y, m, d] = dateStr.split("-");
     const month = monthNames[parseInt(m, 10) - 1];
     return `${y} ${month} ${d}`;
   };
-  
+
   const videoUrl1 = stageVideo[0]?.stage8_video1;
   const videoUrl2 = stageVideo[0]?.stage8_video1;
+
+  const handleSubmit = async () => {
+    if (isStage8Completed) return;
+  
+    try {
+      if (!registeredEvent) {
+        alert("Please register for a session before submitting.");
+        return;
+      }
+  
+      const payload = {
+        student: studentID,
+        applied_session: [
+          {
+            id: registeredEvent.id,
+            display_range: registeredEvent.display_range,
+          },
+        ],
+      };
+  
+      const response = await axios.post(
+        `${API_BASE_URL}/stage-eight-submissions/`,
+        payload
+      );
+  
+      if (response) {
+        console.log(response.data);
+        alert("Stage 8 submission successful!");
+        getStages();
+        editStageEight(registeredEvent.id, registeredEvent.limit);
+      }
+    } catch (error) {
+      console.log("Failed to post the form data", error);
+      alert("Failed to submit Stage 8. Please try again.");
+    }
+  };
+  
+
+  const editStageEight = async (sessionId, currentLimit) => {
+    try {
+      const response = await axios.patch(
+        `${API_BASE_URL}/stage-eight-sessions/${sessionId}/`,
+        {
+          limit: currentLimit - 1,
+        }
+      );
+      console.log("Session limit updated:", response.data);
+    } catch (error) {
+      console.log("Failed to edit Stage 8 session", error);
+    }
+  };
+  
 
   return (
     <div className="flex md:flex-row flex-col">
@@ -110,43 +185,85 @@ const Stage8 = () => {
           <div className="bg-gray-300 px-5 py-3 w-full mt-2 text-center">
             <p className="text-xl font-medium">CGI Portal</p>
           </div>
-          <iframe className="w-full h-[300px] md:h-[400px] mt-2" src={videoUrl2}></iframe>
+          <iframe
+            className="w-full h-[300px] md:h-[400px] mt-2"
+            src={videoUrl2}
+          ></iframe>
         </div>
         <div className=" px-5 py-3 w-[80%] mx-auto mt-2 text-center">
           <p className="text-md font-semibold">
             You can always call or email us if you need any help. Please Make
-            sure you have done everything right and let us <i>REVIEW</i> your progress
-            before final submission.
+            sure you have done everything right and let us <i>REVIEW</i> your
+            progress before final submission.
           </p>
         </div>
         <div>
-          <a href="mailto:abroadunbox@gmail.com" className="px-4 py-2 bg-blue-300 hover:bg-blue-400 rounded-lg">
+          <a
+            href="mailto:abroadunbox@gmail.com"
+            className="px-4 py-2 bg-blue-300 hover:bg-blue-400 rounded-lg"
+          >
             Contact Abroad Unbox Team
           </a>
         </div>
         <div className="w-full flex justify-between px-4 py-3 bg-gradient-to-r text-xl from-white to-blue-300 mt-3">
           <p className="text-xl font-semibold">Visa Preparation</p>
-          
         </div>
         <div className="px-5 py-3 mt-2 text-center w-[96%] mx-auto">
           Now it is about time for getting you ready for visa interview. This is
           going to be a 4 - 6 weeks online or in-person session.
         </div>
         <div className="w-3/4 mx-auto px-4 py-2 bg-gradient-to-r from-white to-blue-300">
-            Register for a session
+          Register for a session
         </div>
         <div className="w-3/4 mx-auto p-3 bg-gray-100 mt-3 rounded-lg space-y-2">
           <p className="mb-2 font-semibold">Available Sessions:</p>
-          {upcoming.map(ev => (
-          <div className="bg-blue-300 px-3 py-1 flex justify-between items-center rounded-lg">
-            <p>{`${formatDate(ev.date)} | ${ev.display_range.split(' | ')[1]}`}</p>
-            <button className="bg-green-300 py-3 px-5 font-semibold cursor-pointer rounded-lg hover:bg-green-400">Register</button>
-          </div>
+          {upcoming.map((ev) => (
+            <div className="bg-blue-300 px-3 py-1 flex justify-between items-center rounded-lg">
+              <p>{`${formatDate(ev.date)} | ${
+                ev.display_range.split(" | ")[1]
+              }`}</p>
+              <button
+                onClick={() => {
+                  setIsRegistered(true);
+                  setRegisteredEvent(ev);
+                }}
+                className={`py-3 px-5 font-semibold cursor-pointer rounded-lg transition ${
+                  ev.limit === 0
+                    ? "bg-gray-400 cursor-not-allowed text-gray-700"
+                    : "bg-green-300 hover:bg-green-400"
+                }`}
+                disabled={ev.limit === 0}
+              >
+                Register
+              </button>
+            </div>
           ))}
+
         </div>
+
+        {isRegistered && registeredEvent && (
+            <div className="text-green-600 mt-2 w-[90%] mx-auto p-3 bg-gray-100 rounded-lg">
+              <p>
+                You are registered for this session:{" "}
+                {`${formatDate(registeredEvent.date)} | ${
+                  registeredEvent.display_range.split(" | ")[1]
+                }`}
+              </p>
+              <button
+                onClick={() => {
+                  setIsRegistered(false);
+                  setRegisteredEvent(null);
+                }}
+                className="px-4 py-2 mt-2 bg-blue-600 text-white rounded-lg"
+              >
+                Unregister
+              </button>
+            </div>
+          )}
+
         <div className="mt-4">
           <button
-            // onClick={() => handleSubmit()}
+            onClick={() => handleSubmit()}
             className={`w-full py-4 text-2xl font-semibold mt-3 ${
               isStage8Completed
                 ? "bg-gray-400 cursor-not-allowed"
