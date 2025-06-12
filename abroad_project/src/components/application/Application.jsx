@@ -114,7 +114,7 @@ function Application() {
       {/* Stages Navigation */}
       <div className="flex flex-col md:flex-row">
         {/* Left: Stages Navigation */}
-        <div className="w-full md:w-1/6 mt-3 flex md:flex-col flex-col gap-3 items-left">
+        <div className="w-full md:w-1/6 mt-3 flex md:flex-col flex-col md:gap-3 items-left">
           {stages.map((stage) => (
             <div key={stage.id} className="w-full">
               {/* Desktop */}
@@ -140,7 +140,7 @@ function Application() {
 
               {/* Mobile */}
               {isMenuOpen && (
-                <div className="flex md:hidden justify-between items-center text-white font-bold text-xl">
+                <div className="flex md:hidden justify-between items-center text-white font-bold text-xl my-1.5">
                   <span
                     onClick={() =>
                       handleStageClick(stage.stage, stage.is_locked)

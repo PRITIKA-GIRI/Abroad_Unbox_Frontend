@@ -4,19 +4,20 @@ import Nav from "../Nav";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const Stage1View = () => {
-  const [stage1Data, setStage1Data] = useState([]);
+const Stage7View = () => {
+//   const [stage7Data, setStage7Data] = useState([]);
+  const [stage7Data, setStage7Data] = useState({ results: [] });
 
   // Fetch all Stage-1 submissions
-  const getStage1Data = async () => {
+  const getStage7Data = async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/stage-one-submissions/`
+        `${API_BASE_URL}/stage-seven-submissions/`
       );
       if (response?.data) {
         // Assume response.data is a list of objects like:
         // { id, student, student_name, stage, status, ... }
-        setStage1Data(response.data);
+        setStage7Data(response.data);
       }
     } catch (error) {
       console.log("Failed to fetch the data", error);
@@ -24,7 +25,7 @@ const Stage1View = () => {
   };
 
   useEffect(() => {
-    getStage1Data();
+    getStage7Data();
   }, []);
 
   // Approve handler: calls complete‐stage, then patches the submission to “completed”
@@ -41,13 +42,13 @@ const Stage1View = () => {
       if (response.status === 200) {
         // 2) Patch the submission’s status to “completed”
         await axios.patch(
-          `${API_BASE_URL}/stage-one-submissions/${submissionId}/`,
+          `${API_BASE_URL}/stage-seven-submissions/${submissionId}/`,
           {
             status: "completed",
           }
         );
         // 3) Refresh the list so the row’s status updates
-        getStage1Data();
+        getStage7Data();
       }
     } catch (error) {
       console.log("Failed to approve the user", error);
@@ -58,16 +59,16 @@ const Stage1View = () => {
   const handleDecline = async (submissionId) => {
     try {
       const confirmDelete = window.confirm(
-        "Are you sure you want to decline this Stage-1 submission?"
+        "Are you sure you want to decline this Stage 7 submission?"
       );
       if (!confirmDelete) return;
 
       const response = await axios.delete(
-        `${API_BASE_URL}/stage-one-submissions/${submissionId}/`
+        `${API_BASE_URL}/stage-seven-submissions/${submissionId}/`
       );
       if (response.status === 204 || response.status === 200) {
-        alert("User’s Stage-1 submission declined.");
-        getStage1Data();
+        alert("User’s Stage 7 submission declined.");
+        getStage7Data();
       }
     } catch (error) {
       console.log("Failed to delete the submission", error);
@@ -79,7 +80,7 @@ const Stage1View = () => {
       <Nav />
       <div className="w-[94%] mx-auto p-6">
         <h2 className="text-2xl font-bold mb-4 text-center">
-          Stage 1 Submissions
+          Stage 7 Submissions
         </h2>
         <table className="w-full border-collapse">
           <thead>
@@ -91,8 +92,8 @@ const Stage1View = () => {
             </tr>
           </thead>
           <tbody>
-            {stage1Data.length > 0 ? (
-              stage1Data.map((data, index) => (
+            {stage7Data.results.length > 0 ? (
+              stage7Data.results.map((data, index) => (
                 <tr
                   key={data.id}
                   className="odd:bg-gray-50 bg-white hover:bg-gray-100 text-gray-900"
@@ -150,4 +151,4 @@ const Stage1View = () => {
   );
 };
 
-export default Stage1View;
+export default Stage7View;

@@ -19,10 +19,15 @@ import Stage1EditVideo from "./components/application/stages_action/Stage1EditVi
 import Stage1View from "./components/adminView/Stage1View";
 import AdminDashboard from "./components/adminView/AdminDashboard";
 import AddUniversity from "./components/adminView/AddUniversity";
+import AddSession from "./components/adminView/AddSession";
+// import Stage1View from "./components/adminView/Stage1View";
 import Stage2View from "./components/adminView/Stage2View";
 import Stage3View from "./components/adminView/Stage3View";
 import Stage4View from "./components/adminView/Stage4View";
 import Stage5View from "./components/adminView/Stage5View";
+import Stage6View from "./components/adminView/Stage6View";
+import Stage7View from "./components/adminView/Stage7View";
+
 
 function App() {
   return (
@@ -136,6 +141,7 @@ function App() {
             }
           />
           <Route path="/add-university" element={ <AdminRoute> <AddUniversity /> </AdminRoute> } />
+          <Route path="/add-session" element={ <AdminRoute> <AddSession /> </AdminRoute> } />
           <Route
             path="/stage2/view"
             element={
@@ -165,6 +171,23 @@ function App() {
             element={
               <AdminRoute>
                 <Stage5View />
+              </AdminRoute>
+            }
+          />
+
+          <Route
+            path="/stage6/view"
+            element={
+              <AdminRoute>
+                <Stage6View />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/stage7/view"
+            element={
+              <AdminRoute>
+                <Stage7View />
               </AdminRoute>
             }
           />

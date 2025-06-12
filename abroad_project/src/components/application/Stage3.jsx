@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Stage3 = () => {
+  const [stagesDetail, setStagesDetail] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({});
   const [files, setFiles] = useState({});
+
+  // Assuming you store or otherwise obtain the current student's ID in localStorage
+  const student_id = localStorage.getItem("student_id");
+
+  // Fetch the student’s stages and status
+  const getStages = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/application-time-stages/?student=${student_id}`
+      );
+      setStagesDetail(response.data);
+    } catch (error) {
+      console.log("Failed to get the stages data", error);
+    }
+  };
 
   const handleFileChange = (e) => {
     const { name, files } = e.target;
@@ -52,23 +68,31 @@ const Stage3 = () => {
     }
   };
 
+  useEffect(() => {
+      getStages();
+    }, []);
+
+  // Check if Stage 3 is marked "completed" in the fetched stages array
+  const stage3Data = stagesDetail.find((item) => item.stage === "3");
+  const isStage3Completed = stage3Data?.is_complete === "completed";
+
   return (
     <div className="flex md:flex-row flex-col mx-auto w-full">
-      <div className="md:w-1/5 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 3:</h2>
         <h2 className="text-xl font-semibold mt-6">Profile</h2>
         <p className="font-medium mt-5">
           Let's build your comprehensive profile
         </p>
-        <p className="font-medium mt-5 md:flex hidden">
+        <p className="font-medium mt-5">
           Now you have a good idea of your mindset, career, and university selection;
         </p>
-        <p className="font-medium mt-5 md:flex hidden">
+        <p className="font-medium mt-5">
           Please give the details of everything to the best of your knowledge. This will help us during your application.
         </p>
       </div>
 
-      <div className="w-full md:w-4/5 bg-white h-svh overflow-scroll">
+      <div className="w-full md:w-3/4 bg-white h-svh md:overflow-scroll">
       <form onSubmit={handleSubmit} className='flex flex-col gap-5 '>
         <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mb-5">
           Documents
@@ -133,7 +157,7 @@ const Stage3 = () => {
           Bank Balance Certificate 
           <input type='file' name='bank_balance' onChange={handleFileChange} className='w-1/2 float-right text-xl font-normal bg-gray-50 p-2' required/>
         </div>
-        <button
+        {/* <button
             type="submit"
             disabled={loading}
             className={`bg-gradient-to-l from-[#ffffff] to-green-300 hover:to-green-500 py-4 w-full text-2xl font-semibold mt-3 ${
@@ -141,7 +165,23 @@ const Stage3 = () => {
             }`}
           >
             {loading ? 'Submitting...' : 'Stage 3: Submit'}
+          </button> */}
+
+           {/* Submit / Completed Button */}
+        <div className="mt-4">
+          <button
+            onClick={() => handleSubmit(responseLink[0]?.stage)}
+            className={`w-full py-4 text-2xl font-semibold mt-3 ${
+              isStage3Completed
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
+            }`}
+            disabled={isStage3Completed}
+          >
+            {isStage3Completed ? "Stage 3: Completed" : "Stage 3: Submit"}
           </button>
+        </div>
+
         </form>
       </div>
     </div>

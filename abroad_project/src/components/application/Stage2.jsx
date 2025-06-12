@@ -1,12 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Stage2 = () => {
+  const [stagesDetail, setStagesDetail] = useState([]);
   const [testType, setTestType] = useState('');
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+
+  // Assuming you store or otherwise obtain the current student's ID in localStorage
+  const student_id = localStorage.getItem("student_id");
+
+  // Fetch the student’s stages and status
+  const getStages = async () => {
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/application-time-stages/?student=${student_id}`
+      );
+      setStagesDetail(response.data);
+    } catch (error) {
+      console.log("Failed to get the stages data", error);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -72,23 +88,31 @@ const Stage2 = () => {
     }
   };
 
+  useEffect(() => {
+    getStages();
+  }, []);
+
+  // Check if Stage 2 is marked "completed" in the fetched stages array
+  const stage2Data = stagesDetail.find((item) => item.stage === "2");
+  const isStage2Completed = stage2Data?.is_complete === "completed";
+
   return (
-    <div className="flex md:flex-row flex-col mx-auto w-full">
-      <div className="md:w-1/5 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
+    <div className="flex md:flex-row flex-col w-full">
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center text-xs md:text-base">
         <h2 className="text-2xl underline font-bold">Stage 2:</h2>
         <h2 className="text-xl font-semibold mt-6">Profile</h2>
         <p className="font-medium mt-5">
           Let's build your comprehensive profile
         </p>
-        <p className="font-medium mt-5 md:flex hidden">
+        <p className="font-medium mt-5">
           Now you have a good idea of your mindset, career, and university selection;
         </p>
-        <p className="font-medium mt-5 md:flex hidden">
+        <p className="font-medium mt-5">
           Please give the details of everything to the best of your knowledge. This will help us during your application.
         </p>
       </div>
 
-      <div className="w-full md:w-4/5 bg-white h-svh overflow-scroll">
+      <div className="w-full md:w-3/4 h-svh p-2 md:overflow-scroll">
         <form onSubmit={handleSubmit}>
           {/* Academic Information */}
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
@@ -293,7 +317,7 @@ const Stage2 = () => {
             />
           </div>
 
-          <button
+          {/* <button
             type="submit"
             disabled={loading}
             className={`bg-gradient-to-l from-[#ffffff] to-green-300 hover:to-green-500 py-4 w-full text-2xl font-semibold mt-3 ${
@@ -301,7 +325,24 @@ const Stage2 = () => {
             }`}
           >
             {loading ? 'Submitting...' : 'Stage 2: Submit'}
+          </button> */}
+
+          {/* Submit / Completed Button */}
+        <div className="mt-4">
+          <button
+            // onClick={() => handleSubmit(responseLink[0]?.stage)}
+            type='submit'
+            className={`w-full py-4 text-2xl font-semibold mt-3 ${
+              isStage2Completed
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
+            }`}
+            disabled={isStage2Completed}
+          >
+            {isStage2Completed ? "Stage 2: Completed" : "Stage 2: Submit"}
           </button>
+        </div>
+
         </form>
       </div>
     </div>
