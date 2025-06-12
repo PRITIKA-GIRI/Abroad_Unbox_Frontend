@@ -222,17 +222,18 @@ const Stage8 = () => {
               <p>{`${formatDate(ev.date)} | ${
                 ev.display_range.split(" | ")[1]
               }`}</p>
+              
               <button
                 onClick={() => {
                   setIsRegistered(true);
                   setRegisteredEvent(ev);
                 }}
-                className={`py-3 px-5 font-semibold cursor-pointer rounded-lg transition ${
-                  ev.limit === 0
-                    ? "bg-gray-400 cursor-not-allowed text-gray-700"
-                    : "bg-green-300 hover:bg-green-400"
+                className={`py-1 px-3 font-semibold rounded-lg transition ${
+                  isStage8Completed || ev.limit === 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-green-300 hover:bg-green-400 cursor-pointer"
                 }`}
-                disabled={ev.limit === 0}
+                disabled={ev.limit === 0 || isStage8Completed}
               >
                 Register
               </button>

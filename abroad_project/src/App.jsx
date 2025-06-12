@@ -27,6 +27,7 @@ import Stage4View from "./components/adminView/Stage4View";
 import Stage5View from "./components/adminView/Stage5View";
 import Stage6View from "./components/adminView/Stage6View";
 import Stage7View from "./components/adminView/Stage7View";
+import Stage8View from "./components/adminView/Stage8View";
 
 
 function App() {
@@ -188,6 +189,14 @@ function App() {
             element={
               <AdminRoute>
                 <Stage7View />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/stage8/view"
+            element={
+              <AdminRoute>
+                <Stage8View />
               </AdminRoute>
             }
           />

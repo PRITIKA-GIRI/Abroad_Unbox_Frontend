@@ -92,6 +92,16 @@ const AdminDashboard = () => {
               View Stage 7 Submissions
             </span>
           </Link>
+
+          <Link
+            to="/stage8/view"
+            className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
+          >
+            <span className="text-lg font-medium">
+              View Stage 8 Submissions
+            </span>
+          </Link>
+
         </div>
       </div>
     </div>
