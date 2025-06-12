@@ -8,6 +8,7 @@ const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep
 
 export default function AddSession() {
   const [date, setDate] = useState("");
+  const [limit, setLimit] = useState(1);
   const startRef = useRef();
   const endRef = useRef();
   const [events, setEvents] = useState([]);
@@ -31,12 +32,12 @@ export default function AddSession() {
     const start_time = startRef.current.value;
     const end_time = endRef.current.value;
 
-    if (!date || !start_time || !end_time) {
+    if (!date || !start_time || !end_time || !limit) {
       setError("All fields are required.");
       return;
     }
 
-    const payload = { date, start_time, end_time };
+    const payload = { date, start_time, end_time, limit };
 
     try {
       const response = await axios.post(
@@ -46,12 +47,13 @@ export default function AddSession() {
       );
       setEvents((prev) => [...prev, response.data]);
       setDate("");
+      setLimit(1);
       startRef.current.value = "00:00";
       endRef.current.value = "00:00";
       alert("Session created successfully");
     } catch (err) {
       console.error("Error creating session:", err);
-      setError("Failed to create event.");
+      setError("Failed to create session.");
     }
   };
 
@@ -71,10 +73,6 @@ export default function AddSession() {
       setError("Failed to delete session.");
     }
   };
-
-//   const today = new Date();
-//   const upcoming = events.filter(ev => new Date(ev.date) >= today);
-//   const expired = events.filter(ev => new Date(ev.date) < today);
 
   const now = new Date();
   const upcoming = events.filter(ev => {
@@ -142,7 +140,8 @@ export default function AddSession() {
               <input
                 type="number"
                 min="1"
-                ref={endRef}
+                value={limit}
+                onChange={e => setLimit(Number(e.target.value))}
                 className="mt-1 block w-full border rounded p-2"
               />
             </div>
@@ -162,7 +161,7 @@ export default function AddSession() {
           <ul className="space-y-2 mt-6">
             {upcoming.map(ev => (
               <li key={ev.id} className="border p-3 rounded flex justify-between">
-                {`${formatDate(ev.date)} | ${ev.display_range.split(' | ')[1]}`}
+                {`${formatDate(ev.date)} | ${ev.display_range.split(' | ')[1]} | Limit: ${ev.limit}`}
                 <FaTrash
                   onClick={() => handleDelete(ev.id)}
                   className="text-red-500 cursor-pointer hover:text-red-700 ml-10"
@@ -178,7 +177,7 @@ export default function AddSession() {
           <ul className="space-y-2 mt-6">
             {expired.map(ev => (
               <li key={ev.id} className="border p-3 rounded flex justify-between">
-                {`${formatDate(ev.date)} | ${ev.display_range.split(' | ')[1]}`}
+                {`${formatDate(ev.date)} | ${ev.display_range.split(' | ')[1]} | Limit: ${ev.limit}`}
                 <FaTrash
                   onClick={() => handleDelete(ev.id)}
                   className="text-red-500 cursor-pointer hover:text-red-700 ml-10"
@@ -191,6 +190,7 @@ export default function AddSession() {
     </>
   );
 }
+
 
 
 
