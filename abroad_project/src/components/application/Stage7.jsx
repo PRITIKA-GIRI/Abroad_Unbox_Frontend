@@ -85,7 +85,7 @@ const Stage7 = () => {
   return (
     <div className="flex md:flex-row flex-col mx-auto w-full">
       {/* Sidebar */}
-      <div className="md:w-1/4 w-full bg-gradient-to-l from-white to-green-500 p-4 ">
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 ">
         <h2 className="text-2xl underline font-bold">Stage 7:</h2>
         <p className="mt-2 font-bold text-xl text-center">
         Email
@@ -130,7 +130,7 @@ const Stage7 = () => {
       </div>
 
       {/* Main Content */}
-      <div className="md:w-3/4 w-full bg-white h-screen overflow-auto p- 4">
+      <div className="md:w-3/4 w-full bg-white h-screen overflow-auto p-4">
         <div 
         className="space-y-4" 
         // onSubmit={handleSubmit}

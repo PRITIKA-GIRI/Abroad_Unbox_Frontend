@@ -151,7 +151,7 @@ const Stage8 = () => {
 
   return (
     <div className="flex md:flex-row flex-col">
-      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#FFFFFF] to-green-300 h-auto md:h-dvh p-2 text-center">
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 8:</h2>
         <h2 className="text-xl font-semibold mt-6">VISA</h2>
         <p className="font-medium mt-5">
@@ -164,7 +164,7 @@ const Stage8 = () => {
           going as well.
         </p>
       </div>
-      <div className="w-full md:w-3/4 bg-white h-svh p- 2 overflow-scroll">
+      <div className="w-full md:w-3/4 bg-white h-svh p-4 overflow-scroll">
         <div className="flex justify-between items-center bg-gradient-to-r from-[#FFFFFF] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
           <p>DS 160</p>
           <div className="flex justify-end items-end">

@@ -42,8 +42,8 @@ const emptyEntry = {
     population: "",
     population_trend: "",
     job_and_opportunities: "",
-    crime: ""
-  }
+    crime: "",
+  },
 };
 
 const Stage5 = () => {
@@ -74,7 +74,7 @@ const Stage5 = () => {
   const [comparisonData, setComparisonData] = useState({
     uniNames: [],
     fieldKeys: [],
-    values: {}
+    values: {},
   });
 
   //----------------------------------------
@@ -85,7 +85,10 @@ const Stage5 = () => {
       const res = await axios.get(`${API_BASE_URL}/university-details/`);
       setUniversities(res.data);
     } catch (err) {
-      console.error("Error fetching universities:", err.response || err.message);
+      console.error(
+        "Error fetching universities:",
+        err.response || err.message
+      );
     }
   };
 
@@ -169,7 +172,7 @@ const Stage5 = () => {
               population: detail.population || "",
               population_trend: detail.population_trend || "",
               job_and_opportunities: detail.job_and_opportunities || "",
-              crime: detail.crime || ""
+              crime: detail.crime || "",
             };
           }
           updated[index].isDisabled = true;
@@ -244,8 +247,7 @@ const Stage5 = () => {
             tuition: entry.formData.tuition,
             living_and_tuition: entry.formData.living_and_tuition,
             avg_scholarship: entry.formData.avg_scholarship,
-            tuition_after_scholarship:
-              entry.formData.tuition_after_scholarship,
+            tuition_after_scholarship: entry.formData.tuition_after_scholarship,
             coa_after_scholarship: entry.formData.coa_after_scholarship,
             us_news_ranking: entry.formData.us_news_ranking,
             niche_ranking: entry.formData.niche_ranking,
@@ -256,7 +258,7 @@ const Stage5 = () => {
             population: entry.formData.population,
             population_trend: entry.formData.population_trend,
             job_and_opportunities: entry.formData.job_and_opportunities,
-            crime: entry.formData.crime
+            crime: entry.formData.crime,
           };
 
           const uniRes = await axios.post(
@@ -282,7 +284,8 @@ const Stage5 = () => {
       // --- 3) Prevent duplicates: check if already linked ---
       if (linkedUniversityIds.has(universityId)) {
         return alert(
-          `“${universityId === null ? universityName : entry.university
+          `“${
+            universityId === null ? universityName : entry.university
           }” is already linked to your profile.`
         );
       }
@@ -294,7 +297,7 @@ const Stage5 = () => {
         university_name:
           entry.university === "other"
             ? entry.other_university.trim()
-            : entry.university
+            : entry.university,
       };
 
       await axios.post(
@@ -310,7 +313,9 @@ const Stage5 = () => {
         return next;
       });
 
-      alert(`University “${studentUniPayload.university_name}” added to your profile.`);
+      alert(
+        `University “${studentUniPayload.university_name}” added to your profile.`
+      );
     } catch (err) {
       console.error("Error in addToProfile:", err.response || err.message);
       alert("Failed to add university to profile: " + (err.message || err));
@@ -334,18 +339,14 @@ const Stage5 = () => {
       const payloadEntries = entries.map((ent) => ({
         university: ent.university === "other" ? "" : ent.university,
         other_university:
-          ent.university === "other"
-            ? ent.other_university.trim()
-            : "",
-        ...ent.formData
+          ent.university === "other" ? ent.other_university.trim() : "",
+        ...ent.formData,
       }));
       const bulkPayload = { student: studentId, entries: payloadEntries };
 
-      await axios.post(
-        `${API_BASE_URL}/stage-five-submissions/`,
-        bulkPayload,
-        { headers: { "Content-Type": "application/json" } }
-      );
+      await axios.post(`${API_BASE_URL}/stage-five-submissions/`, bulkPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       // 2) For each entry, replicate addToProfile logic:
       for (let ent of entries) {
@@ -358,7 +359,8 @@ const Stage5 = () => {
 
           // Check master list (case-insensitive)
           let existing = universities.find(
-            (u) => u.university_name.trim().toLowerCase() === uniName.toLowerCase()
+            (u) =>
+              u.university_name.trim().toLowerCase() === uniName.toLowerCase()
           );
           if (existing) {
             uniId = existing.id;
@@ -398,7 +400,7 @@ const Stage5 = () => {
               population: ent.formData.population,
               population_trend: ent.formData.population_trend,
               job_and_opportunities: ent.formData.job_and_opportunities,
-              crime: ent.formData.crime
+              crime: ent.formData.crime,
             };
 
             const uniRes = await axios.post(
@@ -433,7 +435,7 @@ const Stage5 = () => {
           university_name:
             ent.university === "other"
               ? ent.other_university.trim()
-              : ent.university
+              : ent.university,
         };
         await axios.post(
           `${API_BASE_URL}/student-university-details/`,
@@ -478,7 +480,9 @@ const Stage5 = () => {
     });
 
     if (selected.length < 2) {
-      return alert("Please select or fill in at least two universities to compare.");
+      return alert(
+        "Please select or fill in at least two universities to compare."
+      );
     }
 
     // 2) Build an array of the display names (either chosen or “other”)
@@ -511,9 +515,13 @@ const Stage5 = () => {
   const stage5Data = stagesDetail.find((item) => item.stage === "5");
   const isStage5Completed = stage5Data?.is_complete === "completed";
 
+  // const [videoLink, setVideoLink] = useState(
+  //   ""
+  // );
+
   return (
     <div className="flex md:flex-row flex-col mx-auto w-full">
-      <div className="md:w-1/4 w-full bg-gradient-to-l from-white to-green-500 p-4 h-auto">
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 h-auto">
         <h2 className="text-2xl underline font-bold">Stage 5:</h2>
         <p className="mt-4">University Finalization</p>
         <p className="mt-2">
@@ -522,9 +530,23 @@ const Stage5 = () => {
       </div>
 
       <div className="md:w-3/4 w-full bg-white h-screen overflow-auto p-4">
+        <div className="px-4 py-2 bg-gradient-to-r from-[#ffffff] to-blue-300 text-2xl font-semibold text-center mb-4">
+          University Section
+        </div>
+        <iframe
+          className="w-full h-[400px] mt-1"
+          src='https://www.youtube.com/embed/-E1ULv6LcOk'
+          allowFullScreen
+          title="university"
+        />
+        <div className="w-[30%] mx-auto mt-2 mb-4">
+          <button className="px-3 py-3 text-black text-center rounded bg-green-300 hover:bg-green-400 hover:text-white text-lg font-semibold">
+            Request Appointment
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-6">
           {entries.map((entry, idx) => (
-            <div key={idx} className="border p-4 rounded">
+            <div key={idx} className="shadow shadow-gray-300 p-4 rounded">
               <h3 className="text-xl font-semibold mb-4">
                 University #{idx + 1}
               </h3>
@@ -537,7 +559,7 @@ const Stage5 = () => {
                 onChange={(e) =>
                   handleEntryChange(idx, "university", e.target.value)
                 }
-                className="border p-2 w-full mb-4"
+                className="border border-gray-300 rounded p-2 w-full mb-4"
               >
                 <option value="">-- Select a university --</option>
                 {universities.map((u) => (
@@ -558,7 +580,7 @@ const Stage5 = () => {
                   onChange={(e) =>
                     handleEntryChange(idx, "other_university", e.target.value)
                   }
-                  className="border p-2 w-full mb-4"
+                  className="border border-gray-300 rounded p-2 w-full mb-4"
                 />
               )}
 
@@ -570,24 +592,24 @@ const Stage5 = () => {
                     "early_decision",
                     "early_action",
                     "regular_decision",
-                    "scholarship_priority"
-                  ]
+                    "scholarship_priority",
+                  ],
                 },
                 {
                   title: "Minimum English Proficiency",
-                  fields: ["det", "toefl", "ielts", "pte"]
+                  fields: ["det", "toefl", "ielts", "pte"],
                 },
                 {
                   title: "Minimum GPA",
-                  fields: ["gpa_acceptance", "gpa_scholarship"]
+                  fields: ["gpa_acceptance", "gpa_scholarship"],
                 },
                 {
                   title: "Minimum SAT",
-                  fields: ["sat_acceptance", "sat_scholarship"]
+                  fields: ["sat_acceptance", "sat_scholarship"],
                 },
                 {
                   title: "SAT Requirements",
-                  fields: ["admission", "scholarship"]
+                  fields: ["admission", "scholarship"],
                 },
                 {
                   title: "Scholarship Requirements",
@@ -595,8 +617,8 @@ const Stage5 = () => {
                     "gpa_based",
                     "sat_based",
                     "need_based",
-                    "holistic_review"
-                  ]
+                    "holistic_review",
+                  ],
                 },
                 {
                   title: "Cost",
@@ -605,12 +627,12 @@ const Stage5 = () => {
                     "living_and_tuition",
                     "avg_scholarship",
                     "tuition_after_scholarship",
-                    "coa_after_scholarship"
-                  ]
+                    "coa_after_scholarship",
+                  ],
                 },
                 {
                   title: "Ranking",
-                  fields: ["us_news_ranking", "niche_ranking", "major_ranking"]
+                  fields: ["us_news_ranking", "niche_ranking", "major_ranking"],
                 },
                 {
                   title: "Location Details",
@@ -621,14 +643,12 @@ const Stage5 = () => {
                     "population",
                     "population_trend",
                     "job_and_opportunities",
-                    "crime"
-                  ]
-                }
+                    "crime",
+                  ],
+                },
               ].map(({ title, fields }) => (
                 <div key={title}>
-                  <div className="text-lg font-semibold mt-4 mb-2">
-                    {title}
-                  </div>
+                  <div className="text-lg font-semibold mt-4 mb-2">{title}</div>
                   {fields.map((fld) => (
                     <div
                       key={fld}
@@ -644,7 +664,7 @@ const Stage5 = () => {
                         "gpa_based",
                         "sat_based",
                         "need_based",
-                        "holistic_review"
+                        "holistic_review",
                       ].includes(fld) ? (
                         <select
                           name={fld}
@@ -653,7 +673,7 @@ const Stage5 = () => {
                             handleEntryChange(idx, fld, e.target.value)
                           }
                           disabled={entry.isDisabled}
-                          className="border w-1/2 p-1"
+                          className="border border-gray-300 rounded w-1/2 p-1"
                         >
                           <option value="">-- select --</option>
                           <option value="yes">Yes</option>
@@ -668,7 +688,7 @@ const Stage5 = () => {
                             handleEntryChange(idx, fld, e.target.value)
                           }
                           disabled={entry.isDisabled}
-                          className="border w-1/2 p-1"
+                          className="border border-gray-300 rounded w-1/2 p-2"
                         />
                       )}
                     </div>
@@ -689,7 +709,7 @@ const Stage5 = () => {
 
           <div className="flex flex-col justify-center gap-4">
             {/* COMPARE button now calls our new function */}
-            
+
             <button
               type="button"
               onClick={addMoreUniversity}
@@ -717,21 +737,19 @@ const Stage5 = () => {
             </button> */}
 
             {/* Submit / Completed Button */}
-        <div className="mt-4">
-          <button
-            onClick={() => handleSubmit(responseLink[0]?.stage)}
-            className={`w-full py-4 text-2xl font-semibold mt-3 ${
-              isStage5Completed
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
-            }`}
-            disabled={isStage5Completed}
-          >
-            {isStage5Completed ? "Stage 5: Completed" : "Stage 5: Submit"}
-          </button>
-          
-        </div>
-
+            <div className="mt-4">
+              <button
+                onClick={() => handleSubmit(responseLink[0]?.stage)}
+                className={`w-full py-4 text-2xl font-semibold mt-3 ${
+                  isStage5Completed
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
+                }`}
+                disabled={isStage5Completed}
+              >
+                {isStage5Completed ? "Stage 5: Completed" : "Stage 5: Submit"}
+              </button>
+            </div>
           </div>
         </form>
       </div>

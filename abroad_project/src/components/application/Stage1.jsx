@@ -131,7 +131,7 @@ const Stage1 = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-full md:w-3/4 bg-white h-svh p-2 md:overflow-scroll">
+      <div className="w-full md:w-3/4 bg-white h-svh p-4 md:overflow-scroll">
         {/* Admin controls: Add / Edit / Delete / View */}
         {role === "admin" &&
           (responseLink.length === 0 ? (

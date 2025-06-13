@@ -72,7 +72,12 @@ const Stage4 = () => {
 
       alert("Form submitted successfully!");
       setEcaList([
-        { activities_type: "", position: "", org_involved: "", roles_duties: "" },
+        {
+          activities_type: "",
+          position: "",
+          org_involved: "",
+          roles_duties: "",
+        },
       ]);
       setFiles({});
     } catch (err) {
@@ -84,28 +89,28 @@ const Stage4 = () => {
   };
 
   useEffect(() => {
-        getStages();
-      }, []);
-  
-    // Check if Stage 3 is marked "completed" in the fetched stages array
-    const stage4Data = stagesDetail.find((item) => item.stage === "4");
-    const isStage4Completed = stage4Data?.is_complete === "completed";
+    getStages();
+  }, []);
+
+  // Check if Stage 3 is marked "completed" in the fetched stages array
+  const stage4Data = stagesDetail.find((item) => item.stage === "4");
+  const isStage4Completed = stage4Data?.is_complete === "completed";
 
   return (
     <div className="flex md:flex-row flex-col mx-auto w-full">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 4:</h2>
-        <p className="font-medium mt-5">
+        <p className="font-medium mt-5 p-4">
           Your ECA MATTERS! All those tireless hours...
         </p>
       </div>
 
-      <div className="w-full md:w-3/4 bg-white h-svh md:overflow-scroll">
+      <div className="w-full md:w-3/4 p-4 bg-white h-svh md:overflow-scroll">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold">
             What can be included?
           </div>
-          <div className="p-2 bg-green-300 text-left">
+          <div className="p-2 text-lg font-normal text-left">
             <p>Everything could be included. (But after grade 9 and over)</p>
             <ul className="list-disc ml-5">
               <li>House Captain or Hall Monitor</li>
@@ -119,7 +124,10 @@ const Stage4 = () => {
           </div>
 
           {ecaList.map((eca, index) => (
-            <div key={index} className="border p-4">
+            <div
+              key={index}
+              className="border border-gray-200 shadow-md rounded p-4"
+            >
               <div className="text-2xl font-semibold text-center bg-gradient-to-r from-white to-blue-300 p-2">
                 ECA {index + 1}
               </div>
@@ -128,7 +136,7 @@ const Stage4 = () => {
                 name="activities_type"
                 value={eca.activities_type}
                 onChange={(e) => handleInputChange(index, e)}
-                className="w-full border p-2 mt-3"
+                className="w-full border border-gray-300 rounded p-2 mt-3"
                 placeholder="Activities Type"
               />
               <input
@@ -136,7 +144,7 @@ const Stage4 = () => {
                 name="position"
                 value={eca.position}
                 onChange={(e) => handleInputChange(index, e)}
-                className="w-full border p-2 mt-3"
+                className="w-full border border-gray-300 rounded p-2 mt-3"
                 placeholder="Position"
               />
               <input
@@ -144,14 +152,14 @@ const Stage4 = () => {
                 name="org_involved"
                 value={eca.org_involved}
                 onChange={(e) => handleInputChange(index, e)}
-                className="w-full border p-2 mt-3"
+                className="w-full border border-gray-300 rounded p-2 mt-3"
                 placeholder="Organization Involved With"
               />
               <textarea
                 name="roles_duties"
                 value={eca.roles_duties}
                 onChange={(e) => handleInputChange(index, e)}
-                className="w-full border p-2 mt-3"
+                className="w-full border border-gray-300 rounded p-2 mt-3"
                 placeholder="Describe your roles and duties (150 Words)"
               />
             </div>
@@ -175,17 +183,28 @@ const Stage4 = () => {
               allowFullScreen
               title="Session 1 - The Mindset"
             />
-            <button className="mt-3 border rounded-4xl w-1/3 py-4 mx-auto">
+            <button className="mt-3 border border-gray-300 bg-gradient-to-r from-blue-100 to-blue-300 hover:from-blue-300 hover:to-blue-500 hover:text-white rounded-2xl w-1/3 py-2 mx-auto">
               Download Sample
             </button>
             <br />
-            <label>Upload Resume: </label>
-            <input
-              type="file"
-              name="resume"
-              onChange={handleFileChange}
-              className="mt-3 px-3 border rounded-4xl w-1/3 py-4 text-center"
-            />
+            {/* <div className="mt-3 flex items-center gap-4 w-full bg-gradient-to-r from-blue-50 to-blue-500">
+              <label>Upload Resume: </label>
+              <input
+                type="file"
+                name="resume"
+                onChange={handleFileChange}
+                className="mt-3 px-3 border border-gray-300 bg-gray-50 rounded w-full py-2 text-center"
+              />
+            </div> */}
+            <div className="mt-3 flex items-center gap-4 w-full bg-gradient-to-r from-blue-50 to-blue-300">
+              <label className="text-center w-1/4">Upload Resume:</label>
+              <input
+                type="file"
+                name="resume"
+                onChange={handleFileChange}
+                className="m-2 px-3 border border-gray-300 bg-gray-50 rounded w-full py-2 text-center"
+              />
+            </div>
           </div>
 
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold">
@@ -211,20 +230,19 @@ const Stage4 = () => {
           </button> */}
 
           {/* Submit / Completed Button */}
-        <div className="mt-4">
-          <button
-            onClick={() => handleSubmit(responseLink[0]?.stage)}
-            className={`w-full py-4 text-2xl font-semibold mt-3 ${
-              isStage4Completed
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
-            }`}
-            disabled={isStage4Completed}
-          >
-            {isStage4Completed ? "Stage 4: Completed" : "Stage 4: Submit"}
-          </button>
-        </div>
-          
+          <div className="mt-4">
+            <button
+              onClick={() => handleSubmit(responseLink[0]?.stage)}
+              className={`w-full py-4 text-2xl font-semibold mt-3 ${
+                isStage4Completed
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
+              }`}
+              disabled={isStage4Completed}
+            >
+              {isStage4Completed ? "Stage 4: Completed" : "Stage 4: Submit"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

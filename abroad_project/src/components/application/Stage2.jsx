@@ -112,7 +112,7 @@ const Stage2 = () => {
         </p>
       </div>
 
-      <div className="w-full md:w-3/4 h-svh p-2 md:overflow-scroll">
+      <div className="w-full md:w-3/4 h-svh p-4 md:overflow-scroll">
         <form onSubmit={handleSubmit}>
           {/* Academic Information */}
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">

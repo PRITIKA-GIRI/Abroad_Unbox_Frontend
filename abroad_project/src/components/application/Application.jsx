@@ -165,7 +165,7 @@ function Application() {
         </div>
 
         {/* Right: Stage Component */}
-        <div className="w-full md:w-5/6 p-3 overflow-auto h-dvh">
+        <div className="w-full md:w-5/6 overflow-auto h-dvh">
           {renderStageComponent()}
         </div>
       </div>

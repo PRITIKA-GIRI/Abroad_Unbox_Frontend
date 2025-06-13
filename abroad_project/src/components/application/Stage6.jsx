@@ -123,7 +123,7 @@ const Stage6 = () => {
   return (
     <div className="flex md:flex-row flex-col mx-auto w-full">
       {/* Sidebar */}
-      <div className="md:w-1/5 w-full bg-gradient-to-l from-white to-green-500 p-4 h-auto">
+      <div className="md:w-1/5 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 h-auto">
         <h2 className="text-2xl underline font-bold">Stage 6:</h2>
         <p className="mt-2">
           Now we have all the documents ready & we have all the university list.
