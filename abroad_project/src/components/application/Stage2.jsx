@@ -123,13 +123,13 @@ const Stage2 = () => {
               type="text"
               name="name"
               placeholder="Name"
-              className="border rounded w-full p-2"
+              className="border rounded border-gray-300 w-full p-2"
               onChange={handleChange}
               value={formData.name || ''}
             />
             <select
               name="gender"
-              className="w-full bg-gray-100"
+              className="w-full bg-gray-100 p-2 rounded border border-gray-300"
               onChange={handleChange}
               value={formData.gender || ''}
             >
@@ -138,9 +138,10 @@ const Stage2 = () => {
               <option value="Female">Female</option>
               <option value="Other">Other</option>
             </select>
+
             <select
               name="marital_status"
-              className="w-full bg-gray-100"
+              className="w-full bg-gray-100 rounded border border-gray-300 p-2"
               onChange={handleChange}
               value={formData.marital_status || ''}
             >
@@ -151,7 +152,7 @@ const Stage2 = () => {
             <input
               type="date"
               name="date_of_birth"
-              className="border rounded w-full p-2"
+              className="border rounded w-full p-2 border-gray-300"
               onChange={handleChange}
               value={formData.date_of_birth || ''}
             />
@@ -168,7 +169,7 @@ const Stage2 = () => {
                 type="text"
                 name={field}
                 placeholder={field.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
-                className="border rounded w-full p-2"
+                className="border rounded w-full p-2 border-gray-300"
                 onChange={handleChange}
                 value={formData[field] || ''}
               />
@@ -179,7 +180,7 @@ const Stage2 = () => {
           <div className="mt-5 flex flex-col gap-4">
             <select
               name="standardized_test"
-              className="w-full bg-gray-100"
+              className="w-full bg-gray-100 border border-gray-300 rounded p-2"
               value={testType}
               onChange={e => {
                 setTestType(e.target.value);
@@ -198,7 +199,7 @@ const Stage2 = () => {
                   type="text"
                   name="sat_verbal"
                   placeholder="SAT Verbal"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.sat_verbal || ''}
                 />
@@ -206,7 +207,7 @@ const Stage2 = () => {
                   type="text"
                   name="sat_quant"
                   placeholder="SAT Quant"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.sat_quant || ''}
                 />
@@ -218,7 +219,7 @@ const Stage2 = () => {
                   type="text"
                   name="gre_verbal_reasoning"
                   placeholder="GRE Verbal Reasoning"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.gre_verbal_reasoning || ''}
                 />
@@ -226,7 +227,7 @@ const Stage2 = () => {
                   type="text"
                   name="gre_quant_reasoning"
                   placeholder="GRE Quant Reasoning"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.gre_quant_reasoning || ''}
                 />
@@ -234,7 +235,7 @@ const Stage2 = () => {
                   type="text"
                   name="gre_analytical_writing"
                   placeholder="GRE Analytical Writing"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.gre_analytical_writing || ''}
                 />
@@ -246,7 +247,7 @@ const Stage2 = () => {
                   type="text"
                   name="gmat_quantitative"
                   placeholder="GMAT Quantitative"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.gmat_quantitative || ''}
                 />
@@ -254,7 +255,7 @@ const Stage2 = () => {
                   type="text"
                   name="gmat_verbal"
                   placeholder="GMAT Verbal"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.gmat_verbal || ''}
                 />
@@ -262,7 +263,7 @@ const Stage2 = () => {
                   type="text"
                   name="gmat_data_insights"
                   placeholder="GMAT Data Insights"
-                  className="border rounded w-full p-2"
+                  className="border rounded w-full border-gray-300 p-2"
                   onChange={handleChange}
                   value={formData.gmat_data_insights || ''}
                 />
@@ -274,7 +275,7 @@ const Stage2 = () => {
           <div className="mt-5 flex flex-col gap-4">
             <select
               name="english_test_type"
-              className="w-full bg-gray-100"
+              className="w-full bg-gray-100 border border-gray-300 rounded p-2"
               onChange={handleChange}
               value={formData.english_test_type || ''}
             >
@@ -290,7 +291,7 @@ const Stage2 = () => {
                 type="text"
                 name={field}
                 placeholder={field.split('_')[1].replace(/\b\w/g,c=>c.toUpperCase())}
-                className="border rounded w-full p-2"
+                className="border rounded w-full border-gray-300 p-2"
                 onChange={handleChange}
                 value={formData[field] || ''}
               />
@@ -303,7 +304,7 @@ const Stage2 = () => {
               type="text"
               name="major"
               placeholder="Major"
-              className="border rounded w-full p-2"
+              className="border rounded w-full border-gray-300 p-2"
               onChange={handleChange}
               value={formData.major || ''}
             />
@@ -311,7 +312,7 @@ const Stage2 = () => {
               type="text"
               name="special_note"
               placeholder="Special Note"
-              className="border rounded w-full p-2"
+              className="border rounded w-full p-2 border-gray-300"
               onChange={handleChange}
               value={formData.special_note || ''}
             />

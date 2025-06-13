@@ -189,7 +189,7 @@ const Stage1 = () => {
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20The%20Mindset"
             className="block mx-auto mt-2 w-1/2 md:w-1/3"
           >
-            <div className="bg-green-300 px-5 py-3 text-center">
+            <div className="bg-green-300 px-5 py-3 text-center rounded">
               <p className="text-xl font-medium">Request Appointment</p>
             </div>
           </a>
@@ -215,7 +215,7 @@ const Stage1 = () => {
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Application%20Timeline"
             className="block mx-auto mt-2 w-1/2 md:w-1/3"
           >
-            <div className="bg-green-300 px-5 py-3 text-center">
+            <div className="bg-green-300 px-5 py-3 text-center rounded">
               <p className="text-xl font-medium">
                 Request Appointment
               </p>
@@ -243,7 +243,7 @@ const Stage1 = () => {
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Career%20Counseling"
             className="block mx-auto mt-2 w-1/2 md:w-1/3"
           >
-            <div className="bg-green-300 px-5 py-3 text-center">
+            <div className="bg-green-300 px-5 py-3 text-center rounded">
               <p className="text-xl font-medium">
                 Request Appointment
               </p>
@@ -258,7 +258,7 @@ const Stage1 = () => {
         <div className="flex gap-5 w-full mt-2">
           <a
             href="https://englishtest.duolingo.com/applicants"
-            className="bg-yellow-300 px-5 py-3 w-1/2 text-center"
+            className="bg-yellow-300 px-5 py-3 w-1/2 text-center rounded"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -266,7 +266,7 @@ const Stage1 = () => {
           </a>
           <a
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20English%20Proficiency"
-            className="bg-green-300 px-5 py-3 w-1/2 text-center"
+            className="bg-green-300 px-5 py-3 w-1/2 text-center rounded"
           >
             <p className="text-xl font-medium">Request Appointment</p>
           </a>

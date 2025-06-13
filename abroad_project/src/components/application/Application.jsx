@@ -99,7 +99,7 @@ function Application() {
             className="w-10"
           />
         </Link>
-        <p className="ml-[40%]">My Application Roadmap</p>
+        <p className="w-full mx-auto font-semibold">My Application Roadmap</p>
       </div>
 
       {/* Menu icon for small screens */}
@@ -114,14 +114,14 @@ function Application() {
       {/* Stages Navigation */}
       <div className="flex flex-col md:flex-row">
         {/* Left: Stages Navigation */}
-        <div className="w-full md:w-1/6 mt-3 flex md:flex-col flex-col md:gap-3 items-left">
+        <div className="w-full md:w-1/6 shadow-inner shadow-gray-300 pr-4 py-5 flex md:flex-col flex-col md:gap-3 items-left">
           {stages.map((stage) => (
             <div key={stage.id} className="w-full">
               {/* Desktop */}
-              <div className="hidden md:flex flex-col justify-between items-center text-white font-bold text-xl">
+              <div className="hidden md:flex flex-col justify-between items-center text-white text-center font-normal text-lg">
                 <span
                   onClick={() => handleStageClick(stage.stage, stage.is_locked)}
-                  className={`w-full p-3 cursor-pointer flex ${
+                  className={`w-full p-3 cursor-pointer rounded-r-lg flex ${
                     stage.is_locked === "unlocked"
                       ? activeStage === parseInt(stage.stage)
                         ? "bg-green-600"
@@ -140,7 +140,7 @@ function Application() {
 
               {/* Mobile */}
               {isMenuOpen && (
-                <div className="flex md:hidden justify-between items-center text-white font-bold text-xl my-1.5">
+                <div className="flex md:hidden justify-between items-center text-white font-normal text-center text-lg my-0.5">
                   <span
                     onClick={() =>
                       handleStageClick(stage.stage, stage.is_locked)
