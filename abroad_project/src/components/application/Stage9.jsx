@@ -1,15 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaCirclePlus } from "react-icons/fa6";
+import CryptoJS from "crypto-js";
+import { IoWarningOutline } from "react-icons/io5";
+
 const Stage9 = () => {
-  const [responseLink, setResponseLink] = useState(
-    "https://www.youtube.com/embed/QjQliDFIsnk"
-  );
+  const [signature, setSignature] = useState("");
+  const [isSignatureReady, setIsSignatureReady] = useState(false);
+  const [transactionUuid, setTransactionUuid] = useState("");
+
+  // Generate random transaction UUID
+  const generateRandomString = () => {
+    const strings =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let code = "";
+    let length = 25;
+    for (let i = 0; i < length; i++) {
+      code += strings[Math.floor(Math.random() * strings.length)];
+    }
+    return code;
+  };
+
   const handleEmailClick = () => {
     window.location.href = "mailto:someone@example.com";
   };
+
+  useEffect(() => {
+    const generateEsewaSignature = () => {
+      const secret = "8gBm/:&EnhH.1/q";
+      const uuid = generateRandomString(); // Generate unique UUID
+
+      const totalAmount = "5000";
+      const productCode = "EPAYTEST";
+
+      // FIXED: Correct message format for eSewa signature
+      const message = `total_amount=${totalAmount},transaction_uuid=${uuid},product_code=${productCode}`;
+
+      console.log("Message to sign:", message); // Debug log
+
+      const hash = CryptoJS.HmacSHA256(message, secret);
+      const signature = CryptoJS.enc.Base64.stringify(hash);
+
+      console.log("Generated signature:", signature); // Debug log
+
+      setTransactionUuid(uuid);
+      setSignature(signature);
+      setIsSignatureReady(true);
+    };
+
+    generateEsewaSignature();
+  }, []);
+
   return (
     <div className="flex md:flex-row flex-col">
-      <div className="md:w-1/5 w-full bg-gradient-to-l from-[#FFFFFF] to-[#248A4D] h-auto md:h-dvh p-2 text-center">
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#FFFFFF] to-[#248A4D] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 9:</h2>
         <h2 className="text-xl font-semibold mt-6">After Visa.</h2>
         <p className="font-medium mt-5">
@@ -22,7 +65,7 @@ const Stage9 = () => {
           preparations
         </p>
       </div>
-      <div className="w-full md:w-4/5 lh:w-4/5 bg-white h-svh p- 2 overflow-scroll">
+      <div className="w-full md:w-3/4 lh:w-4/5 bg-white h-svh p-2 overflow-scroll">
         <div className="flex justify-between items-center bg-gradient-to-r from-[#FFFFFF] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
           <p>NOC</p>
           <div className="flex justify-end items-end">
@@ -34,7 +77,8 @@ const Stage9 = () => {
             <p className="font-semibold">1. Visit the Official Website:</p>
             <p>
               - Go to the official website of the Ministry of Education, Science
-              and <br></br>Technology (MOEST): noc.moest.gov.np.
+              and <br />
+              Technology (MOEST): noc.moest.gov.np.
             </p>
             <p className="mt-5 font-semibold">
               2. Create an Account or Log In:
@@ -100,11 +144,82 @@ const Stage9 = () => {
             cost. We charge Rs. 5,000 for the whole session.
           </p>
         </div>
-        <div className="px-5 py-3 mt-2">
-          <button className="px-4 py-2 bg-green-700 hover:bg-green-800 rounded-lg text-white">
-            Register for after visa
-          </button>
-        </div>
+
+        {isSignatureReady && (
+          <div className="px-5 py-3">
+            <form
+              action="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
+              method="POST"
+            >
+              <input type="hidden" name="amount" value="5000" />
+              <input type="hidden" name="tax_amount" value="0" />
+              <input type="hidden" name="total_amount" value="5000" />
+              <input
+                type="hidden"
+                name="transaction_uuid"
+                value={transactionUuid}
+              />
+              <input type="hidden" name="product_code" value="EPAYTEST" />
+              <input type="hidden" name="product_service_charge" value="0" />
+              <input type="hidden" name="product_delivery_charge" value="0" />
+              <input
+                type="hidden"
+                name="success_url"
+                value="http://localhost:5173/esewa-success/"
+              />
+              <input
+                type="hidden"
+                name="failure_url"
+                value="http://localhost:5173/esewa-fail/"
+              />
+              <input
+                type="hidden"
+                name="signed_field_names"
+                value="total_amount,transaction_uuid,product_code"
+              />
+              <input type="hidden" name="signature" value={signature} />
+              <input
+                value="Pay for After Visa Session with eSewa (Rs. 5000)"
+                type="submit"
+                className="px-4 py-2 bg-green-700 hover:bg-green-800 rounded-lg text-white cursor-pointer w-full mb-3"
+              />
+            </form>
+            {/* <div className="bg-gray-100 p-3 rounded text-sm">
+              <p><strong>Debug Info:</strong></p>
+              <p>Transaction UUID: {transactionUuid}</p>
+              <p>Signature: {signature}</p>
+            </div> */}
+
+            <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg shadow-sm text-sm text-gray-800 flex items-start gap-3">
+              <IoWarningOutline size={24} className="text-red-600 mt-1" />
+              <div>
+                <p className="font-semibold mb-1">Disclaimer:</p>
+                <p>
+                  This is a test environment. Please{" "}
+                  <span className="font-semibold text-red-700">do not</span> use
+                  your original credentials.
+                </p>
+                <p className="mt-2">
+                  <span className="font-medium">
+                    For testing purposes, use the following:
+                  </span>
+                  <br />
+                  <span className="block ml-4">
+                    eSewa ID: 9806800001 / 2 / 3 / 4 / 5<br />
+                    Password:{" "}
+                    <code className="bg-gray-200 px-1 rounded">Nepal@123</code>
+                    <br />
+                    MPIN: <code className="bg-gray-200 px-1 rounded">1122</code>
+                    <br />
+                    Token:{" "}
+                    <code className="bg-gray-200 px-1 rounded">123456</code>
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <button className="text-white mt-5 text-center font-semibold w-full px-4 py-3 bg-green-500 hover:bg-green-600">
           STAGE IX: Complete
         </button>
@@ -112,4 +227,5 @@ const Stage9 = () => {
     </div>
   );
 };
+
 export default Stage9;

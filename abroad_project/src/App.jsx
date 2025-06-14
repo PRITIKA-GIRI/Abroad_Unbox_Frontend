@@ -28,9 +28,11 @@ import Stage5View from "./components/adminView/Stage5View";
 import Stage6View from "./components/adminView/Stage6View";
 import Stage7View from "./components/adminView/Stage7View";
 import Stage8View from "./components/adminView/Stage8View";
-
+import EsewaSucess from "./components/esewa/Sucess";
+import EsewaFail from "./components/esewa/Fail";
 
 function App() {
+  
   return (
     <>
       {/* <BrowserRouter basename="/abroad-unbox"> */}
@@ -43,6 +45,8 @@ function App() {
           <Route path="/info" element={<Info />} />
           <Route path="/essay" element={<Essay />} />
           <Route path="/application" element={<Application />} />
+          <Route path="/esewa-success" element={<EsewaSucess />} />
+          <Route path="/esewa-fail" element={<EsewaFail />} />
 
           {/* admin private routes */}
           <Route
