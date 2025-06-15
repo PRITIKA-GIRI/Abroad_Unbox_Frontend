@@ -49,6 +49,7 @@ const emptyEntry = {
 const Stage5 = () => {
   const [stagesDetail, setStagesDetail] = useState([]);
   const [universities, setUniversities] = useState([]);
+  const [stageVideo, setStageVideo] = useState([]);
   const [linkedUniversityIds, setLinkedUniversityIds] = useState(new Set());
   const [loading, setLoading] = useState(false);
   const [entries, setEntries] = useState([{ ...emptyEntry }]);
@@ -76,6 +77,15 @@ const Stage5 = () => {
     fieldKeys: [],
     values: {},
   });
+
+  const getStageVideo = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/stages-videos/`);
+      setStageVideo(response.data);
+    } catch (err) {
+      console.log("Failed to get stage videos", err);
+    }
+  };
 
   //----------------------------------------
   // 1) Fetch master list of universities
@@ -118,6 +128,7 @@ const Stage5 = () => {
   useEffect(() => {
     fetchUniversities();
     fetchLinkedUniversities();
+    getStageVideo();
     getStages();
   }, []);
 
@@ -451,7 +462,8 @@ const Stage5 = () => {
         });
       }
 
-      alert("All entries submitted & linked to your profile (no duplicates).");
+      // alert("All entries submitted & linked to your profile (no duplicates).");
+      alert("Stage 5 submitted successfully! (wait for admin approval to unlock next stage)");
       // Reset to a single empty entry
       setEntries([{ ...emptyEntry }]);
     } catch (err) {
@@ -518,24 +530,27 @@ const Stage5 = () => {
   // const [videoLink, setVideoLink] = useState(
   //   ""
   // );
+  const videoUrl1 = stageVideo[0]?.stage5_video1;
 
   return (
     <div className="flex md:flex-row flex-col mx-auto w-full">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 h-auto">
         <h2 className="text-2xl underline font-bold">Stage 5:</h2>
-        <p className="mt-4">University Finalization</p>
-        <p className="mt-2">
-          Pick 5–10 for undergrad (2–5 for grad), then follow up on I-20s!
-        </p>
+        <p className="mt-4 font-semibold">University Finalization</p>
+        <p className="mt-3">Let's finalize on the list of university based on your expectation.</p>
+        <p className="mt-3">Don't apply to very few University, nor too many. There has to be a happy medium when it comes to applying to the university.</p>
+        <p className="mt-3">Also, BE PATIENCE, Most of the university usually takes over few weeks even months to send you I-20. Be sure to followup.</p>
+        <p className="mt-3">We usually recommend 5-10 University for Undergraduate, and 2-5 for the Graduate Students.</p>
+        <p className="mt-3">Also, don't forget every university has their own requirements, they have their own ways of determining scholarship.</p>
       </div>
 
-      <div className="md:w-3/4 w-full bg-white h-screen overflow-auto p-4">
+      <div className="md:w-3/4 w-full bg-white h-screen p-4">
         <div className="px-4 py-2 bg-gradient-to-r from-[#ffffff] to-blue-300 text-2xl font-semibold text-center mb-4">
           University Section
         </div>
         <iframe
           className="w-full h-[400px] mt-1"
-          src='https://www.youtube.com/embed/-E1ULv6LcOk'
+          src={videoUrl1}
           allowFullScreen
           title="university"
         />

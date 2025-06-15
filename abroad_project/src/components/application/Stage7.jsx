@@ -62,7 +62,7 @@ const Stage7 = () => {
       if (response) {
         console.log(response.data);
         // Refresh stages so the button state updates
-        alert("Stage 7 submission successful!");
+        alert("Stage 7 submission successful! (Wait for admin approval to unlock next stage) ");
         getStages();
       }
     } catch (error) {
@@ -72,7 +72,7 @@ const Stage7 = () => {
   };
 
   const videoUrl1 = stageVideo[0]?.stage7_video1;
-  const videoUrl2 = stageVideo[0]?.stage7_video1;
+  const videoUrl2 = stageVideo[0]?.stage7_video2;
 
   const emailSample_i = emailSample[0]?.sample_i;
   const emailSample_ii = emailSample[0]?.sample_i;
@@ -130,7 +130,7 @@ const Stage7 = () => {
       </div>
 
       {/* Main Content */}
-      <div className="md:w-3/4 w-full bg-white h-screen overflow-auto p-4">
+      <div className="md:w-3/4 w-full bg-white h-screen p-4">
         <div 
         className="space-y-4" 
         // onSubmit={handleSubmit}

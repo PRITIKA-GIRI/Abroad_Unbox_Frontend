@@ -57,7 +57,7 @@ const Stage3 = () => {
         payload,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-      alert('Form submitted successfully!');
+      alert('Stage 3 (three) Form submitted successfully!');
       setFormData({});
       setFiles({});
     } catch (err) {
@@ -152,6 +152,10 @@ const Stage3 = () => {
         <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
           Passport
           <input type='file' name='passport' onChange={handleFileChange} className='w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2' required/>
+        </div>
+        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
+          Personal Essay
+          <input type='file' name='personal_essay' onChange={handleFileChange} className='w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2' required/>
         </div>
         <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
           Bank Balance Certificate 

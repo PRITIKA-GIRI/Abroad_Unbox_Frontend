@@ -108,7 +108,7 @@ const Stage6 = () => {
         }
       );
 
-      alert("Stage 6 submission successful!");
+      alert("Stage 6 submission successful! (Wait for admin approval to unlock next stage)");
       // Clear local “applied” state and re-fetch stages to flip the button to “Completed”
       setAppliedUniIds([]);
       getStages();
@@ -140,7 +140,7 @@ const Stage6 = () => {
       </div>
 
       {/* Main Content */}
-      <div className="md:w-4/5 w-full bg-white h-screen overflow-auto p-4">
+      <div className="md:w-4/5 w-full bg-white h-screen p-4">
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Section Header */}
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">

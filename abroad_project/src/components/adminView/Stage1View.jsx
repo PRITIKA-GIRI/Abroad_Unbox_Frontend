@@ -37,6 +37,7 @@ const Stage1View = () => {
           stage: stage,
           student_id: studentId,
         }
+        
       );
       if (response.status === 200) {
         // 2) Patch the submission’s status to “completed”
@@ -46,6 +47,8 @@ const Stage1View = () => {
             status: "completed",
           }
         );
+
+        alert("User's stage 1 successfully approved!");
         // 3) Refresh the list so the row’s status updates
         getStage1Data();
       }

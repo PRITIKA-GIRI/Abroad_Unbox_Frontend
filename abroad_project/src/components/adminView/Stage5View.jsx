@@ -66,6 +66,7 @@ const Stage5View = () => {
         `${API_BASE_URL}/stage-five-submissions/${submissionId}/`
       );
       alert("Stage 5 declined");
+      closePopup();
       getStage5Data();
     } catch (error) {
       console.error("Failed to delete the stage 5 submission", error);

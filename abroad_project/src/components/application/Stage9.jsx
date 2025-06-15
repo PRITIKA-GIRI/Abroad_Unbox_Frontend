@@ -433,7 +433,7 @@ const Stage9 = () => {
           Just the last thing remaining in the menu. We have to make sure you
           are ready for the future ahead.
         </p>
-        <p className="font-medium mt-5 md:flex hidden">
+        <p className="font-medium mt-3">
           Don't forget visa is just the foot on the door. We have a great,
           unpredicted and unexpected journey ahead. Let's make the necessary
           preparations
@@ -441,7 +441,7 @@ const Stage9 = () => {
       </div>
 
       {/* Main content */}
-      <div className="w-full md:w-3/4 lh:w-4/5 bg-white h-svh p-2 overflow-scroll">
+      <div className="w-full md:w-3/4 lh:w-4/5 bg-white h-svh p-2 ">
         <div className="flex justify-between items-center bg-gradient-to-r from-[#FFFFFF] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
           <p>NOC</p>
           <div className="flex justify-end items-end">

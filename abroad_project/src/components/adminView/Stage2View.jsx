@@ -81,16 +81,16 @@ const Stage2View = () => {
   const handleDecline = async (id) => {
     try {
       const confirm = window.confirm(
-        "Are you sure you want to decline the stage 1 of this user?"
+        "Are you sure you want to decline the stage 2 of this user?"
       );
       if (!confirm) return;
 
       const response = await axios.delete(
-        `${API_BASE_URL}/stage-one-submissions/${id}/`
+        `${API_BASE_URL}/stage-two-submissions/${id}/`
       );
       if (response) {
-        alert("User's stage 1 declined");
-        getStage1Data();
+        alert("User's stage 2 declined");
+        getStage2Data();
       }
     } catch (error) {
       console.log("Failed to delete the user satge", error);

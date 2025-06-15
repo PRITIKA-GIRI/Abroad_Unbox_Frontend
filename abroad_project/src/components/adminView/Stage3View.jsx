@@ -90,6 +90,7 @@ const Stage3View = () => {
       );
       if (response) {
         alert("User's stage 3 declined");
+        closePopup();
         getStage3Data();
       }
     } catch (error) {

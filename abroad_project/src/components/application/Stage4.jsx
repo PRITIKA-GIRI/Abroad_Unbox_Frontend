@@ -6,6 +6,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const Stage4 = () => {
   const [stagesDetail, setStagesDetail] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [stageVideo, setStageVideo] = useState([]);
   const [ecaList, setEcaList] = useState([
     { activities_type: "", position: "", org_involved: "", roles_duties: "" },
   ]);
@@ -23,6 +24,15 @@ const Stage4 = () => {
       setStagesDetail(response.data);
     } catch (error) {
       console.log("Failed to get the stages data", error);
+    }
+  };
+
+  const getStageVideo = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/stages-videos/`);
+      setStageVideo(response.data);
+    } catch (err) {
+      console.log("Failed to get stage videos", err);
     }
   };
 
@@ -70,7 +80,7 @@ const Stage4 = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      alert("Form submitted successfully!");
+      alert("Stage 4 Form submitted successfully! (wait for admin approval to unlock next stage)");
       setEcaList([
         {
           activities_type: "",
@@ -90,18 +100,46 @@ const Stage4 = () => {
 
   useEffect(() => {
     getStages();
+    getStageVideo();
   }, []);
+
+  const videoUrl1 = stageVideo[0]?.stage4_video1;
+  const videoUrl2 = stageVideo[0]?.stage4_video2;
 
   // Check if Stage 3 is marked "completed" in the fetched stages array
   const stage4Data = stagesDetail.find((item) => item.stage === "4");
   const isStage4Completed = stage4Data?.is_complete === "completed";
 
+
   return (
     <div className="flex md:flex-row flex-col mx-auto w-full">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 4:</h2>
-        <p className="font-medium mt-5 p-4">
-          Your ECA MATTERS! All those tireless hours...
+        <p className="text-xl font-semibold mt-5">
+          Extra Curricular Activities
+        </p>
+        <p className="font-medium mt-3">
+          Your ECA MATTERS! All
+          those tireless hours
+          spend on the
+          volunteering and
+          engagement is going to
+          make your application
+          exceptional.
+        </p>
+
+        <p className="font-medium mt-3">
+          Most of the liberal arts
+          college and high rank
+          university considers
+          your ECA for the
+          admission and
+          scholarship
+          consideration.
+        </p>
+        <p className="font-medium mt-3">
+        Be sure to get them all in
+        order.
         </p>
       </div>
 
@@ -179,7 +217,7 @@ const Stage4 = () => {
           <div>
             <iframe
               className="w-full h-[400px] mt-2"
-              src="https://www.youtube.com/embed/lK-5voIYkTo"
+              src={videoUrl1}
               allowFullScreen
               title="Session 1 - The Mindset"
             />
@@ -213,7 +251,7 @@ const Stage4 = () => {
           <div>
             <iframe
               className="w-full h-[400px] mt-2"
-              src="https://www.youtube.com/embed/lK-5voIYkTo"
+              src={videoUrl2}
               allowFullScreen
               title="Session 1 - The Mindset"
             />

@@ -67,6 +67,7 @@ const Stage4View = () => {
 
       await axios.delete(`${API_BASE_URL}/stage-four-submissions/${id}/`);
       alert("Stage 4 declined");
+      closePopup();
       getStage4Data();
     } catch (error) {
       console.log("Failed to delete the stage 4 submission", error);

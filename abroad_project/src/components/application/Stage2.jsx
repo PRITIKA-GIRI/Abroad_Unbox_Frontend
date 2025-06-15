@@ -77,7 +77,7 @@ const Stage2 = () => {
         payload,
         { headers: { 'Content-Type': 'application/json' } }
       );
-      alert('Form submitted successfully!');
+      alert('Stage 2 (two) Form submitted successfully!');
       setFormData({});
       setTestType('');
     } catch (err) {
@@ -149,6 +149,7 @@ const Stage2 = () => {
               <option value="True">Married</option>
               <option value="False">Single</option>
             </select>
+            <label>Date of Birth:</label>
             <input
               type="date"
               name="date_of_birth"

@@ -55,10 +55,6 @@ const Stage8 = () => {
   const stage8Data = stagesDetail.find((item) => item.stage === "8");
   const isStage8Completed = stage8Data?.is_complete === "completed";
 
-  const [responseLink, setResponseLink] = useState(
-    "https://www.youtube.com/embed/QjQliDFIsnk"
-  );
-
   const getStageVideo = async () => {
     try {
       const response = await axios.get(`${API_BASE_URL}/stages-videos/`);
@@ -123,7 +119,7 @@ const Stage8 = () => {
   
       if (response) {
         console.log(response.data);
-        alert("Stage 8 submission successful!");
+        alert("Stage 8 submission successful! (Wait for admin approval to unlock next stage)");
         getStages();
         editStageEight(registeredEvent.id, registeredEvent.limit);
       }
@@ -159,12 +155,13 @@ const Stage8 = () => {
           application. Some of you already have the visa application and
           documents done.
         </p>
-        <p className="font-medium mt-5 md:flex hidden">
+        <p className="font-medium mt-5">
           Also, we are at the phase where we need to have you visa preparation
           going as well.
         </p>
+        <p className="font-medium mt-3">Also, be sure to register for the visa session time. These session will be conducted both online and offline. So, no matter where you are, we got you covered.</p>
       </div>
-      <div className="w-full md:w-3/4 bg-white h-svh p-4 overflow-scroll">
+      <div className="w-full md:w-3/4 bg-white h-svh p-4">
         <div className="flex justify-between items-center bg-gradient-to-r from-[#FFFFFF] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
           <p>DS 160</p>
           <div className="flex justify-end items-end">

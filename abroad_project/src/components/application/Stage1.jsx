@@ -94,9 +94,11 @@ const Stage1 = () => {
       );
       if (response) {
         console.log(response.data);
+        alert("Stage 1 (one) submission successful!");
         // Refresh stages so the button state updates
         getStages();
       }
+
     } catch (error) {
       console.log("Failed to post the form data", error);
       setError(error.response?.data?.detail || "");
