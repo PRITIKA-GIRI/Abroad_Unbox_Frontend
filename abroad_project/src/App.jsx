@@ -28,8 +28,10 @@ import Stage5View from "./components/adminView/Stage5View";
 import Stage6View from "./components/adminView/Stage6View";
 import Stage7View from "./components/adminView/Stage7View";
 import Stage8View from "./components/adminView/Stage8View";
+import Stage9View from "./components/adminView/Stage9View";
 import EsewaSucess from "./components/esewa/Sucess";
 import EsewaFail from "./components/esewa/Fail";
+import ViewTransactions from "./components/adminView/ViewTransactions";
 
 function App() {
   
@@ -201,6 +203,22 @@ function App() {
             element={
               <AdminRoute>
                 <Stage8View />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/stage9/view"
+            element={
+              <AdminRoute>
+                <Stage9View />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/view-transactions"
+            element={
+              <AdminRoute>
+                <ViewTransactions/>
               </AdminRoute>
             }
           />

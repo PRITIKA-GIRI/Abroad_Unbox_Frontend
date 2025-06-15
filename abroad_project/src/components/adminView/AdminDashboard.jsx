@@ -9,11 +9,18 @@ const AdminDashboard = () => {
       <div className="w-11/12 mx-auto mt-6">
         {/* Use responsive grid: 1 column on small screens, 2 on medium, 3 on large */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <Link
+          <Link
             to="/view-students"
             className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
           >
             <span className="text-lg font-medium">View Students</span>
+          </Link>
+
+          <Link
+            to="/view-transactions"
+            className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
+          >
+            <span className="text-lg font-medium">View Transactions</span>
           </Link>
 
           <Link
@@ -102,6 +109,14 @@ const AdminDashboard = () => {
             </span>
           </Link>
 
+          <Link
+            to="/stage9/view"
+            className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
+          >
+            <span className="text-lg font-medium">
+              View Stage 9 Submissions
+            </span>
+          </Link>
         </div>
       </div>
     </div>
