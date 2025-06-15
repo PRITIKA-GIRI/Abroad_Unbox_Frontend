@@ -39,8 +39,8 @@ const Stage8View = () => {
   const closePopup = () => {
     setShowPopup(false);
     setSelectedStudentData(null);
-  };
-
+  }; 
+ 
   const handleApprove = async (studentId, stage, submissionId) => {
     try {
       await axios.post(`${API_BASE_URL}/students/complete-stage/`, {
