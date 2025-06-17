@@ -121,7 +121,7 @@ const Stage6 = () => {
   };
 
   return (
-    <div className="flex md:flex-row flex-col mx-auto w-full">
+    <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
       {/* Sidebar */}
       <div className="md:w-1/5 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 h-auto">
         <h2 className="text-2xl underline font-bold">Stage 6:</h2>
@@ -140,7 +140,7 @@ const Stage6 = () => {
       </div>
 
       {/* Main Content */}
-      <div className="md:w-4/5 w-full bg-white h-screen p-4">
+      <div className="md:w-4/5 w-full bg-white h-screen p-4 md:overflow-scroll">
         <form className="space-y-6" onSubmit={handleSubmit}>
           {/* Section Header */}
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">

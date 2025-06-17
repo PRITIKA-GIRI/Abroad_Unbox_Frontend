@@ -83,7 +83,7 @@ const Stage7 = () => {
   const emailSample_vii = emailSample[0]?.sample_i;
 
   return (
-    <div className="flex md:flex-row flex-col mx-auto w-full">
+    <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
       {/* Sidebar */}
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 ">
         <h2 className="text-2xl underline font-bold">Stage 7:</h2>
@@ -130,7 +130,7 @@ const Stage7 = () => {
       </div>
 
       {/* Main Content */}
-      <div className="md:w-3/4 w-full bg-white h-screen p-4">
+      <div className="md:w-3/4 w-full bg-white h-screen p-4 md:overflow-scroll">
         <div 
         className="space-y-4" 
         // onSubmit={handleSubmit}
@@ -241,4 +241,4 @@ const Stage7 = () => {
   )
 }
 
-export default Stage7
+export default Stage7;

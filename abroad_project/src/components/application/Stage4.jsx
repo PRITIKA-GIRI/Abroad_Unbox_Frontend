@@ -112,7 +112,7 @@ const Stage4 = () => {
 
 
   return (
-    <div className="flex md:flex-row flex-col mx-auto w-full">
+    <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 4:</h2>
         <p className="text-xl font-semibold mt-5">

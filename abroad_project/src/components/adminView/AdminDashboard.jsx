@@ -17,6 +17,20 @@ const AdminDashboard = () => {
           </Link>
 
           <Link
+            to="/update-stage-videos"
+            className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
+          >
+            <span className="text-lg font-medium">Update Stage's Video</span>
+          </Link>
+
+          <Link
+            to="/update-email-sample"
+            className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
+          >
+            <span className="text-lg font-medium">Update Email Sample</span>
+          </Link>
+
+          <Link
             to="/view-transactions"
             className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
           >

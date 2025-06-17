@@ -7,6 +7,7 @@ import { MdDelete } from "react-icons/md";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Stage1 = () => {
+  const [stageVideo, setStageVideo] = useState([]);
   const [stagesDetail, setStagesDetail] = useState([]);
   const [responseLink, setResponseLink] = useState([]);
   const [error, setError] = useState("");
@@ -29,6 +30,15 @@ const Stage1 = () => {
     }
   };
 
+  const getStageVideo = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/stages-videos/`);
+      setStageVideo(response.data);
+    } catch (err) {
+      console.log("Failed to get stage videos", err);
+    }
+  };
+
   // Fetch Stage 1 video content (if any)
   const getVideoLink = async () => {
     try {
@@ -44,6 +54,7 @@ const Stage1 = () => {
   // When component mounts, load both video link and stage statuses
   useEffect(() => {
     getVideoLink();
+    getStageVideo();
     getStages();
     // eslint-disable-next-line
   }, []);
@@ -109,8 +120,12 @@ const Stage1 = () => {
   const stage1Data = stagesDetail.find((item) => item.stage === "1");
   const isStage1Completed = stage1Data?.is_complete === "completed";
 
+  const videoUrl1 = stageVideo[0]?.stage1_video1;
+  const videoUrl2 = stageVideo[0]?.stage1_video2;
+  const videoUrl3 = stageVideo[0]?.stage1_video3;
+
   return (
-    <div className="flex md:flex-row flex-col">
+    <div className="flex md:flex-row-reverse flex-col">
       {/* Sidebar / Description */}
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center text-xs md:text-base">
         <h2 className="text-2xl underline font-bold">Stage 1:</h2>
@@ -179,14 +194,13 @@ const Stage1 = () => {
           <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
             <p className="text-xl font-medium">SESSION I - The Mindset</p>
           </div>
-          {responseLink.length > 0 && (
             <iframe
               className="w-full h-[400px] mt-2"
-              src={responseLink[0]?.video_link1}
+              src={videoUrl1}
               allowFullScreen
               title="Session 1 - The Mindset"
             />
-          )}
+          
           <a
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20The%20Mindset"
             className="block mx-auto mt-2 w-1/2 md:w-1/3"
@@ -205,14 +219,13 @@ const Stage1 = () => {
           <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
             <p className="text-xl font-medium">SESSION II - The Timeline</p>
           </div>
-          {responseLink.length > 0 && (
             <iframe
               className="w-full h-[600px] mt-2"
-              src={responseLink[0]?.video_link2}
+              src={videoUrl2}
               allowFullScreen
               title="Session 2 - The Timeline"
             />
-          )}
+          
           <a
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Application%20Timeline"
             className="block mx-auto mt-2 w-1/2 md:w-1/3"
@@ -233,14 +246,13 @@ const Stage1 = () => {
           <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
             <p className="text-xl font-medium">SESSION III - Career</p>
           </div>
-          {responseLink.length > 0 && (
             <iframe
               className="w-full h-[600px] mt-2"
-              src={responseLink[0]?.video_link3}
+              src={videoUrl3}
               allowFullScreen
               title="Session 3 - Career Counseling"
             />
-          )}
+          
           <a
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Career%20Counseling"
             className="block mx-auto mt-2 w-1/2 md:w-1/3"

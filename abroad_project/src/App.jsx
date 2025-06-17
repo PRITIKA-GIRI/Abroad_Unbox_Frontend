@@ -32,6 +32,8 @@ import Stage9View from "./components/adminView/Stage9View";
 import EsewaSucess from "./components/esewa/Sucess";
 import EsewaFail from "./components/esewa/Fail";
 import ViewTransactions from "./components/adminView/ViewTransactions";
+import UpdateVideo from "./components/adminView/UpdateVideo";
+import UpdateEmailSample from "./components/adminView/UpdateEmailSample";
 
 function App() {
   
@@ -149,6 +151,8 @@ function App() {
           />
           <Route path="/add-university" element={ <AdminRoute> <AddUniversity /> </AdminRoute> } />
           <Route path="/add-session" element={ <AdminRoute> <AddSession /> </AdminRoute> } />
+          <Route path="/update-stage-videos" element={ <AdminRoute> <UpdateVideo /> </AdminRoute> } />
+          <Route path="/update-email-sample" element={ <AdminRoute> <UpdateEmailSample /> </AdminRoute> } />
           <Route
             path="/stage2/view"
             element={

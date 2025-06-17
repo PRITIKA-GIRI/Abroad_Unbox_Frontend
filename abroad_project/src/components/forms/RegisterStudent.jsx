@@ -7,6 +7,7 @@ function RegisterStudent() {
   const [firstName, setFirstName] = useState(null);
   const [lastName, setLastName] = useState(null);
   const [email, setEmail] = useState(null);
+  const [phone, setPhone] = useState(null);
   const [password, setPassword] = useState(null);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ function RegisterStudent() {
     formData.append("first_name", firstName);
     formData.append("last_name", lastName);
     formData.append("email", email);
+    formData.append("phone", phone);
     formData.append("password", password);
     try {
       const response = await axios.post(`${API_BASE_URL}/students/`
@@ -30,8 +32,8 @@ function RegisterStudent() {
       );
       if (response) {
         console.log(response);
-        alert("new student added successfully");
-        navigate('/login');
+        alert("New student added successfully");
+        navigate('/register_student');
       }
     } catch (error) {
       console.error("Failed to post the student data", error);
@@ -67,6 +69,14 @@ function RegisterStudent() {
             type="text"
             name="email"
             onChange={(e) => setEmail(e.target.value)}
+            className="w-full border border-gray-400 p-2 rounded"
+            required
+          />
+          <label className="block mb-1 font-semibold">Phone</label>
+          <input
+            type="text"
+            name="phone"
+            onChange={(e) => setPhone(e.target.value)}
             className="w-full border border-gray-400 p-2 rounded"
             required
           />

@@ -533,7 +533,7 @@ const Stage5 = () => {
   const videoUrl1 = stageVideo[0]?.stage5_video1;
 
   return (
-    <div className="flex md:flex-row flex-col mx-auto w-full">
+    <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 h-auto">
         <h2 className="text-2xl underline font-bold">Stage 5:</h2>
         <p className="mt-4 font-semibold">University Finalization</p>
@@ -544,7 +544,7 @@ const Stage5 = () => {
         <p className="mt-3">Also, don't forget every university has their own requirements, they have their own ways of determining scholarship.</p>
       </div>
 
-      <div className="md:w-3/4 w-full bg-white h-screen p-4">
+      <div className="md:w-3/4 w-full bg-white h-screen p-4 md:overflow-scroll">
         <div className="px-4 py-2 bg-gradient-to-r from-[#ffffff] to-blue-300 text-2xl font-semibold text-center mb-4">
           University Section
         </div>

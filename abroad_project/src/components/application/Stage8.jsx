@@ -146,7 +146,7 @@ const Stage8 = () => {
   
 
   return (
-    <div className="flex md:flex-row flex-col">
+    <div className="flex md:flex-row-reverse flex-col">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 8:</h2>
         <h2 className="text-xl font-semibold mt-6">VISA</h2>
@@ -161,7 +161,7 @@ const Stage8 = () => {
         </p>
         <p className="font-medium mt-3">Also, be sure to register for the visa session time. These session will be conducted both online and offline. So, no matter where you are, we got you covered.</p>
       </div>
-      <div className="w-full md:w-3/4 bg-white h-svh p-4">
+      <div className="w-full md:w-3/4 bg-white h-svh p-4 md:overflow-scroll">
         <div className="flex justify-between items-center bg-gradient-to-r from-[#FFFFFF] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
           <p>DS 160</p>
           <div className="flex justify-end items-end">

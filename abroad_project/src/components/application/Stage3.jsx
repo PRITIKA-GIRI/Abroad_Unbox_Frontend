@@ -77,7 +77,7 @@ const Stage3 = () => {
   const isStage3Completed = stage3Data?.is_complete === "completed";
 
   return (
-    <div className="flex md:flex-row flex-col mx-auto w-full">
+    <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 3:</h2>
         <h2 className="text-xl font-semibold mt-6">Profile</h2>

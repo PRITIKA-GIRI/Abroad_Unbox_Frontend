@@ -424,7 +424,7 @@ const Stage9 = () => {
   }, []);
 
   return (
-    <div className="flex md:flex-row flex-col">
+    <div className="flex md:flex-row-reverse flex-col">
       {/* Sidebar */}
       <div className="md:w-1/4 w-full bg-gradient-to-l from-[#FFFFFF] to-[#248A4D] h-auto md:h-dvh p-2 text-center">
         <h2 className="text-2xl underline font-bold">Stage 9:</h2>
@@ -441,7 +441,7 @@ const Stage9 = () => {
       </div>
 
       {/* Main content */}
-      <div className="w-full md:w-3/4 lh:w-4/5 bg-white h-svh p-2 ">
+      <div className="w-full md:w-3/4 lh:w-4/5 bg-white h-svh p-2 md:overflow-scroll">
         <div className="flex justify-between items-center bg-gradient-to-r from-[#FFFFFF] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
           <p>NOC</p>
           <div className="flex justify-end items-end">
