@@ -7,6 +7,7 @@ function Nav() {
   const [username, setUsername] = useState('');
   const [first_name, setFirstName] = useState('');
   const [role, setRole] = useState('');
+  const [graduation, setGraduation] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false); // State to toggle mobile menu visibility
   const location = useLocation();
   const navigate = useNavigate();
@@ -17,11 +18,13 @@ function Nav() {
     const storedFirstName = localStorage.getItem('first_name');
     const role = localStorage.getItem("role");
     const storedRole = localStorage.getItem('role');
+    const storedGraduation = localStorage.getItem('graduation');
     if (token) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
       setFirstName(storedFirstName);
       setRole(storedRole);
+      setGraduation(storedGraduation);
     } else {
       setIsLoggedIn(false);
     }
@@ -58,10 +61,18 @@ function Nav() {
           {isLoggedIn ? (
             <ul className="flex gap-10 justify-between">
               {/* <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link> */}
-              {role == "admin" ?(
-                <a href="/admin_dashboard"><li className="hover:text-blue-900 hover:underline">Application</li></a>
-              ):(
-                <a href="/application"><li className="hover:text-blue-900 hover:underline">Application</li></a>
+              {role === "admin" ? (
+                <a href="/admin_dashboard">
+                  <li className="hover:text-blue-900 hover:underline">Application</li>
+                </a>
+              ) : graduation === "undergraduate" ? (
+                <a href="/application">
+                  <li className="hover:text-blue-900 hover:underline">Application</li>
+                </a>
+              ) : (
+                <a href="/masters-application">
+                  <li className="hover:text-blue-900 hover:underline">Application</li>
+                </a>
               )}
               <a href="/essay"><li className="hover:text-blue-900 hover:underline">Essay</li></a>
               <a href="/"><li className="hover:text-blue-900 hover:underline">SAT</li></a>

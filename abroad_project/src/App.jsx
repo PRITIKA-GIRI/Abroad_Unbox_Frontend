@@ -34,6 +34,7 @@ import EsewaFail from "./components/esewa/Fail";
 import ViewTransactions from "./components/adminView/ViewTransactions";
 import UpdateVideo from "./components/adminView/UpdateVideo";
 import UpdateEmailSample from "./components/adminView/UpdateEmailSample";
+import MastersApplication from "./components/application/masters/MastersApplication";
 
 function App() {
   
@@ -49,6 +50,7 @@ function App() {
           <Route path="/info" element={<Info />} />
           <Route path="/essay" element={<Essay />} />
           <Route path="/application" element={<Application />} />
+          <Route path="/masters-application" element={<MastersApplication />} />
           <Route path="/esewa-success" element={<EsewaSucess />} />
           <Route path="/esewa-fail" element={<EsewaFail />} />
 
