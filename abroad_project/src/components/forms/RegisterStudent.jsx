@@ -8,6 +8,7 @@ function RegisterStudent() {
   const [lastName, setLastName] = useState(null);
   const [email, setEmail] = useState(null);
   const [phone, setPhone] = useState(null);
+  const [graduation, setGraduation] = useState(null);
   const [password, setPassword] = useState(null);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function RegisterStudent() {
     formData.append("last_name", lastName);
     formData.append("email", email);
     formData.append("phone", phone);
+    formData.append("graduation", graduation);
     formData.append("password", password);
     try {
       const response = await axios.post(`${API_BASE_URL}/students/`
@@ -80,6 +82,12 @@ function RegisterStudent() {
             className="w-full border border-gray-400 p-2 rounded"
             required
           />
+          <label className="block mb-1 font-semibold">Graduation</label>
+          <select className="w-full py-2 rounded" name="graduation" onChange={(e) => setGraduation(e.target.value)}>
+            <option value="">-- Select Graduation Status --</option>
+            <option value="graduate">Graduate</option>
+            <option value="undergraduate">Undergraduate</option>
+          </select>
           <label className="block mb-1 font-semibold">Password</label>
           <input
             type="text"
