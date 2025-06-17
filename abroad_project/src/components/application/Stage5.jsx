@@ -29,7 +29,7 @@ const emptyEntry = {
     need_based: "",
     holistic_review: "",
     application_fee:"",
-    application_fee_wavier:"",
+    application_fee_waiver:"",
     i20_deposit:"",
     tuition: "",
     living_and_tuition: "",
@@ -173,7 +173,7 @@ const Stage5 = () => {
               need_based: detail.need_based || "",
               holistic_review: detail.holistic_review || "",
               application_fee: detail.application_fee || "",
-              application_fee_wavier: detail.application_fee_wavier || "",
+              application_fee_waiver: detail.application_fee_waiver || "",
               i20_deposit: detail.i20_deposit || "",
               tuition: detail.tuition || "",
               living_and_tuition: detail.living_and_tuition || "",
@@ -262,7 +262,7 @@ const Stage5 = () => {
             need_based: entry.formData.need_based,
             holistic_review: entry.formData.holistic_review,
             application_fee: entry.formData.application_fee,
-            application_fee_wavier: entry.formData.application_fee_wavier,
+            application_fee_waiver: entry.formData.application_fee_waiver,
             i20_deposit: entry.formData.i20_deposit,
             tuition: entry.formData.tuition,
             living_and_tuition: entry.formData.living_and_tuition,
@@ -318,6 +318,12 @@ const Stage5 = () => {
           entry.university === "other"
             ? entry.other_university.trim()
             : entry.university,
+        early_decision: entry.early_decision,
+        early_action: entry.early_action,
+        regular_decision: entry.regular_decision,
+        scholarship_priority: entry.scholarship_priority,
+        application_fee: entry.application_fee,
+        application_fee_waiver: entry.application_fee_waiver,
       };
 
       await axios.post(
@@ -407,7 +413,7 @@ const Stage5 = () => {
               need_based: ent.formData.need_based,
               holistic_review: ent.formData.holistic_review,
               application_fee: ent.formData.application_fee,
-              application_fee_wavier: ent.formData.application_fee_wavier,
+              application_fee_waiver: ent.formData.application_fee_waiver,
               i20_deposit: ent.formData.i20_deposit,
               tuition: ent.formData.tuition,
               living_and_tuition: ent.formData.living_and_tuition,
@@ -651,7 +657,7 @@ const Stage5 = () => {
                   title: "Cost",
                   fields: [
                     "application_fee",
-                    "application_fee_wavier",
+                    "application_fee_waiver",
                     "i20_deposit",
                     "tuition",
                     "living_and_tuition",
