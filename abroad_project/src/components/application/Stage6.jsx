@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { MdOutlineExpandLess, MdOutlineExpandMore } from "react-icons/md";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const APPLIED_KEY = "stage6_applied_unis";
 
 const Stage6 = () => {
   const [stagesDetail, setStagesDetail] = useState([]);
@@ -9,108 +11,153 @@ const Stage6 = () => {
   const [studentUniDetail, setStudentUniDetail] = useState([]);
   const [stageVideo, setStageVideo] = useState([]);
   const [error, setError] = useState("");
-  // Now track actual University IDs (uniDetail.university), not StudentUniversityDetail IDs.
   const [appliedUniIds, setAppliedUniIds] = useState([]);
+  const [essayFiles, setEssayFiles] = useState({});
+  const [isCommonAppOpen, setIsCommonAppOpen] = useState(false);
 
   const studentID = localStorage.getItem("student_id");
 
+  useEffect(() => {
+    const saved = localStorage.getItem(APPLIED_KEY);
+    if (saved) {
+      setAppliedUniIds(JSON.parse(saved));
+    }
+    getStages();
+    getStageVideo();
+    getStuUniDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const getStages = async () => {
     try {
-      const response = await axios.get(
+      const { data } = await axios.get(
         `${API_BASE_URL}/application-time-stages/?student=${studentID}`
       );
-      setStagesDetail(response.data);
+      setStagesDetail(data);
     } catch (err) {
-      console.log("Failed to get stages data", err);
-    }
-  };
-
-  const getStuUniDetail = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/student-university-details/?student=${studentID}`
-      );
-      setStudentUniDetail(response.data);
-    } catch (err) {
-      console.log("Failed to get university list", err);
-      setError("Could not load your university list.");
+      console.error("Failed to get stages data", err);
     }
   };
 
   const getStageVideo = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/stages-videos/`);
-      setStageVideo(response.data);
+      const { data } = await axios.get(`${API_BASE_URL}/stages-videos/`);
+      setStageVideo(data);
     } catch (err) {
-      console.log("Failed to get stage videos", err);
+      console.error("Failed to get stage videos", err);
     }
   };
 
-  useEffect(() => {
-    getStuUniDetail();
-    getStageVideo();
-    getStages();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const getStuUniDetail = async () => {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE_URL}/student-university-details/?student=${studentID}`
+      );
 
-  // Check if stage 6 is marked “completed”
+      const parsed = data.map((item) => {
+        const raw = item.college_essay_titles;
+        let essays = [];
+        if (Array.isArray(raw)) {
+          essays = raw;
+        } else {
+          try { essays = JSON.parse(raw); } catch { essays = []; }
+        }
+        const titles = essays.map((obj, idx) => ({ id: idx, title: obj.title }));
+        return { ...item, college_essay_titles: titles };
+      });
+
+      setStudentUniDetail(parsed);
+    } catch (err) {
+      console.error("Failed to get university list", err);
+      setError("Could not load your university list.");
+    }
+  };
+
   const stage6Data = stagesDetail.find((item) => item.stage === "6");
   const isStage6Completed = stage6Data?.is_complete === "completed";
-
-  // Pull the CommonApp video URL from stageVideo[0].stage6_video1
   const videoUrl = stageVideo[0]?.stage6_video1;
 
-  // When the user clicks “Apply”, add uniDetail.university (i.e. the University PK)
+  const handleFileChange = (uniDetailId, essayTitleId, file) => {
+    setEssayFiles((prev) => ({
+      ...prev,
+      [uniDetailId]: {
+        ...(prev[uniDetailId] || {}),
+        [essayTitleId]: file,
+      },
+    }));
+  };
+
+  // Check if any essay file is missing for a university
+  const isMissingEssay = (uniDetail) => {
+    const needed = uniDetail.college_essay_titles.map((t) => t.id);
+    const filesForUni = essayFiles[uniDetail.id] || {};
+    return needed.some((id) => !filesForUni[id]);
+  };
+
   const handleApply = (uniDetail) => {
-    const uniPK = uniDetail.university; // ← this is the actual University ID
-    if (!appliedUniIds.includes(uniPK)) {
-      setAppliedUniIds((prev) => [...prev, uniPK]);
+    if (!appliedUniIds.includes(uniDetail.university)) {
+      const updated = [...appliedUniIds, uniDetail.university];
+      setAppliedUniIds(updated);
+      localStorage.setItem(APPLIED_KEY, JSON.stringify(updated));
     }
   };
 
-  // To “Remove” a university from the applied list, filter it out
   const handleRemove = (uniDetail) => {
-    const uniPK = uniDetail.university;
-    setAppliedUniIds((prev) => prev.filter((id) => id !== uniPK));
+    const updated = appliedUniIds.filter((id) => id !== uniDetail.university);
+    setAppliedUniIds(updated);
+    localStorage.setItem(APPLIED_KEY, JSON.stringify(updated));
   };
 
-  // Build a list of “applied” university‐details by matching uniDetail.university
   const appliedUnis = studentUniDetail.filter((u) =>
     appliedUniIds.includes(u.university)
   );
 
-  // On form submit, POST { student, stage: "6", applied_university: [ <university IDs> ] }
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!studentID) {
       alert("Student ID not found in local storage!");
       return;
     }
-
-    const payload = {
-      student: studentID,
-      stage: "6",
-      // send exactly the array of university‐PKs
-      applied_university: appliedUniIds,
-    };
-
+    if (appliedUniIds.length === 0) {
+      alert("Please apply to at least one university before submitting.");
+      return;
+    }
     try {
       setLoading(true);
+      const uploadPromises = appliedUnis.flatMap((uniDetail) =>
+        uniDetail.college_essay_titles.map(({ id, title }) => {
+          const file = essayFiles[uniDetail.id]?.[id];
+          const form = new FormData();
+          form.append("student", studentID);
+          form.append("university", uniDetail.university);
+          form.append("title", title);
+          form.append("essay_file", file);
+          return axios.post(
+            `${API_BASE_URL}/student-university-essay-details/`,
+            form,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
+        })
+      );
 
+      await Promise.all(uploadPromises);
+      const payload = {
+        student: studentID,
+        stage: "6",
+        applied_university: appliedUniIds,
+      };
       await axios.post(
         `${API_BASE_URL}/stage-six-submissions/`,
         payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
+        { headers: { "Content-Type": "application/json" } }
       );
 
-      alert("Stage 6 submission successful! (Wait for admin approval to unlock next stage)");
-      // Clear local “applied” state and re-fetch stages to flip the button to “Completed”
+      alert(
+        "Stage 6 submission successful! (Wait for admin approval to unlock next stage)"
+      );
       setAppliedUniIds([]);
+      setEssayFiles({});
+      localStorage.removeItem(APPLIED_KEY);
       getStages();
     } catch (err) {
       console.error("Submission error:", err.response || err.message);
@@ -123,88 +170,111 @@ const Stage6 = () => {
   return (
     <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
       {/* Sidebar */}
-      <div className="md:w-1/5 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 h-auto">
+      <div className="md:w-1/5 w-full bg-gradient-to-l from-white to-green-500 p-4 h-auto">
         <h2 className="text-2xl underline font-bold">Stage 6:</h2>
-        <p className="mt-2">
-          Now we have all the documents ready & we have all the university list.
-          Let's apply.
-        </p>
-        <p className="mt-2">
-          Although there are many ways to apply, we prefer CommonApp, University
-          portal, and AU Portal.
-        </p>
-        <p className="mt-2">
-          Our goal with the combination of portals is to reduce cost and shorten
-          the time to get an offer letter.
-        </p>
+        <p className="mt-2">Now we have all the documents ready & we have all the university list. Let's apply.</p>
+        <p className="mt-2">Although there are many ways to apply, we prefer CommonApp, University portal, and AU Portal.</p>
+        <p className="mt-2">Our goal with the combination of portals is to reduce cost and shorten the time to get an offer letter.</p>
       </div>
 
       {/* Main Content */}
       <div className="md:w-4/5 w-full bg-white h-screen p-4 md:overflow-scroll">
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Section Header */}
-          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          <div className="bg-gradient-to-r from-white to-blue-300 p-2 w-full text-2xl font-semibold text-center">
             Applying to University
           </div>
+          <div className="bg-gradient-to-r from-white to-blue-300 p-2 text-2xl font-semibold text-center flex items-center">
+            <p>Abroad Unbox Portal</p>
+          </div>
+          <p className="px-10">This Portal, the one you are using right now will help you
+            with applying to your selected University. Just click apply
+            next to the list of your finalized university. Your application
+            DONE.</p>
           <p className="px-10">
-            This Portal (the one you are using right now) will help you apply to
-            your selected universities. Just click “Apply” next to the list of
-            your finalized universities. Your application is DONE.
-          </p>
-          <p className="px-10">
-            Someone from our team will reach out to you if anything else is
-            needed.
-          </p>
+            Someone from our team will reach out to you if there is
+            anything.</p>
 
-          {/* Render all universities */}
           {studentUniDetail.map((uniDetail) => {
-            // “uniDetail.university” is the actual University PK
-            const isApplied =
-              appliedUniIds.includes(uniDetail.university);
-
+            const applied = appliedUniIds.includes(uniDetail.university);
+            const disableApply = applied || isMissingEssay(uniDetail);
             return (
-              <div
-                key={uniDetail.id}
-                className="bg-gradient-to-r from-[#ffffff] to-green-300 p-2 w-full text-xl font-semibold flex justify-between items-center mb-2"
-              >
-                <span>
-                  {uniDetail.university_name} (ID: {uniDetail.university})
-                </span>
-                <button
-                  onClick={() => handleApply(uniDetail)}
-                  disabled={isApplied}
-                  className={`px-3 rounded-3xl py-1 box-border transition duration-150 ${
-                    isApplied
-                      ? "bg-gray-300 cursor-not-allowed opacity-70"
-                      : "bg-blue-300 hover:bg-blue-400 cursor-pointer hover:shadow-md"
-                  }`}
-                  type="button"
-                >
-                  {isApplied ? "Applied" : "Apply"}
-                </button>
+              <div key={uniDetail.id} className="mb-6">
+                <div className="bg-gradient-to-r from-white to-green-300 p-2 flex justify-between items-center">
+                  <span className="text-xl font-semibold">
+                    {uniDetail.university_name} (ID: {uniDetail.university})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleApply(uniDetail)}
+                    disabled={disableApply || loading}
+                    className={`px-3 py-1 rounded-3xl transition duration-150 ${
+                      disableApply ? "bg-gray-300 cursor-not-allowed opacity-70" : "bg-blue-300 hover:bg-blue-400"
+                    }`}
+                  >
+                    {applied ? "Applied" : "Apply"}
+                  </button>
+                </div>
+                  
+                  {/* {isStage6Completed ? (
+                    <div className="text-red-500 text-sm mt-2">
+                      Stage 6 is already completed. You cannot apply again.
+                    </div>
+                    // <></>
+                  ) : isMissingEssay(uniDetail) ? (
+                    <div className="text-red-500 text-sm mt-2">
+                      Please upload all required essays before applying.
+                    </div>
+                  ) : ( */}
+                  <div className="flex flex-col md:flex-row gap-5 mt-2">
+                    <div className="w-full md:w-1/3 space-y-2 md:border-r border-gray-300">
+                      <p className="font-semibold underline">Duration Details:</p>
+                      <p>Early Action: {uniDetail.early_action}</p>
+                      <p>Early Decision: {uniDetail.early_decision}</p>
+                      <p>Regular Decision: {uniDetail.regular_decision}</p>
+                      <p>Scholarship Priority: {uniDetail.scholarship_priority}</p>
+                      <p className="font-semibold underline">Cost Details:</p>
+                      <p>Application Fee: {uniDetail.application_fee}</p>
+                      <p>Application Fee Waiver: {uniDetail.application_fee_waiver}</p>
+                    </div>
+
+                    <div className="w-full md:w-2/3 space-y-2">
+                      {uniDetail.college_essay_titles.map(({ id, title }) => (
+                        
+                        <div key={id} className="flex justify-between items-center">
+                          <p>{title}</p>
+                          <input
+                            type="file"
+                            className="border p-2 rounded-lg w-1/2 right-0"
+                            // accept=".pdf,.doc,.docx,.txt"
+                            accept=".pdf"
+                            onChange={(e) =>
+                              handleFileChange(uniDetail.id, id, e.target.files[0])
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* )} */}
+                
               </div>
             );
           })}
 
-          {/* Applied Universities Section */}
           {appliedUnis.length > 0 && (
             <>
-              <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mt-6 mb-3">
+              <div className="bg-gradient-to-r from-white to-blue-300 p-2 text-2xl font-semibold text-center mt-6 mb-3">
                 Applied Universities
               </div>
               {appliedUnis.map((uniDetail) => (
-                <div
-                  key={uniDetail.id}
-                  className="bg-gradient-to-r from-[#ffffff] to-green-300 p-2 w-full text-xl font-semibold flex justify-between items-center mb-2"
-                >
-                  {/* Show the university_name; the “ID:” is uniDetail.university */}
-                  <span>
+                <div key={uniDetail.id} className="bg-gradient-to-r from-white to-green-300 p-2 flex justify-between items-center mb-2">
+                  <span className="text-xl font-semibold">
                     {uniDetail.university_name} (ID: {uniDetail.university})
                   </span>
                   <button
-                    onClick={() => handleRemove(uniDetail)}
-                    className="px-3 bg-blue-400 rounded-3xl py-1 box-border shadow-md hover:bg-blue-500 transition duration-150"
                     type="button"
+                    onClick={() => handleRemove(uniDetail)}
+                    className="px-3 py-1 bg-blue-400 rounded-3xl hover:bg-blue-500"
                   >
                     Remove
                   </button>
@@ -213,23 +283,20 @@ const Stage6 = () => {
             </>
           )}
 
-          {/* Divider */}
-          <div className="border-t border-gray-300 my-6"></div>
+          <div className="border-t border-gray-300 my-6" />
 
-          {/* CommonApp Section */}
-          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
-            CommonApp
+          <div className="bg-gradient-to-r from-white to-blue-300 p-2 text-2xl font-semibold text-center flex items-center cursor-pointer"
+              onClick={() => setIsCommonAppOpen((o) => !o)}>
+              <p className="text-2xl font-semibold text-center">CommonApp</p>
+              {isCommonAppOpen ? (
+                <MdOutlineExpandLess className="ml-auto text-4xl" />
+              ) : (
+                <MdOutlineExpandMore className="ml-auto text-4xl" />
+              )}
           </div>
-          <p className="px-10">
-            CommonApp is one of the best ways to apply to US universities. It
-            allows you to apply to up to twenty (20) universities, and many are
-            free to apply. Although it may sound simple, CommonApp must be filled
-            with precise details—everything matters.
-          </p>
-          <p className="px-10">
-            CommonApp is only for undergraduates. For Master’s students, please
-            skip this one.
-          </p>
+          {isCommonAppOpen && (
+          <div>
+          <p className="px-10">CommonApp allows applying to up to 20 universities. It's for undergraduates only.</p>
           <div className="w-full mb-4">
             <a
               href="https://www.commonapp.org/"
@@ -240,9 +307,7 @@ const Stage6 = () => {
               Go To CommonApp
             </a>
           </div>
-          <div className="bg-blue-300 py-2 w-full text-xl font-semibold text-center">
-            CommonApp Video Tutorial
-          </div>
+          <div className="bg-blue-300 py-2 w-full text-xl font-semibold text-center">CommonApp Video Tutorial</div>
           {videoUrl && (
             <iframe
               className="w-full h-[300px] md:h-[400px] mt-2"
@@ -251,29 +316,26 @@ const Stage6 = () => {
               title="CommonApp Video Tutorial"
             />
           )}
-
-          {/* Divider */}
-          <div className="border-t border-gray-300 my-6"></div>
-
-          {/* Final Submit Button */}
-          <div className="mt-4">
-            <button
-              type="submit"
-              className={`w-full py-4 text-2xl font-semibold mt-3 ${
-                isStage6Completed
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
-              }`}
-              disabled={isStage6Completed || loading}
-            >
-              {/* {isStage6Completed ? "Stage 6: Completed" : "Stage 6: Submit"} */}
-              {isStage6Completed
-                ? "Stage 6: Completed"
-                : loading
-                ? "Submitting..."
-                : "Stage 6: Submit"}
-            </button>
           </div>
+        )}
+
+          <div className="border-t border-gray-300 my-6" />
+
+          <button
+            type="submit"
+            disabled={isStage6Completed || loading || appliedUniIds.length === 0}
+            className={`w-full py-4 text-2xl font-semibold mt-3 ${
+              isStage6Completed
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-l from-white to-green-300 hover:to-green-500"
+            }`}
+          >
+            {isStage6Completed
+              ? "Stage 6: Completed"
+              : loading
+              ? "Submitting..."
+              : "Stage 6: Submit"}
+          </button>
         </form>
       </div>
     </div>

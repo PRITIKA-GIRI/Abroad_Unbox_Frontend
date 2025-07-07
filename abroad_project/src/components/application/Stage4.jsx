@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { IoMdPulse } from "react-icons/io";
+import { MdOutlineExpandLess, MdOutlineExpandMore } from "react-icons/md";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Stage4 = () => {
   const [stagesDetail, setStagesDetail] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stageVideo, setStageVideo] = useState([]);
+  const [resumeSample, setResumeSample] = useState([]);
+  const [isResumeOpen, setIsResumeOpen] = useState(false);
+  const [isLinkedInOpen, setIsLinkedInOpen] = useState(false);
   const [ecaList, setEcaList] = useState([
     { activities_type: "", position: "", org_involved: "", roles_duties: "" },
   ]);
@@ -24,6 +28,15 @@ const Stage4 = () => {
       setStagesDetail(response.data);
     } catch (error) {
       console.log("Failed to get the stages data", error);
+    }
+  };
+
+  const getResumeSample = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/stage-seven-email-samples/`);
+      setResumeSample(response.data);
+    } catch (err) {
+      console.log("Failed to get email samples.", err);
     }
   };
 
@@ -101,6 +114,7 @@ const Stage4 = () => {
   useEffect(() => {
     getStages();
     getStageVideo();
+    getResumeSample();
   }, []);
 
   const videoUrl1 = stageVideo[0]?.stage4_video1;
@@ -110,6 +124,7 @@ const Stage4 = () => {
   const stage4Data = stagesDetail.find((item) => item.stage === "4");
   const isStage4Completed = stage4Data?.is_complete === "completed";
 
+  const resume_sample = resumeSample[0]?.bachelors_resume_sample_stage4;
 
   return (
     <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
@@ -211,19 +226,33 @@ const Stage4 = () => {
             Add More ECA +
           </button>
 
-          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold">
+          {/* Divider */} <div className="border-t border-gray-300"></div>
+
+          <div className="bg-gradient-to-l from-[#ffffff] to-green-300 p-2 text-center text-2xl font-semibold">
             Resume and LinkedIn
           </div>
+
+          <div className="relative bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold flex items-center cursor-pointer"
+            onClick={() => setIsResumeOpen(!isResumeOpen)}>
+            <p className="absolute left-1/2 transform -translate-x-1/2">Resume</p>
+            {isResumeOpen ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
+          </div>
+
+          { isResumeOpen && (
           <div>
             <iframe
-              className="w-full h-[400px] mt-2"
+              className="w-full h-[400px] mt-2 mb-3"
               src={videoUrl1}
               allowFullScreen
               title="Session 1 - The Mindset"
             />
-            <button className="mt-3 border border-gray-300 bg-gradient-to-r from-blue-100 to-blue-300 hover:from-blue-300 hover:to-blue-500 hover:text-white rounded-2xl w-1/3 py-2 mx-auto">
-              Download Sample
-            </button>
+            <a href={resume_sample} download="resume_sample.pdf" className="mt-5 px-3 py-2 bg-gradient-to-r from-blue-100 to-blue-300 hover:from-blue-300 hover:to-blue-500 hover:text-white rounded-2xl w-1/3 mx-auto shadow-lg">
+                Download Resume Sample
+            </a>
             <br />
             {/* <div className="mt-3 flex items-center gap-4 w-full bg-gradient-to-r from-blue-50 to-blue-500">
               <label>Upload Resume: </label>
@@ -244,10 +273,19 @@ const Stage4 = () => {
               />
             </div>
           </div>
+          )}
 
-          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold">
-            LinkedIn
+          <div className="relative bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold flex items-center cursor-pointer"
+            onClick={() => setIsLinkedInOpen(!isLinkedInOpen)}>
+            <p className="absolute left-1/2 transform -translate-x-1/2">LinkedIn</p>
+            {isLinkedInOpen ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
           </div>
+
+          {isLinkedInOpen && (
           <div>
             <iframe
               className="w-full h-[400px] mt-2"
@@ -256,6 +294,7 @@ const Stage4 = () => {
               title="Session 1 - The Mindset"
             />
           </div>
+          )}
 
           {/* <button
             type="submit"

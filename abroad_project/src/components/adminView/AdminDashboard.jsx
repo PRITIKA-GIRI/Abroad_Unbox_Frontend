@@ -10,7 +10,7 @@ const AdminDashboard = () => {
         {/* Use responsive grid: 1 column on small screens, 2 on medium, 3 on large */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <Link
-            to="/view-students"
+            to="/view/student"
             className="flex items-center justify-center h-32 border border-gray-300 rounded-xl hover:shadow-lg transition-shadow duration-200 bg-white"
           >
             <span className="text-lg font-medium">View Students</span>

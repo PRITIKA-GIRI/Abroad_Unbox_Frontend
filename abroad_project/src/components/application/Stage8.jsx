@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { MdOutlineExpandLess, MdOutlineExpandMore } from "react-icons/md";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const monthNames = [
   "Jan",
@@ -25,7 +26,8 @@ const Stage8 = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [registeredEvent, setRegisteredEvent] = useState(null);
   const [sessionData, setSessionData] = useState({limit: null});
-
+  const [isDS160Open, setIsDS160Open] = useState(false);
+  const [isCGIPortalOpen, setIsCGIPortalOpen] = useState(false);
 
   const fetchEvents = () => {
     axios
@@ -169,23 +171,54 @@ const Stage8 = () => {
           </div>
         </div>
         <div>
-          <div className="bg-gray-300 px-5 py-3  mt-2 text-center w-full tect-center">
-            <p className="text-xl font-medium">DS 160</p>
+          <div className="relative bg-gray-300 px-5 py-3 text-xl font-medium mt-2 text-center w-full tect-center flex items-center cursor-pointer"
+          onClick={() => setIsDS160Open(!isDS160Open)}>
+            <p className="absolute left-1/2 transform -translate-x-1/2">DS 160</p>
+            {isDS160Open ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
           </div>
+
+          {isDS160Open && (
+            <>
+          {videoUrl1 ? (
           <iframe
             className="w-full h-[300px] md:h-[400px] mt-2"
             src={videoUrl1}
             allowFullScreen
           />
+          ) : (
+            <p className="text-center text-red-500 mt-2">
+              Video for DS 160 is not available at the moment.
+            </p>
+          )} 
+          </>
+          )} 
         </div>
         <div>
-          <div className="bg-gray-300 px-5 py-3 w-full mt-2 text-center">
-            <p className="text-xl font-medium">CGI Portal</p>
+          <div className="relative bg-gray-300 px-5 py-3 w-full text-xl font-medium mt-2 text-center flex items-center cursor-pointer"
+          onClick={() => setIsCGIPortalOpen(!isCGIPortalOpen)}>
+            <p className="absolute left-1/2 transform -translate-x-1/2">CGI Portal</p>
+            {isCGIPortalOpen ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
           </div>
-          <iframe
-            className="w-full h-[300px] md:h-[400px] mt-2"
-            src={videoUrl2}
-          ></iframe>
+
+          {isCGIPortalOpen && (
+            <>
+              {videoUrl2 ? (
+              <iframe className="w-full h-[300px] md:h-[400px] mt-2" src={videoUrl2}></iframe>
+              ) : (
+                <p className="text-center text-red-500 mt-2">
+                  Video for CGI Portal is not available at the moment.
+                </p>
+              )}
+            </>
+          )}  
         </div>
         <div className=" px-5 py-3 w-[80%] mx-auto mt-2 text-center">
           <p className="text-md font-semibold">

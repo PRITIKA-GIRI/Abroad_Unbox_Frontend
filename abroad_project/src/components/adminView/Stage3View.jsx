@@ -162,8 +162,8 @@ const Stage3View = () => {
                 const fileName = isPdf ? value.split("/").pop() : null;
 
                 return (
-                  <div key={key}>
-                    <p className="font-semibold">{formattedKey}</p>
+                  <div key={key} className="flex">
+                    <p className="font-semibold">{formattedKey}: </p>
                     {isPdf ? (
                       <a
                         href={value}
@@ -171,7 +171,8 @@ const Stage3View = () => {
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline break-all"
                       >
-                        {fileName}
+                        {/* {fileName} */}
+                        View File
                       </a>
                     ) : (
                       <p>{formattedValue}</p>

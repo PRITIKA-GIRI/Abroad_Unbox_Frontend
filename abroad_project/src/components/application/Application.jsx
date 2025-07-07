@@ -90,7 +90,7 @@ function Application() {
   return (
     <>
       {/* Header */}
-      <div className="p-3 w-full flex flex-row gap-1 bg-gradient-to-r from-green-300 to-blue-300 text-xl font-semibold text-center items-center">
+      <div className=" p-3 w-full flex flex-row gap-1 bg-gradient-to-r from-green-300 to-blue-300 text-xl font-semibold text-center items-center">
         <Link to="/">
           <img
             src={Back}

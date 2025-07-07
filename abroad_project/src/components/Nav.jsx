@@ -18,7 +18,7 @@ function Nav() {
     const storedFirstName = localStorage.getItem('first_name');
     const role = localStorage.getItem("role");
     const storedRole = localStorage.getItem('role');
-    const storedGraduation = localStorage.getItem('graduation');
+    const storedGraduation = localStorage.getItem('application_level');
     if (token) {
       setIsLoggedIn(true);
       setUsername(storedUsername);
@@ -106,17 +106,24 @@ function Nav() {
               <span className="mr-4 text-black">Welcome, {first_name}</span>
               <button
                 onClick={handleLogout}
-                className="p-2 bg-gray-500 text-white rounded-lg cursor-pointer hover:bg-black hover:scale-105 transition-transform duration-200"
+                className="p-2 bg-blue-400 hover:bg-blue-600 text-black rounded-lg cursor-pointer hover:text-white hover:scale-105 transition-transform duration-200"
               >
                 Log Out
               </button>
             </div>
           ) : (
+            <>
             <Link to="/login">
-              <button className="ml-auto p-2 bg-[#1a53ff] text-white rounded-lg cursor-pointer mr-4 hover:bg-black hover:scale-105 transition-transform duration-200">
+              <button className="ml-auto p-2 bg-[#1a53ff] text-white rounded-lg cursor-pointer mr-2 hover:bg-black hover:scale-105 transition-transform duration-200">
                 Log In
               </button>
             </Link>
+            <Link to="/register">
+              <button className="ml-auto p-2 bg-[#1a53ff] text-white rounded-lg cursor-pointer mr-4 hover:bg-black hover:scale-105 transition-transform duration-200">
+                Register
+              </button>
+            </Link>
+            </>
           )}
         </div>
 

@@ -9,9 +9,12 @@ const Stage5View = () => {
   const [selectedStudentData, setSelectedStudentData] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
 
+  // Fetch all submissions
   const getStage5Data = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/stage-five-submissions/`);
+      const response = await axios.get(
+        `${API_BASE_URL}/stage-five-submissions/`
+      );
       setStage5Data(response.data.results || []);
     } catch (error) {
       console.error("Failed to fetch the data", error);
@@ -22,6 +25,7 @@ const Stage5View = () => {
     getStage5Data();
   }, []);
 
+  // When a card is clicked, fetch that student's full submission
   const handlePopup = async (studentId) => {
     try {
       const res = await axios.get(
@@ -41,11 +45,12 @@ const Stage5View = () => {
     setSelectedStudentData(null);
   };
 
+  // Approve: mark student stage complete and update submission status
   const handleApprove = async (studentId, stage, submissionId) => {
     try {
       await axios.post(`${API_BASE_URL}/students/complete-stage/`, {
-        stage,
         student_id: studentId,
+        stage,
       });
       await axios.patch(
         `${API_BASE_URL}/stage-five-submissions/${submissionId}/`,
@@ -59,6 +64,7 @@ const Stage5View = () => {
     }
   };
 
+  // Decline: delete the submission
   const handleDecline = async (submissionId) => {
     if (!window.confirm("Are you sure you want to decline stage 5?")) return;
     try {
@@ -116,12 +122,12 @@ const Stage5View = () => {
               {selectedStudentData.student_name}'s University Details
             </h3>
 
-            {/* Top-level fields */}
+            {/* Top‐level fields (excluding entries array) */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               {Object.entries(selectedStudentData)
                 .filter(
                   ([key, val]) =>
-                    !["entries", "eca_data", "student", "id"].includes(key) &&
+                    !["entries", "student", "id"].includes(key) &&
                     val != null &&
                     val !== ""
                 )
@@ -129,10 +135,10 @@ const Stage5View = () => {
                   const label = key
                     .replace(/_/g, " ")
                     .replace(/\b\w/g, (l) => l.toUpperCase());
-                  let display = value;
-                  if (key === "submitted_at") {
-                    display = value.split("T")[0];
-                  }
+                  const display =
+                    key === "submitted_at"
+                      ? value.split("T")[0]
+                      : value.toString();
                   return (
                     <div key={key}>
                       <p className="font-semibold">{label}:</p>
@@ -144,25 +150,50 @@ const Stage5View = () => {
 
             {/* entries JSONField */}
             <div className="mb-6">
-              <h4 className="text-xl font-bold mb-2">University Entries</h4>
+              <h4 className="text-xl font-bold mb-3">University Entries</h4>
+
               {selectedStudentData.entries.map((entry, idx) => (
                 <div
                   key={idx}
-                  className="p-3 border border-gray-300 rounded-lg mb-3 bg-gray-50"
+                  className="p-3 border border-gray-300 rounded-lg mb-4 bg-gray-50"
                 >
-                  <p className="font-semibold mb-2">Entry #{idx + 1}</p>
+                  <p className="font-semibold mb-3">Entry #{idx + 1}</p>
                   <div className="grid grid-cols-2 gap-4">
-                    {Object.entries(entry).map(([k, v]) => (
-                      <div key={k}>
-                        <span className="font-semibold">
-                          {k
-                            .replace(/_/g, " ")
-                            .replace(/\b\w/g, (l) => l.toUpperCase())}
-                          :
-                        </span>{" "}
-                        <span>{v}</span>
-                      </div>
-                    ))}
+                    {Object.entries(entry).map(([k, v]) => {
+                      const label = k
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (l) => l.toUpperCase());
+
+                      // Special rendering for college_essay_titles array
+                      if (k === "college_essay_titles" && Array.isArray(v)) {
+                        return (
+                          <div key={k} className="col-span-2">
+                            <p className="font-semibold">{label}:</p>
+                            <ul className="list-disc list-inside ml-4">
+                              {v.map((obj, i) => (
+                                <li key={i}>{obj.title}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        );
+                      }
+
+                      // Skip internal or null keys if desired
+                      if (
+                        ["id", "university"].includes(k) ||
+                        v == null ||
+                        v === ""
+                      ) {
+                        return null;
+                      }
+
+                      return (
+                        <div key={k}>
+                          <p className="font-semibold">{label}:</p>
+                          <p>{v.toString()}</p>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               ))}

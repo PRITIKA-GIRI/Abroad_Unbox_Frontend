@@ -13,6 +13,7 @@ const KEYS = [
   "sample_v",
   "sample_vi",
   "sample_vii",
+  "bachelors_resume_sample_stage4",
 ];
 
 const UpdateEmailSample = () => {

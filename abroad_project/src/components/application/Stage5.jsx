@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Nav from "../Nav";
+import { MdOutlineExpandLess, MdOutlineExpandMore } from "react-icons/md";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Template for a single university entry
 const emptyEntry = {
   university: "",
-  other_university: "",
-  isDisabled: false,
+  showDetails: false,
   formData: {
     early_decision: "",
     early_action: "",
@@ -20,17 +19,15 @@ const emptyEntry = {
     pte: "",
     gpa_acceptance: "",
     gpa_scholarship: "",
-    sat_acceptance: "",
-    sat_scholarship: "",
     admission: "",
-    scholarship: "",
+    sat_scholarship: "",
     gpa_based: "",
     sat_based: "",
     need_based: "",
     holistic_review: "",
-    application_fee:"",
-    application_fee_waiver:"",
-    i20_deposit:"",
+    application_fee: "",
+    application_fee_waiver: "",
+    i20_deposit: "",
     tuition: "",
     living_and_tuition: "",
     avg_scholarship: "",
@@ -46,6 +43,8 @@ const emptyEntry = {
     population_trend: "",
     job_and_opportunities: "",
     crime: "",
+    college_essay: false,
+    college_essay_titles: [{ title: "" }],
   },
 };
 
@@ -53,806 +52,1259 @@ const Stage5 = () => {
   const [stagesDetail, setStagesDetail] = useState([]);
   const [universities, setUniversities] = useState([]);
   const [stageVideo, setStageVideo] = useState([]);
+  const [entries, setEntries] = useState([{ ...emptyEntry }]);
   const [linkedUniversityIds, setLinkedUniversityIds] = useState(new Set());
   const [loading, setLoading] = useState(false);
-  const [entries, setEntries] = useState([{ ...emptyEntry }]);
-
-  const student_id = localStorage.getItem("student_id");
-
-  // Fetch the student’s stages and status
-  const getStages = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE_URL}/application-time-stages/?student=${student_id}`
-      );
-      setStagesDetail(response.data);
-    } catch (error) {
-      console.log("Failed to get the stages data", error);
-    }
-  };
-
-  // ─── COMPARISON STATE ─────────────────────────────────────────────────────
-  // Whether “Compare” modal is open
+  const [isUniSelectionOpen, setIsUniSelectionOpen] = useState(false);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
-  // { uniNames: [...], fieldKeys: [...], values: { [fieldKey]: [val1, val2, ...] } }
   const [comparisonData, setComparisonData] = useState({
     uniNames: [],
     fieldKeys: [],
     values: {},
   });
 
-  const getStageVideo = async () => {
+  const student_id = localStorage.getItem("student_id");
+
+  useEffect(() => {
+    getStages();
+    fetchUniversities();
+    fetchLinkedUniversities();
+    fetchStageVideo();
+  }, []);
+
+  const getStages = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/stages-videos/`);
-      setStageVideo(response.data);
+      const res = await axios.get(
+        `${API_BASE_URL}/application-time-stages/?student=${student_id}`
+      );
+      setStagesDetail(res.data);
     } catch (err) {
-      console.log("Failed to get stage videos", err);
+      console.error("getStages:", err);
     }
   };
 
-  //----------------------------------------
-  // 1) Fetch master list of universities
-  //----------------------------------------
   const fetchUniversities = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/university-details/`);
       setUniversities(res.data);
     } catch (err) {
-      console.error(
-        "Error fetching universities:",
-        err.response || err.message
-      );
+      console.error("fetchUniversities:", err);
     }
   };
 
-  //----------------------------------------
-  // 2) Fetch existing StudentUniversityDetail links
-  //----------------------------------------
   const fetchLinkedUniversities = async () => {
-    const studentId = localStorage.getItem("student_id");
-    if (!studentId) return;
-
+    if (!student_id) return;
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/student-university-details/?student=${studentId}`
+        `${API_BASE_URL}/student-university-details/?student=${student_id}`
       );
-      // Build a Set of all linked “university” IDs
-      const idSet = new Set(res.data.map((item) => item.university));
-      setLinkedUniversityIds(idSet);
+      setLinkedUniversityIds(new Set(res.data.map((i) => i.university)));
     } catch (err) {
-      console.error(
-        "Error fetching student-university-details:",
-        err.response || err.message
-      );
+      console.error("fetchLinkedUniversities:", err);
     }
   };
 
-  // Run both on mount
-  useEffect(() => {
-    fetchUniversities();
-    fetchLinkedUniversities();
-    getStageVideo();
-    getStages();
-  }, []);
-
-  const addMoreUniversity = () => {
-    setEntries((prev) =>
-      prev.length >= 20 ? prev : [...prev, { ...emptyEntry }]
-    );
+  const fetchStageVideo = async () => {
+    try {
+      const res = await axios.get(`${API_BASE_URL}/stages-videos/`);
+      setStageVideo(res.data);
+    } catch (err) {
+      console.error("fetchStageVideo:", err);
+    }
   };
 
-  const handleEntryChange = (index, field, value) => {
+  const addMoreUniversity = () => {
+    if (entries.length < 20) {
+      setEntries((prev) => [...prev, { ...emptyEntry }]);
+    }
+  };
+
+  const removeUniversity = (idx) => {
+    setEntries((prev) => prev.filter((_, i) => i !== idx));
+  };
+
+  const handleUniversityChange = (idx, universityName) => {
     setEntries((prev) => {
       const updated = [...prev];
-
-      if (field === "university") {
-        updated[index].university = value;
-        updated[index].other_university = "";
-
-        if (value && value !== "other") {
-          // Prefill formData from master “universities”
-          const detail = universities.find((u) => u.university_name === value);
-          if (detail) {
-            updated[index].formData = {
-              early_decision: detail.early_decision || "",
-              early_action: detail.early_action || "",
-              regular_decision: detail.regular_decision || "",
-              scholarship_priority: detail.scholarship_priority || "",
-              det: detail.det || "",
-              toefl: detail.toefl || "",
-              ielts: detail.ielts || "",
-              pte: detail.pte || "",
-              gpa_acceptance: detail.gpa_acceptance || "",
-              gpa_scholarship: detail.gpa_scholarship || "",
-              sat_acceptance: detail.sat_acceptance || "",
-              sat_scholarship: detail.sat_scholarship || "",
-              admission: detail.admission || "",
-              scholarship: detail.scholarship || "",
-              gpa_based: detail.gpa_based || "",
-              sat_based: detail.sat_based || "",
-              need_based: detail.need_based || "",
-              holistic_review: detail.holistic_review || "",
-              application_fee: detail.application_fee || "",
-              application_fee_waiver: detail.application_fee_waiver || "",
-              i20_deposit: detail.i20_deposit || "",
-              tuition: detail.tuition || "",
-              living_and_tuition: detail.living_and_tuition || "",
-              avg_scholarship: detail.avg_scholarship || "",
-              tuition_after_scholarship: detail.tuition_after_scholarship || "",
-              coa_after_scholarship: detail.coa_after_scholarship || "",
-              us_news_ranking: detail.us_news_ranking || "",
-              niche_ranking: detail.niche_ranking || "",
-              major_ranking: detail.major_ranking || "",
-              place_name: detail.place_name || "",
-              settings: detail.settings || "",
-              racial_mix: detail.racial_mix || "",
-              population: detail.population || "",
-              population_trend: detail.population_trend || "",
-              job_and_opportunities: detail.job_and_opportunities || "",
-              crime: detail.crime || "",
-            };
-          }
-          updated[index].isDisabled = true;
-        } else {
-          // “Other” or cleared → reset
-          updated[index].formData = { ...emptyEntry.formData };
-          updated[index].isDisabled = false;
-        }
-      } else if (field === "other_university") {
-        updated[index].other_university = value;
+      updated[idx].university = universityName;
+      updated[idx].showDetails = !!universityName;
+      // preload any formData fields from detail if available:
+      const detail = universities.find((u) => u.university_name === universityName);
+      if (detail) {
+        updated[idx].formData = {
+          ...updated[idx].formData,
+          ...detail,
+          college_essay: detail.college_essay || false,
+          college_essay_titles:
+            detail.college_essay_titles?.length > 0
+              ? detail.college_essay_titles.map((t) =>
+                  typeof t === "string" ? { title: t } : t
+                )
+              : [{ title: "" }],
+        };
       } else {
-        // Any other form field
-        updated[index].formData[field] = value;
+        updated[idx].formData = { ...emptyEntry.formData };
       }
-
       return updated;
     });
   };
 
-  //------------------------------------------------------------------------------
-  // addToProfile(idx):
-  //   (same as before: handle “other,” prevent duplicates, post StudentUniversityDetail)
-  //------------------------------------------------------------------------------
+  const toggleDetails = (idx) => {
+    setEntries((prev) => {
+      const updated = [...prev];
+      updated[idx].showDetails = !updated[idx].showDetails;
+      return updated;
+    });
+  };
+
+  const handleFieldChange = (idx, field, value) => {
+    setEntries((prev) => {
+      const updated = [...prev];
+      updated[idx].formData[field] = value;
+      return updated;
+    });
+  };
+
+  const addEssayTitle = (idx) => {
+    setEntries((prev) => {
+      const updated = [...prev];
+      updated[idx].formData.college_essay_titles.push({ title: "" });
+      return updated;
+    });
+  };
+
+  const handleEssayTitleChange = (idx, eIdx, value) => {
+    setEntries((prev) => {
+      const updated = [...prev];
+      updated[idx].formData.college_essay_titles[eIdx].title = value;
+      return updated;
+    });
+  };
+
+  const compareUniversity = () => {
+    const selected = entries.filter((e) => e.university);
+    if (selected.length < 2) {
+      return alert("Select at least two universities to compare.");
+    }
+    const uniNames = selected.map((e) => e.university);
+    const fieldKeys = Object.keys(emptyEntry.formData);
+    const values = {};
+    fieldKeys.forEach((key) => {
+      values[key] = selected.map((e) => e.formData[key] ?? "");
+    });
+    setComparisonData({ uniNames, fieldKeys, values });
+    setIsCompareOpen(true);
+  };
+
+  const closeCompare = () => setIsCompareOpen(false);
+
   const addToProfile = async (idx) => {
     const entry = entries[idx];
-    const studentId = localStorage.getItem("student_id");
-    if (!studentId) {
-      return alert("Student ID not found in localStorage!");
-    }
-
-    let universityId = null;
-    let universityName = "";
-
+    if (!entry.university) return alert("Select a university first.");
     try {
-      // --- 1) Handle “other” case: create if not already in master list ---
-      if (entry.university === "other") {
-        universityName = entry.other_university.trim();
-        if (!universityName) {
-          return alert("Please enter a name for the new university.");
-        }
+      const uniObj = universities.find((u) => u.university_name === entry.university);
+      if (!uniObj) return alert("Invalid university.");
+      const uniId = uniObj.id;
 
-        // Check if this name already exists (case-insensitive match)
-        const existing = universities.find(
-          (u) =>
-            u.university_name.trim().toLowerCase() ===
-            universityName.toLowerCase()
-        );
-        if (existing) {
-          universityId = existing.id;
-        } else {
-          // POST a brand-new UniversityDetail
-          const uniPayload = {
-            university_name: universityName,
-            early_decision: entry.formData.early_decision,
-            early_action: entry.formData.early_action,
-            regular_decision: entry.formData.regular_decision,
-            scholarship_priority: entry.formData.scholarship_priority,
-            det: entry.formData.det,
-            toefl: entry.formData.toefl,
-            ielts: entry.formData.ielts,
-            pte: entry.formData.pte,
-            gpa_acceptance: entry.formData.gpa_acceptance,
-            gpa_scholarship: entry.formData.gpa_scholarship,
-            sat_acceptance: entry.formData.sat_acceptance,
-            sat_scholarship: entry.formData.sat_scholarship,
-            admission: entry.formData.admission,
-            scholarship: entry.formData.scholarship,
-            gpa_based: entry.formData.gpa_based,
-            sat_based: entry.formData.sat_based,
-            need_based: entry.formData.need_based,
-            holistic_review: entry.formData.holistic_review,
-            application_fee: entry.formData.application_fee,
-            application_fee_waiver: entry.formData.application_fee_waiver,
-            i20_deposit: entry.formData.i20_deposit,
-            tuition: entry.formData.tuition,
-            living_and_tuition: entry.formData.living_and_tuition,
-            avg_scholarship: entry.formData.avg_scholarship,
-            tuition_after_scholarship: entry.formData.tuition_after_scholarship,
-            coa_after_scholarship: entry.formData.coa_after_scholarship,
-            us_news_ranking: entry.formData.us_news_ranking,
-            niche_ranking: entry.formData.niche_ranking,
-            major_ranking: entry.formData.major_ranking,
-            place_name: entry.formData.place_name,
-            settings: entry.formData.settings,
-            racial_mix: entry.formData.racial_mix,
-            population: entry.formData.population,
-            population_trend: entry.formData.population_trend,
-            job_and_opportunities: entry.formData.job_and_opportunities,
-            crime: entry.formData.crime,
-          };
-
-          const uniRes = await axios.post(
-            `${API_BASE_URL}/university-details/`,
-            uniPayload
-          );
-          universityId = uniRes.data.id;
-          // Refresh master list so future dropdowns include this new record
-          await fetchUniversities();
-        }
-      } else {
-        // --- 2) Existing university: find its ID in master list ---
-        const detail = universities.find(
-          (u) => u.university_name === entry.university
-        );
-        if (!detail) {
-          return alert("Selected university not found in master list!");
-        }
-        universityId = detail.id;
-        universityName = detail.university_name;
+      if (linkedUniversityIds.has(uniId)) {
+        return alert("This university is already linked to your profile.");
       }
 
-      // --- 3) Prevent duplicates: check if already linked ---
-      if (linkedUniversityIds.has(universityId)) {
-        return alert(
-          `“${
-            universityId === null ? universityName : entry.university
-          }” is already linked to your profile.`
-        );
-      }
-
-      // --- 4) Create StudentUniversityDetail link ---
-      const studentUniPayload = {
-        student: studentId,
-        university: universityId,
-        university_name:
-          entry.university === "other"
-            ? entry.other_university.trim()
-            : entry.university,
-        early_decision: entry.early_decision,
-        early_action: entry.early_action,
-        regular_decision: entry.regular_decision,
-        scholarship_priority: entry.scholarship_priority,
-        application_fee: entry.application_fee,
-        application_fee_waiver: entry.application_fee_waiver,
-      };
-
-      await axios.post(
-        `${API_BASE_URL}/student-university-details/`,
-        studentUniPayload,
-        { headers: { "Content-Type": "application/json" } }
-      );
-
-      // 5) Update our set so we don’t re-link
-      setLinkedUniversityIds((prevSet) => {
-        const next = new Set(prevSet);
-        next.add(universityId);
-        return next;
+      await axios.post(`${API_BASE_URL}/student-university-details/`, {
+        student: student_id,
+        university: uniId,
+        university_name: entry.university,
+        early_decision: entry.formData.early_decision,
+        early_action: entry.formData.early_action,
+        regular_decision: entry.formData.regular_decision,
+        scholarship_priority: entry.formData.scholarship_priority,
+        application_fee: entry.formData.application_fee,
+        application_fee_waiver: entry.formData.application_fee_waiver,
+        college_essay_titles: JSON.stringify(entry.formData.college_essay_titles),
       });
 
-      alert(
-        `University “${studentUniPayload.university_name}” added to your profile.`
-      );
+      setLinkedUniversityIds((prev) => new Set(prev).add(uniId));
+      alert(`University "${entry.university}" added to your profile.`);
     } catch (err) {
-      console.error("Error in addToProfile:", err.response || err.message);
-      alert("Failed to add university to profile: " + (err.message || err));
+      console.error("addToProfile:", err);
+      alert("Failed to add university to profile.");
     }
   };
 
-  //------------------------------------------------------------------------------
-  // handleSubmit(e) “Submit All”
-  //  (same bulk‐submit + linking logic as before)
-  //------------------------------------------------------------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const studentId = localStorage.getItem("student_id");
-    if (!studentId) {
-      return alert("Student ID not found!");
-    }
-
     setLoading(true);
     try {
-      // 1) Bulk POST to stage-five-submissions
-      const payloadEntries = entries.map((ent) => ({
-        university: ent.university === "other" ? "" : ent.university,
-        other_university:
-          ent.university === "other" ? ent.other_university.trim() : "",
-        ...ent.formData,
-      }));
-      const bulkPayload = { student: studentId, entries: payloadEntries };
-
-      await axios.post(`${API_BASE_URL}/stage-five-submissions/`, bulkPayload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      // 2) For each entry, replicate addToProfile logic:
-      for (let ent of entries) {
-        let uniId = null;
-        let uniName = "";
-
-        if (ent.university === "other") {
-          uniName = ent.other_university.trim();
-          if (!uniName) continue; // skip blank “other”
-
-          // Check master list (case-insensitive)
-          let existing = universities.find(
-            (u) =>
-              u.university_name.trim().toLowerCase() === uniName.toLowerCase()
-          );
-          if (existing) {
-            uniId = existing.id;
-          } else {
-            // Create new
-            const uniPayload = {
-              university_name: uniName,
-              early_decision: ent.formData.early_decision,
-              early_action: ent.formData.early_action,
-              regular_decision: ent.formData.regular_decision,
-              scholarship_priority: ent.formData.scholarship_priority,
-              det: ent.formData.det,
-              toefl: ent.formData.toefl,
-              ielts: ent.formData.ielts,
-              pte: ent.formData.pte,
-              gpa_acceptance: ent.formData.gpa_acceptance,
-              gpa_scholarship: ent.formData.gpa_scholarship,
-              sat_acceptance: ent.formData.sat_acceptance,
-              sat_scholarship: ent.formData.sat_scholarship,
-              admission: ent.formData.admission,
-              scholarship: ent.formData.scholarship,
-              gpa_based: ent.formData.gpa_based,
-              sat_based: ent.formData.sat_based,
-              need_based: ent.formData.need_based,
-              holistic_review: ent.formData.holistic_review,
-              application_fee: ent.formData.application_fee,
-              application_fee_waiver: ent.formData.application_fee_waiver,
-              i20_deposit: ent.formData.i20_deposit,
-              tuition: ent.formData.tuition,
-              living_and_tuition: ent.formData.living_and_tuition,
-              avg_scholarship: ent.formData.avg_scholarship,
-              tuition_after_scholarship: ent.formData.tuition_after_scholarship,
-              coa_after_scholarship: ent.formData.coa_after_scholarship,
-              us_news_ranking: ent.formData.us_news_ranking,
-              niche_ranking: ent.formData.niche_ranking,
-              major_ranking: ent.formData.major_ranking,
-              place_name: ent.formData.place_name,
-              settings: ent.formData.settings,
-              racial_mix: ent.formData.racial_mix,
-              population: ent.formData.population,
-              population_trend: ent.formData.population_trend,
-              job_and_opportunities: ent.formData.job_and_opportunities,
-              crime: ent.formData.crime,
-            };
-
-            const uniRes = await axios.post(
-              `${API_BASE_URL}/university-details/`,
-              uniPayload
-            );
-            uniId = uniRes.data.id;
-            await fetchUniversities(); // refresh master list
-          }
-        } else {
-          // Existing university
-          const detail = universities.find(
-            (u) => u.university_name === ent.university
-          );
-          if (!detail) {
-            // If somehow missing, skip
-            continue;
-          }
-          uniId = detail.id;
-          uniName = detail.university_name;
-        }
-
-        // Skip if already linked
-        if (linkedUniversityIds.has(uniId)) {
-          continue;
-        }
-
-        // Create StudentUniversityDetail
-        const studentUniPayload = {
-          student: studentId,
-          university: uniId,
-          university_name:
-            ent.university === "other"
-              ? ent.other_university.trim()
-              : ent.university,
-        };
-        await axios.post(
-          `${API_BASE_URL}/student-university-details/`,
-          studentUniPayload,
-          { headers: { "Content-Type": "application/json" } }
-        );
-
-        // Update the Set so subsequent entries don’t duplicate
-        setLinkedUniversityIds((prevSet) => {
-          const next = new Set(prevSet);
-          next.add(uniId);
-          return next;
-        });
+      const payload = {
+        student: student_id,
+        entries: entries.map((ent) => ({
+          university: ent.university,
+          ...ent.formData,
+        })),
+      };
+      await axios.post(`${API_BASE_URL}/stage-five-submissions/`, payload);
+      // also add each to profile
+      for (let i = 0; i < entries.length; i++) {
+        await addToProfile(i);
       }
-
-      // alert("All entries submitted & linked to your profile (no duplicates).");
-      alert("Stage 5 submitted successfully! (wait for admin approval to unlock next stage)");
-      // Reset to a single empty entry
+      alert("Stage 5 submitted successfully! (wait for admin approval)");
       setEntries([{ ...emptyEntry }]);
     } catch (err) {
-      console.error("Error in handleSubmit:", err.response || err.message);
-      alert("Failed to submit: " + (err.message || err));
+      console.error("handleSubmit:", err);
+      alert("Submission failed.");
     } finally {
       setLoading(false);
     }
   };
 
-  //──────────────────────────────────────────────────────────────────────────────
-  // compareUniversity():
-  //   - Take only “filled” entries (where entry.university is non‐empty OR “other” is filled)
-  //   - If fewer than 2, alert the user
-  //   - Otherwise, build a table of (fields × universities) and open the modal
-  //──────────────────────────────────────────────────────────────────────────────
-  const compareUniversity = () => {
-    // 1) Filter out entries where no university was chosen
-    const selected = entries.filter((ent) => {
-      // If user chose “other,” ensure they typed an actual other_university
-      if (ent.university === "other") {
-        return ent.other_university.trim() !== "";
-      }
-      // Otherwise, if they picked a known university, that counts
-      return ent.university !== "";
-    });
-
-    if (selected.length < 2) {
-      return alert(
-        "Please select or fill in at least two universities to compare."
-      );
-    }
-
-    // 2) Build an array of the display names (either chosen or “other”)
-    const uniNames = selected.map((ent) =>
-      ent.university === "other" ? ent.other_university.trim() : ent.university
-    );
-
-    // 3) Collect all the keys of formData (we assume they’re identical for each entry)
-    const fieldKeys = Object.keys(emptyEntry.formData);
-
-    // 4) Build a map: fieldKey → [ valueForUni1, valueForUni2, ... ]
-    const values = {};
-    fieldKeys.forEach((fld) => {
-      values[fld] = selected.map((ent) => ent.formData[fld] || "");
-    });
-
-    // 5) Save into state and open modal
-    setComparisonData({ uniNames, fieldKeys, values });
-    setIsCompareOpen(true);
-  };
-
-  //──────────────────────────────────────────────────────────────────────────────
-  // closeCompare(): simply hide the popup
-  //──────────────────────────────────────────────────────────────────────────────
-  const closeCompare = () => {
-    setIsCompareOpen(false);
-  };
-
-  // Check if Stage 5 is marked "completed" in the fetched stages array
-  const stage5Data = stagesDetail.find((item) => item.stage === "5");
-  const isStage5Completed = stage5Data?.is_complete === "completed";
-
-  // const [videoLink, setVideoLink] = useState(
-  //   ""
-  // );
+  const isStage5Completed =
+    stagesDetail.find((s) => s.stage === "5")?.is_complete === "completed";
   const videoUrl1 = stageVideo[0]?.stage5_video1;
+
+  const selectedNames = entries.map((e) => e.university).filter(Boolean);
 
   return (
     <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
-      <div className="md:w-1/4 w-full bg-gradient-to-l from-[#ffffff] to-[#248a4d] p-4 h-auto">
+      {/* Sidebar */}
+      <div className="md:w-1/4 w-full bg-gradient-to-l from-white to-green-500 p-4">
         <h2 className="text-2xl underline font-bold">Stage 5:</h2>
         <p className="mt-4 font-semibold">University Finalization</p>
-        <p className="mt-3">Let's finalize on the list of university based on your expectation.</p>
-        <p className="mt-3">Don't apply to very few University, nor too many. There has to be a happy medium when it comes to applying to the university.</p>
-        <p className="mt-3">Also, BE PATIENCE, Most of the university usually takes over few weeks even months to send you I-20. Be sure to followup.</p>
-        <p className="mt-3">We usually recommend 5-10 University for Undergraduate, and 2-5 for the Graduate Students.</p>
-        <p className="mt-3">Also, don't forget every university has their own requirements, they have their own ways of determining scholarship.</p>
+        <p className="mt-3">
+          Let's finalize on the list of universities based on your expectations.
+        </p>
+        <p className="mt-3">
+          We recommend applying to 5–10 for undergrads, 2–5 for grads. Patience is
+          key—most I‑20s take weeks or months.
+        </p>
       </div>
 
-      <div className="md:w-3/4 w-full bg-white h-screen p-4 md:overflow-scroll">
-        <div className="px-4 py-2 bg-gradient-to-r from-[#ffffff] to-blue-300 text-2xl font-semibold text-center mb-4">
-          University Section
+      {/* Main Content */}
+      <div className="md:w-3/4 w-full bg-white p-4 h-screen md:overflow-auto">
+        {/* University Selection Toggle */}
+        <div
+          className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold flex items-center cursor-pointer"
+          onClick={() => setIsUniSelectionOpen((o) => !o)}
+        >
+          <span>University Selection</span>
+          {isUniSelectionOpen ? (
+            <MdOutlineExpandLess className="ml-auto text-4xl" />
+          ) : (
+            <MdOutlineExpandMore className="ml-auto text-4xl" />
+          )}
         </div>
-        <iframe
-          className="w-full h-[400px] mt-1"
-          src={videoUrl1}
-          allowFullScreen
-          title="university"
-        />
-        <div className="w-[30%] mx-auto mt-2 mb-4">
-          <button className="px-3 py-3 text-black text-center rounded bg-green-300 hover:bg-green-400 hover:text-white text-lg font-semibold">
-            Request Appointment
-          </button>
-        </div>
+
+        {isUniSelectionOpen && (
+          <div>
+            <div className="w-1/2 bg-amber-500 rounded-full px-5 py-2 mt-4 font-semibold">
+              SESSION IV - University Selection
+            </div>
+            <iframe
+              src={videoUrl1}
+              className="w-full h-[300px] md:h-[400px] mt-2 mb-4"
+              title="University Selection Video"
+              allowFullScreen
+            />
+            <a
+              href="mailto:abroadunbox@gmail.com"
+              className="w-1/2 bg-yellow-300 rounded-full px-5 py-2 mt-4 font-semibold shadow-lg hover:bg-yellow-400 block text-center"
+            >
+              Request Appointment
+            </a>
+          </div>
+        )}
+
+        <div className="border-t border-gray-300 my-6" />
+
+        <h2 className="text-xl font-semibold mb-2">University Profile:</h2>
+        <p className="mb-6">
+          We shall create a comprehensive report on the important things about your
+          chosen university that you have to work on. You can always refer back
+          when comparing universities.
+        </p>
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          {entries.map((entry, idx) => (
-            <div key={idx} className="shadow shadow-gray-300 p-4 rounded">
-              <h3 className="text-xl font-semibold mb-4">
-                University #{idx + 1}
-              </h3>
+          {entries.map((entry, idx) => {
+            const locked = !!entry.university;
+            return (
+              <div key={idx} className="p-4 shadow rounded relative">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-xl font-semibold">University #{idx + 1}</h3>
+                  <div className="flex items-center gap-2">
+                    {entry.university && (
+                      <button
+                        type="button"
+                        onClick={() => toggleDetails(idx)}
+                        className="text-sm underline"
+                      >
+                        {entry.showDetails ? "Hide Details" : "Show Details"}
+                      </button>
+                    )}
+                    {entries.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeUniversity(idx)}
+                        className="text-red-500 text-sm"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                </div>
 
-              {/* University Selector */}
-              <label className="block mb-2">Select University:</label>
-              <select
-                name="university"
-                value={entry.university}
-                onChange={(e) =>
-                  handleEntryChange(idx, "university", e.target.value)
-                }
-                className="border border-gray-300 rounded p-2 w-full mb-4"
-              >
-                <option value="">-- Select a university --</option>
-                {universities.map((u) => (
-                  <option key={u.id} value={u.university_name}>
-                    {u.university_name}
-                  </option>
-                ))}
-                <option value="other">Other</option>
-              </select>
-
-              {/* “Other” name input */}
-              {entry.university === "other" && (
-                <input
-                  type="text"
-                  name="other_university"
-                  placeholder="Enter university name"
-                  value={entry.other_university}
-                  onChange={(e) =>
-                    handleEntryChange(idx, "other_university", e.target.value)
-                  }
-                  className="border border-gray-300 rounded p-2 w-full mb-4"
-                />
-              )}
-
-              {/* Reusable renderer for all form fields */}
-              {[
-                {
-                  title: "Deadline",
-                  fields: [
-                    "early_decision",
-                    "early_action",
-                    "regular_decision",
-                    "scholarship_priority",
-                  ],
-                },
-                {
-                  title: "Minimum English Proficiency",
-                  fields: ["det", "toefl", "ielts", "pte"],
-                },
-                {
-                  title: "Minimum GPA",
-                  fields: ["gpa_acceptance", "gpa_scholarship"],
-                },
-                {
-                  title: "Minimum SAT",
-                  fields: ["sat_acceptance", "sat_scholarship"],
-                },
-                {
-                  title: "SAT Requirements",
-                  fields: ["admission", "scholarship"],
-                },
-                {
-                  title: "Scholarship Requirements",
-                  fields: [
-                    "gpa_based",
-                    "sat_based",
-                    "need_based",
-                    "holistic_review",
-                  ],
-                },
-                {
-                  title: "Cost",
-                  fields: [
-                    "application_fee",
-                    "application_fee_waiver",
-                    "i20_deposit",
-                    "tuition",
-                    "living_and_tuition",
-                    "avg_scholarship",
-                    "tuition_after_scholarship",
-                    "coa_after_scholarship",
-                  ],
-                },
-                {
-                  title: "Ranking",
-                  fields: ["us_news_ranking", "niche_ranking", "major_ranking"],
-                },
-                {
-                  title: "Location Details",
-                  fields: [
-                    "place_name",
-                    "settings",
-                    "racial_mix",
-                    "population",
-                    "population_trend",
-                    "job_and_opportunities",
-                    "crime",
-                  ],
-                },
-              ].map(({ title, fields }) => (
-                <div key={title}>
-                  <div className="text-lg font-semibold mt-4 mb-2">{title}</div>
-                  {fields.map((fld) => (
-                    <div
-                      key={fld}
-                      className="flex justify-between items-center mb-2"
+                {/* University Dropdown */}
+                <label className="block mb-2">Select University:</label>
+                <select
+                  value={entry.university}
+                  onChange={(e) => handleUniversityChange(idx, e.target.value)}
+                  className="border rounded p-2 w-full mb-4"
+                >
+                  <option value="">-- Select a university --</option>
+                  {universities.map((u) => (
+                    <option
+                      key={u.id}
+                      value={u.university_name}
+                      disabled={
+                        selectedNames.includes(u.university_name) &&
+                        u.university_name !== entry.university
+                      }
                     >
-                      <label className="capitalize mr-4">
-                        {fld.replace(/_/g, " ")}:
-                      </label>
+                      {u.university_name}
+                    </option>
+                  ))}
+                </select>
 
-                      {[
-                        "admission",
-                        "scholarship",
-                        "gpa_based",
-                        "sat_based",
-                        "need_based",
-                        "holistic_review",
-                      ].includes(fld) ? (
+                {/* Details Section */}
+                {entry.showDetails && (
+                  <>
+                    {[
+                      {
+                        title: "Deadline",
+                        fields: [
+                          "early_decision",
+                          "early_action",
+                          "regular_decision",
+                          "scholarship_priority",
+                        ],
+                      },
+                      {
+                        title: "Minimum English Proficiency",
+                        fields: ["det", "toefl", "ielts", "pte"],
+                      },
+                      {
+                        title: "Minimum GPA",
+                        fields: ["gpa_acceptance", "gpa_scholarship"],
+                      },
+                      {
+                        title: "Minimum SAT",
+                        fields: ["admission", "sat_scholarship"],
+                      },
+                      {
+                        title: "Scholarship Requirements",
+                        fields: [
+                          "gpa_based",
+                          "sat_based",
+                          "need_based",
+                          "holistic_review",
+                        ],
+                      },
+                      {
+                        title: "Cost",
+                        fields: [
+                          "application_fee",
+                          "application_fee_waiver",
+                          "i20_deposit",
+                          "tuition",
+                          "living_and_tuition",
+                          "avg_scholarship",
+                          "tuition_after_scholarship",
+                          "coa_after_scholarship",
+                        ],
+                      },
+                      {
+                        title: "Ranking",
+                        fields: [
+                          "us_news_ranking",
+                          "niche_ranking",
+                          "major_ranking",
+                        ],
+                      },
+                      {
+                        title: "Location Details",
+                        fields: [
+                          "place_name",
+                          "settings",
+                          "racial_mix",
+                          "population",
+                          "population_trend",
+                          "job_and_opportunities",
+                          "crime",
+                        ],
+                      },
+                    ].map(({ title, fields }) => (
+                      <div key={title}>
+                        <div className="text-lg font-semibold mt-4 mb-2">
+                          {title}
+                        </div>
+                        {fields.map((fld) => (
+                          <div
+                            key={fld}
+                            className="flex justify-between items-center mb-2"
+                          >
+                            <label className="capitalize mr-4">
+                              {fld.replace(/_/g, " ")}:
+                            </label>
+                            <input
+                              type="text"
+                              value={entry.formData[fld] || ""}
+                              onChange={(e) =>
+                                handleFieldChange(idx, fld, e.target.value)
+                              }
+                              disabled={locked}
+                              className="border rounded w-1/2 p-2"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+
+                    {/* SOP Section */}
+                    <div className="mt-6">
+                      <h3 className="text-lg font-semibold mb-2">SOP</h3>
+                      <div className="flex items-center mb-4">
+                        <label className="mr-4">
+                          College Essay Required:
+                        </label>
                         <select
-                          name={fld}
-                          value={entry.formData[fld]}
+                          value={entry.formData.college_essay ? "yes" : "no"}
                           onChange={(e) =>
-                            handleEntryChange(idx, fld, e.target.value)
+                            handleFieldChange(
+                              idx,
+                              "college_essay",
+                              e.target.value === "yes"
+                            )
                           }
-                          disabled={entry.isDisabled}
-                          className="border border-gray-300 rounded w-1/2 p-1"
+                          disabled={locked}
+                          className="border p-1 rounded"
                         >
-                          <option value="">-- select --</option>
-                          <option value="yes">Yes</option>
                           <option value="no">No</option>
+                          <option value="yes">Yes</option>
                         </select>
-                      ) : (
-                        <input
-                          type="text"
-                          name={fld}
-                          value={entry.formData[fld]}
-                          onChange={(e) =>
-                            handleEntryChange(idx, fld, e.target.value)
-                          }
-                          disabled={entry.isDisabled}
-                          className="border border-gray-300 rounded w-1/2 p-2"
-                        />
+                      </div>
+                      {entry.formData.college_essay && (
+                        <div>
+                          {entry.formData.college_essay_titles.map(
+                            (tObj, eIdx) => (
+                              <div
+                                key={eIdx}
+                                className="flex items-center mb-2"
+                              >
+                                <label className="w-32">
+                                  Essay {eIdx + 1} Title:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={tObj.title}
+                                  onChange={(e) =>
+                                    handleEssayTitleChange(
+                                      idx,
+                                      eIdx,
+                                      e.target.value
+                                    )
+                                  }
+                                  disabled={locked}
+                                  className="border p-2 rounded flex-1"
+                                />
+                              </div>
+                            )
+                          )}
+                          {/* <button
+                            type="button"
+                            onClick={() => addEssayTitle(idx)}
+                            disabled={locked}
+                            className="mt-2 bg-blue-200 hover:bg-blue-300 px-3 py-1 rounded"
+                          >
+                            + Add Essay
+                          </button> */}
+                        </div>
                       )}
                     </div>
-                  ))}
-                </div>
-              ))}
+                  </>
+                )}
 
-              {/* Add single entry to profile */}
-              <button
-                type="button"
-                onClick={() => addToProfile(idx)}
-                className="w-full bg-blue-300 hover:bg-blue-400 p-3 text-lg font-semibold mt-4"
-              >
-                Add This University to Your Profile
-              </button>
-            </div>
-          ))}
+                {/* Add to Profile */}
+                <button
+                  type="button"
+                  onClick={() => addToProfile(idx)}
+                  className="mt-4 w-full bg-blue-400 hover:bg-blue-500 text-white p-2 rounded"
+                >
+                  Add This University to Your Profile
+                </button>
+              </div>
+            );
+          })}
 
-          <div className="flex flex-col justify-center gap-4">
-            {/* COMPARE button now calls our new function */}
-
+          {/* + More / Compare */}
+          <div className="flex gap-4">
             <button
               type="button"
               onClick={addMoreUniversity}
-              className="bg-green-300 hover:bg-green-400 py-2 px-4 rounded w-full"
+              className="bg-green-300 hover:bg-green-400 py-2 px-4 rounded"
             >
-              + More
+              + Add More University
             </button>
-
             <button
               type="button"
               onClick={compareUniversity}
-              className="bg-green-300 hover:bg-green-400 py-2 px-4 rounded w-full"
+              className="bg-green-300 hover:bg-green-400 py-2 px-4 rounded"
             >
               Compare University
             </button>
-
-            {/* <button
-              type="submit"
-              disabled={loading}
-              className={`bg-gradient-to-r from-green-300 to-green-500 py-2 px-6 rounded text-white ${
-                loading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-            >
-              {loading ? "Submitting..." : "Stage 5: Submit All"}
-            </button> */}
-
-            {/* Submit / Completed Button */}
-            <div className="mt-4">
-              <button
-                onClick={() => handleSubmit(responseLink[0]?.stage)}
-                className={`w-full py-4 text-2xl font-semibold mt-3 ${
-                  isStage5Completed
-                    ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
-                }`}
-                disabled={isStage5Completed}
-              >
-                {isStage5Completed ? "Stage 5: Completed" : "Stage 5: Submit"}
-              </button>
-            </div>
           </div>
-        </form>
-      </div>
 
-      {/* ─────────────────────────────────────────────────────────────────────
-          COMPARE MODAL POPUP
-          Only render when isCompareOpen === true
-      ───────────────────────────────────────────────────────────────────── */}
-      {isCompareOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-          onClick={closeCompare}
-        >
-          {/* Clicking the translucent background closes the popup */}
-          <div
-            className="bg-white rounded-lg overflow-auto max-h-[80vh] w-[90vw] md:w-[70vw] p-4"
-            onClick={(e) => e.stopPropagation()}
+          {/* Submit */}
+          <button
+            type="submit"
+            disabled={loading || isStage5Completed}
+            className={`w-full py-4 text-2xl font-semibold mt-3 ${
+              isStage5Completed
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-l from-white to-green-300 hover:to-green-500"
+            }`}
           >
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-2xl font-semibold">Compare Universities</h3>
-              <button
-                onClick={closeCompare}
-                className="text-xl font-bold px-2 hover:text-red-600"
-              >
-                ✕
-              </button>
-            </div>
+            {isStage5Completed
+              ? "Stage 5: Completed"
+              : loading
+              ? "Submitting..."
+              : "Stage 5: Submit"}
+          </button>
+        </form>
 
-            <div className="overflow-auto">
-              <table className="min-w-full border-collapse">
-                <thead>
-                  <tr>
-                    {/* First header can be “Field” or blank */}
-                    <th className="border bg-gray-100 px-3 py-2 text-left">
-                      Field
-                    </th>
-                    {comparisonData.uniNames.map((uName, i) => (
-                      <th
-                        key={i}
-                        className="border bg-gray-100 px-3 py-2 text-left"
-                      >
-                        {uName}
+        {/* Compare Modal */}
+        {isCompareOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            onClick={closeCompare}
+          >
+            <div
+              className="bg-white rounded-lg overflow-auto max-h-[80vh] w-[90vw] p-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-2xl font-semibold">
+                  Compare Universities
+                </h3>
+                <button
+                  onClick={closeCompare}
+                  className="text-xl font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="overflow-auto">
+                <table className="min-w-full border-collapse">
+                  <thead>
+                    <tr>
+                      <th className="border bg-gray-100 px-3 py-2 text-left">
+                        Field
                       </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonData.fieldKeys.map((fldKey) => (
-                    <tr key={fldKey}>
-                      <td className="border px-3 py-1 font-semibold">
-                        {fldKey.replace(/_/g, " ")}
-                      </td>
-                      {comparisonData.values[fldKey].map((val, j) => (
-                        <td key={j} className="border px-3 py-1">
-                          {val || "-"}
-                        </td>
+                      {comparisonData.uniNames.map((u, i) => (
+                        <th
+                          key={i}
+                          className="border bg-gray-100 px-3 py-2 text-left"
+                        >
+                          {u}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {comparisonData.fieldKeys.map((fk) => (
+                      <tr key={fk}>
+                        <td className="border px-3 py-1 font-semibold">
+                          {fk.replace(/_/g, " ")}
+                        </td>
+                        {comparisonData.values[fk].map((v, j) => (
+                          <td key={j} className="border px-3 py-1">
+                            {Array.isArray(v)
+                              ? v.map((it) => it.title ?? it).join(", ")
+                              : v || "-"}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
 
 export default Stage5;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// // Template for a single university entry
+// const emptyEntry = {
+//   university: "",
+//   other_university: "",
+//   isDisabled: false,
+//   formData: {
+//     early_decision: "",
+//     early_action: "",
+//     regular_decision: "",
+//     scholarship_priority: "",
+//     det: "",
+//     toefl: "",
+//     ielts: "",
+//     pte: "",
+//     gpa_acceptance: "",
+//     gpa_scholarship: "",
+//     sat_acceptance: "",
+//     sat_scholarship: "",
+//     admission: "",
+//     scholarship: "",
+//     gpa_based: "",
+//     sat_based: "",
+//     need_based: "",
+//     holistic_review: "",
+//     application_fee: "",
+//     application_fee_waiver: "",
+//     i20_deposit: "",
+//     tuition: "",
+//     living_and_tuition: "",
+//     avg_scholarship: "",
+//     tuition_after_scholarship: "",
+//     coa_after_scholarship: "",
+//     us_news_ranking: "",
+//     niche_ranking: "",
+//     major_ranking: "",
+//     place_name: "",
+//     settings: "",
+//     racial_mix: "",
+//     population: "",
+//     population_trend: "",
+//     job_and_opportunities: "",
+//     crime: "",
+//     college_essay: false,
+//     college_essay_titles: [{ title: "" }],
+//   },
+// };
+
+// const Stage5 = () => {
+//   const [stagesDetail, setStagesDetail] = useState([]);
+//   const [universities, setUniversities] = useState([]);
+//   const [stageVideo, setStageVideo] = useState([]);
+//   const [linkedUniversityIds, setLinkedUniversityIds] = useState(new Set());
+//   const [loading, setLoading] = useState(false);
+//   const [entries, setEntries] = useState([{ ...emptyEntry }]);
+//   const [isCompareOpen, setIsCompareOpen] = useState(false);
+//   const [comparisonData, setComparisonData] = useState({
+//     uniNames: [],
+//     fieldKeys: [],
+//     values: {},
+//   });
+//   console.log(comparisonData);
+
+//   const student_id = localStorage.getItem("student_id");
+
+//   useEffect(() => {
+//     getStages();
+//     fetchUniversities();
+//     fetchLinkedUniversities();
+//     getStageVideo();
+//   }, []);
+
+//   const getStages = async () => {
+//     try {
+//       const res = await axios.get(
+//         `${API_BASE_URL}/application-time-stages/?student=${student_id}`
+//       );
+//       setStagesDetail(res.data);
+//     } catch (err) {
+//       console.error("getStages:", err);
+//     }
+//   };
+
+//   const fetchUniversities = async () => {
+//     try {
+//       const res = await axios.get(`${API_BASE_URL}/university-details/`);
+//       setUniversities(res.data);
+//     } catch (err) {
+//       console.error("fetchUniversities:", err);
+//     }
+//   };
+
+//   const fetchLinkedUniversities = async () => {
+//     if (!student_id) return;
+//     try {
+//       const res = await axios.get(
+//         `${API_BASE_URL}/student-university-details/?student=${student_id}`
+//       );
+//       setLinkedUniversityIds(new Set(res.data.map((item) => item.university)));
+//     } catch (err) {
+//       console.error("fetchLinkedUniversities:", err);
+//     }
+//   };
+
+//   const getStageVideo = async () => {
+//     try {
+//       const res = await axios.get(`${API_BASE_URL}/stages-videos/`);
+//       setStageVideo(res.data);
+//     } catch (err) {
+//       console.error("getStageVideo:", err);
+//     }
+//   };
+
+//   const addMoreUniversity = () => {
+//     setEntries((prev) =>
+//       prev.length < 20 ? [...prev, { ...emptyEntry }] : prev
+//     );
+//   };
+
+//   const handleEntryChange = (index, field, value) => {
+//     setEntries((prev) => {
+//       const updated = [...prev];
+//       const entry = updated[index];
+
+//       if (field === "university") {
+//         entry.university = value;
+//         entry.other_university = "";
+//         if (value && value !== "other") {
+//           const detail = universities.find((u) => u.university_name === value);
+//           if (detail) {
+//             entry.formData = {
+//               ...entry.formData,
+//               ...detail,
+//               college_essay: detail.college_essay || false,
+//               // Ensure college_essay_titles are in object format
+//               college_essay_titles:
+//                 detail.college_essay_titles &&
+//                 detail.college_essay_titles.length
+//                   ? detail.college_essay_titles.map((title) =>
+//                       typeof title === "string" ? { title } : title
+//                     )
+//                   : [{ title: "" }],
+//             };
+//           }
+//           entry.isDisabled = true;
+//         } else {
+//           entry.formData = { ...emptyEntry.formData };
+//           entry.isDisabled = false;
+//         }
+//       } else if (field === "other_university") {
+//         entry.other_university = value;
+//       } else if (field === "college_essay") {
+//         if (!entry.isDisabled) {
+//           entry.formData.college_essay = value === "yes";
+//           if (
+//             entry.formData.college_essay &&
+//             !entry.formData.college_essay_titles.length
+//           ) {
+//             entry.formData.college_essay_titles = [{ title: "" }];
+//           }
+//           if (!entry.formData.college_essay) {
+//             entry.formData.college_essay_titles = [];
+//           }
+//         }
+//       } else {
+//         entry.formData[field] = value;
+//       }
+
+//       return updated;
+//     });
+//   };
+
+//   const addEssayTitle = (index) => {
+//     setEntries((prev) => {
+//       const updated = [...prev];
+//       const entry = updated[index];
+//       if (!entry.isDisabled && entry.formData.college_essay) {
+//         entry.formData.college_essay_titles.push({ title: "" });
+//       }
+//       return updated;
+//     });
+//   };
+
+//   const handleEssayTitleChange = (index, essayIdx, value) => {
+//     setEntries((prev) => {
+//       const updated = [...prev];
+//       if (!updated[index].isDisabled) {
+//         updated[index].formData.college_essay_titles[essayIdx] = {
+//           title: value,
+//         };
+//       }
+//       return updated;
+//     });
+//   };
+
+//   const addToProfile = async (idx) => {
+//     const entry = entries[idx];
+//     try {
+//       let uniId;
+//       if (entry.university === "other") {
+//         const name = entry.other_university.trim();
+//         const existing = universities.find(
+//           (u) => u.university_name.toLowerCase() === name.toLowerCase()
+//         );
+//         if (existing) {
+//           uniId = existing.id;
+//         } else {
+//           const res = await axios.post(`${API_BASE_URL}/university-details/`, {
+//             university_name: name,
+//             ...entry.formData,
+//           });
+//           uniId = res.data.id;
+//           await fetchUniversities();
+//         }
+//       } else {
+//         uniId = universities.find(
+//           (u) => u.university_name === entry.university
+//         ).id;
+//       }
+
+//       if (linkedUniversityIds.has(uniId)) {
+//         return alert("This university is already linked to your profile.");
+//       }
+
+//       await axios.post(`${API_BASE_URL}/student-university-details/`, {
+//         student: student_id,
+//         university: uniId,
+//         university_name:
+//           entry.university === "other"
+//             ? entry.other_university
+//             : entry.university,
+//         early_decision: entry.formData.early_decision,
+//         early_action: entry.formData.early_action,
+//         regular_decision: entry.formData.regular_decision,
+//         scholarship_priority: entry.formData.scholarship_priority,
+//         application_fee: entry.formData.application_fee,
+//         application_fee_waiver: entry.formData.application_fee_waiver,
+//         college_essay_titles: JSON.stringify(
+//           entry.formData.college_essay_titles
+//         ),
+//       });
+
+//       setLinkedUniversityIds((prev) => new Set(prev).add(uniId));
+//       alert(
+//         `University "${
+//           entry.university || entry.other_university
+//         }" added to your profile.`
+//       );
+//     } catch (err) {
+//       console.error("addToProfile:", err);
+//       alert("Failed to add university to profile.");
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setLoading(true);
+//     try {
+//       const bulkPayload = {
+//         student: student_id,
+//         entries: entries.map((ent) => ({
+//           university: ent.university === "other" ? "" : ent.university,
+//           other_university:
+//             ent.university === "other" ? ent.other_university : "",
+//           ...ent.formData,
+//         })),
+//       };
+//       await axios.post(`${API_BASE_URL}/stage-five-submissions/`, bulkPayload);
+
+//       for (let i = 0; i < entries.length; i++) {
+//         await addToProfile(i);
+//       }
+
+//       alert("Stage 5 submitted successfully! (wait for admin approval)");
+//       setEntries([{ ...emptyEntry }]);
+//     } catch (err) {
+//       console.error("handleSubmit:", err);
+//       alert("Submission failed.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const compareUniversity = () => {
+//     const selected = entries.filter(
+//       (ent) => ent.university || ent.other_university
+//     );
+//     if (selected.length < 2) {
+//       return alert(
+//         "Please select or fill in at least two universities to compare."
+//       );
+//     }
+//     const uniNames = selected.map((ent) =>
+//       ent.university === "other" ? ent.other_university : ent.university
+//     );
+//     const fieldKeys = Object.keys(emptyEntry.formData);
+//     const values = {};
+//     fieldKeys.forEach((k) => {
+//       values[k] = selected.map((ent) => ent.formData[k] || "");
+//     });
+//     setComparisonData({ uniNames, fieldKeys, values });
+//     setIsCompareOpen(true);
+//   };
+
+//   const closeCompare = () => setIsCompareOpen(false);
+
+//   const isStage5Completed =
+//     stagesDetail.find((s) => s.stage === "5")?.is_complete === "completed";
+//   const videoUrl1 = stageVideo[0]?.stage5_video1;
+
+//   return (
+//     <div className="flex md:flex-row-reverse flex-col mx-auto w-full">
+//       {/* Sidebar */}
+//       <div className="md:w-1/4 w-full bg-gradient-to-l from-white to-green-500 p-4">
+//         <h2 className="text-2xl underline font-bold">Stage 5:</h2>
+//         <p className="mt-4 font-semibold">University Finalization</p>
+//         <p className="mt-3">
+//           Let's finalize on the list of universities based on your expectations.
+//         </p>
+//         <p className="mt-3">
+//           We recommend applying to 5–10 for undergrads, 2–5 for grads. Patience
+//           is key—most I‑20s take weeks or months.
+//         </p>
+//       </div>
+
+//       {/* Main Content */}
+//       <div className="md:w-3/4 w-full bg-white p-4 h-screen overflow-auto">
+//         {/* Video */}
+//         <iframe
+//           src={videoUrl1}
+//           className="w-full h-64 mb-4"
+//           title="stage5 video"
+//           allowFullScreen
+//         />
+
+//         <form onSubmit={handleSubmit} className="space-y-6">
+//           {entries.map((entry, idx) => (
+//             <div key={idx} className="p-4 shadow rounded">
+//               <h3 className="text-xl font-semibold mb-4">
+//                 University #{idx + 1}
+//               </h3>
+
+//               {/* University Selector */}
+//               <label className="block mb-2">Select University:</label>
+//               <select
+//                 value={entry.university}
+//                 onChange={(e) =>
+//                   handleEntryChange(idx, "university", e.target.value)
+//                 }
+//                 className="border rounded p-2 w-full mb-4"
+//               >
+//                 <option value="">-- Select a university --</option>
+//                 {universities.map((u) => (
+//                   <option key={u.id} value={u.university_name}>
+//                     {u.university_name}
+//                   </option>
+//                 ))}
+//                 <option value="other">Other</option>
+//               </select>
+//               {entry.university === "other" && (
+//                 <input
+//                   type="text"
+//                   placeholder="Enter university name"
+//                   value={entry.other_university}
+//                   onChange={(e) =>
+//                     handleEntryChange(idx, "other_university", e.target.value)
+//                   }
+//                   className="border rounded p-2 w-full mb-4"
+//                 />
+//               )}
+
+//               {/* Field Groups */}
+//               {[
+//                 {
+//                   title: "Deadline",
+//                   fields: [
+//                     "early_decision",
+//                     "early_action",
+//                     "regular_decision",
+//                     "scholarship_priority",
+//                   ],
+//                 },
+//                 {
+//                   title: "Minimum English Proficiency",
+//                   fields: ["det", "toefl", "ielts", "pte"],
+//                 },
+//                 {
+//                   title: "Minimum GPA",
+//                   fields: ["gpa_acceptance", "gpa_scholarship"],
+//                 },
+//                 {
+//                   title: "Minimum SAT",
+//                   fields: ["admission", "sat_scholarship"],
+//                 },
+//                 {
+//                   title: "Scholarship Requirements",
+//                   fields: [
+//                     "gpa_based",
+//                     "sat_based",
+//                     "need_based",
+//                     "holistic_review",
+//                   ],
+//                 },
+//                 {
+//                   title: "Cost",
+//                   fields: [
+//                     "application_fee",
+//                     "application_fee_waiver",
+//                     "i20_deposit",
+//                     "tuition",
+//                     "living_and_tuition",
+//                     "avg_scholarship",
+//                     "tuition_after_scholarship",
+//                     "coa_after_scholarship",
+//                   ],
+//                 },
+//                 {
+//                   title: "Ranking",
+//                   fields: ["us_news_ranking", "niche_ranking", "major_ranking"],
+//                 },
+//                 {
+//                   title: "Location Details",
+//                   fields: [
+//                     "place_name",
+//                     "settings",
+//                     "racial_mix",
+//                     "population",
+//                     "population_trend",
+//                     "job_and_opportunities",
+//                     "crime",
+//                   ],
+//                 },
+//               ].map(({ title, fields }) => (
+//                 <div key={title}>
+//                   <div className="text-lg font-semibold mt-4 mb-2">{title}</div>
+//                   {fields.map((fld) => (
+//                     <div
+//                       key={fld}
+//                       className="flex justify-between items-center mb-2"
+//                     >
+//                       <label className="capitalize mr-4">
+//                         {fld.replace(/_/g, " ")}:
+//                       </label>
+
+//                       {[
+//                         "scholarship",
+//                         "gpa_based",
+//                         "sat_based",
+//                         "need_based",
+//                         "holistic_review",
+//                       ].includes(fld) ? (
+//                         <select
+//                           value={entry.formData[fld]}
+//                           onChange={(e) =>
+//                             handleEntryChange(idx, fld, e.target.value)
+//                           }
+//                           disabled={entry.isDisabled}
+//                           className="border rounded w-1/2 p-1"
+//                         >
+//                           <option value="">-- select --</option>
+//                           <option value="yes">Yes</option>
+//                           <option value="no">No</option>
+//                         </select>
+//                       ) : (
+//                         <input
+//                           type="text"
+//                           value={entry.formData[fld]}
+//                           onChange={(e) =>
+//                             handleEntryChange(idx, fld, e.target.value)
+//                           }
+//                           disabled={entry.isDisabled}
+//                           className="border rounded w-1/2 p-2"
+//                         />
+//                       )}
+//                     </div>
+//                   ))}
+//                 </div>
+//               ))}
+
+//               {/* Dynamic SOP Section */}
+//               <div className="mt-6">
+//                 <h3 className="text-lg font-semibold mb-2">SOP</h3>
+//                 <div className="flex items-center mb-4">
+//                   <label className="mr-4">College Essay Required:</label>
+//                   <select
+//                     value={entry.formData.college_essay ? "yes" : "no"}
+//                     onChange={(e) =>
+//                       handleEntryChange(idx, "college_essay", e.target.value)
+//                     }
+//                     disabled={entry.isDisabled}
+//                     className="border p-1 rounded"
+//                   >
+//                     <option value="no">No</option>
+//                     <option value="yes">Yes</option>
+//                   </select>
+//                 </div>
+
+//                 {entry.formData.college_essay && (
+//                   <div>
+//                     {entry.formData.college_essay_titles.map(
+//                       (titleObj, eIdx) => (
+//                         <div key={eIdx} className="flex items-center mb-2">
+//                           <label className="w-32">
+//                             Essay {eIdx + 1} Title:
+//                           </label>
+//                           <input
+//                             type="text"
+//                             value={titleObj.title || ""}
+//                             onChange={(e) =>
+//                               handleEssayTitleChange(idx, eIdx, e.target.value)
+//                             }
+//                             disabled={entry.isDisabled}
+//                             className="border p-2 rounded flex-1"
+//                           />
+//                         </div>
+//                       )
+//                     )}
+
+//                     <button
+//                       type="button"
+//                       onClick={() => addEssayTitle(idx)}
+//                       disabled={entry.isDisabled}
+//                       className="mt-2 bg-blue-200 hover:bg-blue-300 px-3 py-1 rounded"
+//                     >
+//                       + Add Essay
+//                     </button>
+//                   </div>
+//                 )}
+//               </div>
+
+//               {/* Add to Profile */}
+//               <button
+//                 type="button"
+//                 onClick={() => addToProfile(idx)}
+//                 className="mt-4 w-full bg-blue-400 hover:bg-blue-500 text-white p-2 rounded"
+//               >
+//                 Add This University to Your Profile
+//               </button>
+//             </div>
+//           ))}
+
+//           {/* More / Compare / Submit Controls */}
+//           <div className="flex gap-4">
+//             <button
+//               type="button"
+//               onClick={addMoreUniversity}
+//               className="bg-green-300 hover:bg-green-400 py-2 px-4 rounded"
+//             >
+//               + More
+//             </button>
+//             <button
+//               type="button"
+//               onClick={compareUniversity}
+//               className="bg-green-300 hover:bg-green-400 py-2 px-4 rounded"
+//             >
+//               Compare University
+//             </button>
+//           </div>
+
+//           <button
+//             type="submit"
+//             disabled={loading || isStage5Completed}
+//             className={`w-full py-4 text-2xl font-semibold mt-3 ${
+//               isStage5Completed
+//                 ? "bg-gray-400 cursor-not-allowed"
+//                 : "bg-gradient-to-l from-white to-green-300 hover:to-green-500"
+//             }`}
+//           >
+//             {isStage5Completed
+//               ? "Stage 5: Completed"
+//               : loading
+//               ? "Submitting..."
+//               : "Stage 5: Submit"}
+//           </button>
+//         </form>
+
+//         {/* Compare Modal */}
+//         {isCompareOpen && (
+//           <div
+//             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+//             onClick={closeCompare}
+//           >
+//             <div
+//               className="bg-white rounded-lg overflow-auto max-h-[80vh] w-[90vw] p-4"
+//               onClick={(e) => e.stopPropagation()}
+//             >
+//               <div className="flex justify-between items-center mb-4">
+//                 <h3 className="text-2xl font-semibold">Compare Universities</h3>
+//                 <button onClick={closeCompare} className="text-xl font-bold">
+//                   ✕
+//                 </button>
+//               </div>
+//               <div className="overflow-auto">
+//                 <table className="min-w-full border-collapse">
+//                   <thead>
+//                     <tr>
+//                       <th className="border bg-gray-100 px-3 py-2 text-left">
+//                         Field
+//                       </th>
+//                       {comparisonData.uniNames.map((u, i) => (
+//                         <th
+//                           key={i}
+//                           className="border bg-gray-100 px-3 py-2 text-left"
+//                         >
+//                           {u}
+//                         </th>
+//                       ))}
+//                     </tr>
+//                   </thead>
+//                   <tbody>
+//                     {comparisonData.fieldKeys.map((fk) => (
+//                       <tr key={fk}>
+//                         <td className="border px-3 py-1 font-semibold">
+//                           {fk.replace(/_/g, " ")}
+//                         </td>
+//                         {comparisonData.values[fk].map((v, j) => {
+//                           // If it’s an array (e.g. college_essay_titles), extract titles
+//                           const display = Array.isArray(v)
+//                             ? v.map((item) => item.title ?? item).join(", ")
+//                             : v || "-";
+
+//                           return (
+//                             <td key={j} className="border px-3 py-1">
+//                               {display}
+//                             </td>
+//                           );
+//                         })}
+//                       </tr>
+//                     ))}
+//                   </tbody>
+//                 </table>
+//               </div>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Stage5;

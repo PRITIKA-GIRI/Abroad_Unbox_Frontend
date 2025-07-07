@@ -272,7 +272,7 @@ const Stage1Masters = () => {
         <div className="flex gap-5 w-full mt-2">
           <a
             href="https://englishtest.duolingo.com/applicants"
-            className="bg-yellow-300 px-5 py-3 w-1/2 text-center rounded"
+            className="bg-yellow-300 px-5 py-3 w-1/2 text-center rounded-lg shadow-lg hover:scale-103 transition-transform duration-200"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -280,7 +280,7 @@ const Stage1Masters = () => {
           </a>
           <a
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20English%20Proficiency"
-            className="bg-green-300 px-5 py-3 w-1/2 text-center rounded"
+            className="bg-green-300 px-5 py-3 w-1/2 text-center rounded-lg shadow-lg hover:scale-103 transition-transform duration-200"
           >
             <p className="text-xl font-medium">Request Appointment</p>
           </a>
@@ -300,7 +300,7 @@ const Stage1Masters = () => {
             className={`w-full py-4 text-2xl font-semibold mt-3 ${
               isStage1Completed
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
+                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:bg-gradient-to-r transition-transform duration-500"
             }`}
             disabled={isStage1Completed}
           >

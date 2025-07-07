@@ -2,7 +2,11 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import {
+  MdDelete,
+  MdOutlineExpandLess,
+  MdOutlineExpandMore,
+} from "react-icons/md";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -14,6 +18,10 @@ const Stage1 = () => {
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const [isMindsetOpen, setIsMindsetOpen] = useState(true);
+  const [isTimelineOpen, setIsTimelineOpen] = useState(false);
+  const [isCareerCounselingOpen, setIsCareerCounselingOpen] = useState(false);
+  const [isEPTOpen, setIsEPTOpen] = useState(false);
 
   // Assuming you store or otherwise obtain the current student's ID in localStorage
   const student_id = localStorage.getItem("student_id");
@@ -109,7 +117,6 @@ const Stage1 = () => {
         // Refresh stages so the button state updates
         getStages();
       }
-
     } catch (error) {
       console.log("Failed to post the form data", error);
       setError(error.response?.data?.detail || "");
@@ -187,110 +194,175 @@ const Stage1 = () => {
           ))}
 
         {/* SESSION I: The Mindset */}
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
-          The Mindset
+        {/* <div className="bg-gradient-to-r from-white to-blue-300 p-2 flex items-center">
+        <p className="text-2xl font-semibold text-center">The Mindset</p>
+        {isMindsetOpen
+          ? (
+            <MdOutlineExpandLess
+              className="ml-auto text-4xl cursor-pointer"
+              onClick={() => setIsMindsetOpen(false)}
+            />
+          )
+          : (
+            <MdOutlineExpandMore
+              className="ml-auto text-4xl cursor-pointer"
+              onClick={() => setIsMindsetOpen(true)}
+            />
+          )
+        }
+      </div> */}
+        <div
+          className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full flex items-center cursor-pointer"
+          onClick={() => setIsMindsetOpen((o) => !o)}
+        >
+          <p className="text-2xl font-semibold text-center">The Mindset</p>
+          {isMindsetOpen ? (
+            <MdOutlineExpandLess className="ml-auto text-4xl" />
+          ) : (
+            <MdOutlineExpandMore className="ml-auto text-4xl" />
+          )}
         </div>
-        <div className="mt-2">
-          <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
-            <p className="text-xl font-medium">SESSION I - The Mindset</p>
-          </div>
+
+        {/* Expandable content */}
+        {isMindsetOpen && (
+          <div className="mt-2">
+            <div className="bg-gradient-to-r from-white to-green-300 px-5 py-3 text-center w-full">
+              <p className="text-xl font-medium">SESSION I - The Mindset</p>
+            </div>
             <iframe
               className="w-full h-[400px] mt-2"
               src={videoUrl1}
               allowFullScreen
               title="Session 1 - The Mindset"
             />
-          
-          <a
-            href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20The%20Mindset"
-            className="block mx-auto mt-2 w-1/2 md:w-1/3"
-          >
-            <div className="bg-green-300 px-5 py-3 text-center rounded">
-              <p className="text-xl font-medium">Request Appointment</p>
-            </div>
-          </a>
-        </div>
+            <a
+              href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20The%20Mindset"
+              className="block mx-auto mt-2 w-2/3 md:w-1/3"
+            >
+              <div className="bg-green-300 px-5 py-3 text-center rounded">
+                <p className="text-xl font-medium">Request Appointment</p>
+              </div>
+            </a>
+          </div>
+        )}
 
         {/* SESSION II: The Timeline */}
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold mt-8 text-center">
-          The Timeline
+        <div
+          className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full flex items-center cursor-pointer mt-3"
+          onClick={() => setIsTimelineOpen((o) => !o)}
+        >
+          <p className="text-2xl font-semibold text-center">The Timeline</p>
+          {isTimelineOpen ? (
+            <MdOutlineExpandLess className="ml-auto text-4xl" />
+          ) : (
+            <MdOutlineExpandMore className="ml-auto text-4xl" />
+          )}
         </div>
-        <div className="mt-2">
-          <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
-            <p className="text-xl font-medium">SESSION II - The Timeline</p>
-          </div>
+        {isTimelineOpen && (
+          <div className="mt-2">
+            <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
+              <p className="text-xl font-medium">SESSION II - The Timeline</p>
+            </div>
             <iframe
-              className="w-full h-[600px] mt-2"
+              className="w-full h-[300px] md:h-[400px] mt-2"
               src={videoUrl2}
               allowFullScreen
               title="Session 2 - The Timeline"
             />
-          
-          <a
-            href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Application%20Timeline"
-            className="block mx-auto mt-2 w-1/2 md:w-1/3"
-          >
-            <div className="bg-green-300 px-5 py-3 text-center rounded">
-              <p className="text-xl font-medium">
-                Request Appointment
-              </p>
-            </div>
-          </a>
-        </div>
+
+            <a
+              href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Application%20Timeline"
+              className="block mx-auto mt-2 w-2/3 md:w-1/3"
+            >
+              <div className="bg-green-300 px-5 py-3 text-center rounded">
+                <p className="text-xl font-medium">Request Appointment</p>
+              </div>
+            </a>
+          </div>
+        )}
 
         {/* SESSION III: Career Counseling & Major Selection */}
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold mt-8 text-center">
-          Career Counseling & Major Selection
+        <div
+          className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full mt-3 cursor-pointer flex items-center"
+          onClick={() => setIsCareerCounselingOpen((o) => !o)}
+        >
+          <p className="text-2xl font-semibold text-center">
+            Career Counseling & Major Selection
+          </p>
+          {isCareerCounselingOpen ? (
+            <MdOutlineExpandLess className="ml-auto text-4xl" />
+          ) : (
+            <MdOutlineExpandMore className="ml-auto text-4xl" />
+          )}
         </div>
-        <div className="mt-2">
-          <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
-            <p className="text-xl font-medium">SESSION III - Career</p>
-          </div>
+
+        {isCareerCounselingOpen && (
+          <div className="mt-2">
+            <div className="bg-gradient-to-r from-[#ffffff] to-green-300 px-5 py-3 text-center w-full">
+              <p className="text-xl font-medium">SESSION III - Career</p>
+            </div>
             <iframe
-              className="w-full h-[600px] mt-2"
+              className="w-full h-[300px] md:h-[400px] mt-2"
               src={videoUrl3}
               allowFullScreen
               title="Session 3 - Career Counseling"
             />
-          
-          <a
-            href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Career%20Counseling"
-            className="block mx-auto mt-2 w-1/2 md:w-1/3"
-          >
-            <div className="bg-green-300 px-5 py-3 text-center rounded">
-              <p className="text-xl font-medium">
-                Request Appointment
-              </p>
-            </div>
-          </a>
-        </div>
+
+            <a
+              href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Career%20Counseling"
+              className="block mx-auto mt-2 w-2/3 md:w-1/3"
+            >
+              <div className="bg-green-300 px-5 py-3 text-center rounded">
+                <p className="text-xl font-medium">Request Appointment</p>
+              </div>
+            </a>
+          </div>
+        )}
 
         {/* EPT Section */}
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold mt-8 text-center">
-          English Proficiency Test (EPT)
+        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold mt-3 text-center flex items-center"
+          onClick={() => setIsEPTOpen((o) => !o)}
+        >
+          <p className="text-2xl font-semibold text-center">English Proficiency Test (EPT)</p>
+          {isEPTOpen ? (
+            <MdOutlineExpandLess className="ml-auto text-4xl" />
+          ) : (
+            <MdOutlineExpandMore className="ml-auto text-4xl" />
+          )}
         </div>
-        <div className="flex gap-5 w-full mt-2">
-          <a
-            href="https://englishtest.duolingo.com/applicants"
-            className="bg-yellow-300 px-5 py-3 w-1/2 text-center rounded"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <p className="text-xl font-medium">Practice Module</p>
-          </a>
-          <a
-            href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20English%20Proficiency"
-            className="bg-green-300 px-5 py-3 w-1/2 text-center rounded"
-          >
-            <p className="text-xl font-medium">Request Appointment</p>
-          </a>
+
+        {isEPTOpen && (
+        <div className="gap-5 w-full mt-2">
+          <iframe
+            className="w-full h-[300px] md:h-[400px] mt-2"
+            src={videoUrl3}
+            allowFullScreen
+            title="Session 3 - Career Counseling"
+          />
+
+          <div className="flex flex-col md:flex-row gap-5 px-3 mt-2">
+            <a
+              href="https://englishtest.duolingo.com/applicants"
+              className="bg-yellow-300 hover:bg-yellow-400 shadow-lg px-5 mx-auto py-3 w-2/3 md:w-1/2 text-center rounded-lg"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <p className="text-xl font-medium">Practice Module</p>
+            </a>
+
+            <a
+              href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Stage%20one%20EPT"
+              className="bg-green-300 hover:bg-green-400 shadow-lg px-5 py-3 mx-auto w-2/3 md:w-1/2 text-center rounded-lg"
+            >
+                <p className="text-xl font-medium">Request Appointment</p>
+            </a>
+          </div>
         </div>
+        )}
 
         {/* Error Message */}
         {error && (
-          <p className="text-lg text-center text-red-500 mt-3">
-            {error}
-          </p>
+          <p className="text-lg text-center text-red-500 mt-3">{error}</p>
         )}
 
         {/* Submit / Completed Button */}

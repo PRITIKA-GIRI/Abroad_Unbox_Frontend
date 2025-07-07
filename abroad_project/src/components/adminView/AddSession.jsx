@@ -160,7 +160,7 @@ export default function AddSession() {
           <p className="font-semibold text-lg text-center">Available Sessions</p>
           <ul className="space-y-2 mt-6">
             {upcoming.map(ev => (
-              <li key={ev.id} className="border p-3 rounded flex justify-between">
+              <li key={ev.id} className="border p-3 rounded flex justify-between text-sm">
                 {`${formatDate(ev.date)} | ${ev.display_range.split(' | ')[1]} | Limit: ${ev.limit}`}
                 <FaTrash
                   onClick={() => handleDelete(ev.id)}
@@ -176,7 +176,7 @@ export default function AddSession() {
           <p className="font-semibold text-lg text-center">Expired Sessions</p>
           <ul className="space-y-2 mt-6">
             {expired.map(ev => (
-              <li key={ev.id} className="border p-3 rounded flex justify-between">
+              <li key={ev.id} className="border p-3 rounded flex justify-between text-sm">
                 {`${formatDate(ev.date)} | ${ev.display_range.split(' | ')[1]} | Limit: ${ev.limit}`}
                 <FaTrash
                   onClick={() => handleDelete(ev.id)}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { MdOutlineExpandLess, MdOutlineExpandMore } from "react-icons/md";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -10,6 +11,12 @@ const Stage7 = () => {
   const [stageVideo, setStageVideo] = useState([]);
   const [emailSample, setEmailSample] = useState([]);
   const [error, setError] = useState("");
+  const [isWritingEmailOpen, setIsWritingEmailOpen] = useState(false);
+  const [isEmailTimelineOpen, setIsEmailTimelineOpen] = useState(false);
+  const [isSampleEmailIOpen, setIsSampleEmailIOpen] = useState(false);
+  const [isSampleEmailIIOpen, setIsSampleEmailIIOpen] = useState(false);
+  const [isSampleEmailIIIOpen, setIsSampleEmailIIIOpen] = useState(false);
+  const [isSampleEmailIVOpen, setIsSampleEmailIVOpen] = useState(false);
 
   const studentID = localStorage.getItem("student_id");
 
@@ -137,7 +144,7 @@ const Stage7 = () => {
         >
           {/* Section Header */}
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
-            Essay Session
+            Email Session
           </div>
 
           <p className="px-10 flex flex-col">
@@ -153,35 +160,64 @@ const Stage7 = () => {
           <div className="border-t border-gray-300 my-6"></div>
 
           {/* Writing Email Section */}
-          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
-            Writing Email
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center flex items-center cursor-pointer"
+            onClick={() => setIsWritingEmailOpen((prev) => !prev)}
+          >
+            <p className="text-2xl font-semibold text-center">Writing Email</p>
+            {isWritingEmailOpen ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
           </div>
-          <iframe
-              className="w-full h-[300px] md:h-[400px] mt-2"
-              src={videoUrl1}
-              allowFullScreen
-              title="CommonApp Video Tutorial"
-            />
+          {isWritingEmailOpen && (
+            <>
+              {videoUrl1 ?  (
+              <iframe
+                  className="w-full h-[300px] md:h-[400px] mt-2"
+                  src={videoUrl1}
+                  allowFullScreen
+                  title="CommonApp Video Tutorial"
+                />
+              ) : (
+                <p className="text-center text-red-500">Video not available</p>
+              )}
+            </>
+          )}
           
-          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center">
-            Writing Timeline
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center flex items-center cursor-pointer"
+            onClick={() => setIsEmailTimelineOpen((prev) => !prev)}
+          >
+            <p className="text-2xl font-semibold text-center">Email Timeline</p>
+            {isEmailTimelineOpen ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
           </div>
+
+          {isEmailTimelineOpen && (
+            <div>
+          {videoUrl2 ? (
           <iframe
               className="w-full h-[300px] md:h-[400px] mt-2"
               src={videoUrl2}
               allowFullScreen
               title="CommonApp Video Tutorial"
           />
+          ) : (
+            <p className="text-center text-red-500">Video not available</p>
+          )}
           <a
             href="mailto:abroadunbox@gmail.com?subject=Request%20for%20Appointment%20for%20Career%20Counseling"
             className="block mx-auto mt-2 w-1/2 md:w-1/3"
           >
-            <div className="bg-green-300 px-5 py-3 text-center">
-              <p className="text-xl font-medium">
+            <button className="bg-green-300 px-5 py-3 text-center text-xl font-medium shadow-lg hover:bg-green-500 transition-colors duration-300 w-full rounded-lg">
                 Request Appointment
-              </p>
-            </div>
+            </button>
           </a>
+          </div>
+          )}
           
           {/* Divider */}
           <div className="border-t border-gray-300 my-6"></div>
@@ -190,36 +226,102 @@ const Stage7 = () => {
             Email Samples
           </div>
 
-          <div className="bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center">
-            Email I
+          <div className="relative bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center flex items-center cursor-pointer"
+              onClick={() => setIsSampleEmailIOpen((prev) => !prev)}
+          >
+            <p className="absolute left-1/2 transform -translate-x-1/2">Email I</p>
+            {isSampleEmailIOpen ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
           </div>
-          <p className='w-full md:w-1/2 py-2 px-4 bg-gray-400'>Within 7 -10 Days of SUBMITTING APPLICATION</p>
-          
-          <div className='w-full md:w-3/4'><img src={emailSample_i} alt='email i' loading='lazy' className='w-full h-auto' /></div>
-          <div className='w-full md:w-3/4'><img src={emailSample_ii} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+          {isSampleEmailIOpen && (
+          <div>
+            <p className='w-full md:w-1/2 py-2 px-4 bg-gray-400'>Within 7 -10 Days of SUBMITTING APPLICATION</p>
+            
+            {emailSample_i && emailSample_ii ? (
+            <>
+              <div className='w-full md:w-3/4'><img src={emailSample_i} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+              <div className='w-full md:w-3/4'><img src={emailSample_ii} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+            </>
+            ) : (
+              <p className='text-center text-red-500'>Email Sample not available</p>
+            )}
+          </div>
+          )}
 
-          <div className="bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center">
-            Email II
+          <div className="relative bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center flex items-center cursor-pointer"
+              onClick={() => setIsSampleEmailIIOpen((prev) => !prev)}
+          >
+            <p className="absolute left-1/2 transform -translate-x-1/2">Email II</p>
+            {isSampleEmailIIOpen ? (
+              <MdOutlineExpandLess className="ml-auto text-4xl" />
+            ) : (
+              <MdOutlineExpandMore className="ml-auto text-4xl" />
+            )}
           </div>
+          {isSampleEmailIIOpen && (
+          <div>
           <p className='w-full md:w-1/2 py-2 px-4 bg-gray-400'>Within 10 - 14 Days of SUBMITTING APPLICATION</p>
           
-          <div className='w-full md:w-3/4'><img src={emailSample_iii} alt='email i' loading='lazy' className='w-full h-auto' /></div>
-          <div className='w-full md:w-3/4'><img src={emailSample_iv} alt='email i' loading='lazy' className='w-full h-auto' /></div>
-
-          <div className="bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center">
-            Email III
+          {emailSample_iii && emailSample_ii ? (
+          <>
+            <div className='w-full md:w-3/4'><img src={emailSample_iii} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+            <div className='w-full md:w-3/4'><img src={emailSample_iv} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+          </>
+          ) : (
+            <p className='text-center text-red-500'>Email Sample not available</p>
+          )}
           </div>
+          )}
+
+          <div className="relative bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center flex items-center cursor-pointer"
+              onClick={() => setIsSampleEmailIIIOpen((prev) => !prev)}
+          >
+          <p className="absolute left-1/2 transform -translate-x-1/2">Email III</p>
+          {isSampleEmailIIIOpen ? (
+            <MdOutlineExpandLess className="ml-auto text-4xl" />
+          ) : (
+            <MdOutlineExpandMore className="ml-auto text-4xl" />
+          )}
+          </div>
+
+          {isSampleEmailIIIOpen && (
+          <div>
           <p className='w-full md:w-1/2 py-2 px-4 bg-gray-400'>Within 15 - 21 Days of SUBMITTING APPLICATION</p>
-          
-          <div className='w-full md:w-3/4'><img src={emailSample_v} alt='email i' loading='lazy' className='w-full h-auto' /></div>
-          <div className='w-full md:w-3/4'><img src={emailSample_vi} alt='email i' loading='lazy' className='w-full h-auto' /></div>
-
-          <div className="bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center">
-            Email IV
+          {emailSample_v && emailSample_vi ? (
+            <>
+              <div className='w-full md:w-3/4'><img src={emailSample_v} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+              <div className='w-full md:w-3/4'><img src={emailSample_vi} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+            </>
+          ) : (
+            <p className='text-center text-red-500'>Email Sample not available</p>
+          )}
           </div>
+          )}
+
+          <div className="relative bg-gradient-to-l from-blue-300 to-[#fff] p-2 w-full text-2xl font-semibold text-center flex items-center cursor-pointer"
+              onClick={() => setIsSampleEmailIVOpen((prev) => !prev)}
+          >
+          <p className="absolute left-1/2 transform -translate-x-1/2">Email IV</p>
+          {isSampleEmailIVOpen ? (
+            <MdOutlineExpandLess className="ml-auto text-4xl" />
+          ) : (
+            <MdOutlineExpandMore className="ml-auto text-4xl" />
+          )}
+          </div>
+          {isSampleEmailIVOpen && (
+          <div>
           <p className='w-full md:w-1/2 py-2 px-4 bg-gray-400'>Within 21 - 27 Days of SUBMITTING APPLICATION</p>
-          
-          <div className='w-full md:w-3/4'><img src={emailSample_vii} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+          {emailSample_vii ? (
+            <div className='w-full md:w-3/4'><img src={emailSample_vii} alt='email i' loading='lazy' className='w-full h-auto' /></div>
+          ) : (
+            <p className='text-center text-red-500'>Email Sample not available</p>
+          ) 
+        }
+          </div>
+          )}
 
           <div className="mt-4">
           <button

@@ -137,7 +137,8 @@ const Stage4View = () => {
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline break-all"
                       >
-                        {fileName}
+                        {/* {fileName} */}
+                        View Resume File
                       </a>
                     ) : (
                       <p>{formattedValue}</p>

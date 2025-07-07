@@ -631,6 +631,11 @@ const Stage9 = () => {
           </button>
         </div>
       </div>
+      {/* <iframe
+        src="http://localhost:5173/"
+        className="w-full h-[500px] md:h-[600px] mt-4 md:mt-0"
+        title="application content"
+      ></iframe> */}
     </div>
   );
 };

@@ -12,6 +12,7 @@ import AdminRoute from "./components/adminRoute/AdminRoute";
 import Home from "./components/home/Home";
 import Student from "./components/Student";
 import Login from "./components/Login";
+import Register from "./components/Register";
 import Info from "./components/info/Info";
 import Essay from "./components/essay/Essay";
 import Application from "./components/application/Application";
@@ -35,6 +36,10 @@ import ViewTransactions from "./components/adminView/ViewTransactions";
 import UpdateVideo from "./components/adminView/UpdateVideo";
 import UpdateEmailSample from "./components/adminView/UpdateEmailSample";
 import MastersApplication from "./components/application/masters/MastersApplication";
+import ViewStudent from "./components/adminView/adminDashboard/ViewStudent";
+import ViewStudentApplication from "./components/adminView/adminDashboard/ViewStudentApplication";
+import ViewStudentDetail from "./components/adminView/adminDashboard/ViewStudentDetail";
+
 
 function App() {
   
@@ -47,6 +52,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/students" element={<Student />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/info" element={<Info />} />
           <Route path="/essay" element={<Essay />} />
           <Route path="/application" element={<Application />} />
@@ -111,6 +117,9 @@ function App() {
               </AdminRoute>
             }
           />
+          <Route path="/view/student" element={<AdminRoute> <ViewStudent /> </AdminRoute>} />
+          <Route path="/view/student/application/:id" element={<AdminRoute> <ViewStudentApplication /> </AdminRoute>} />
+          
           <Route
             path="/add_info"
             element={
