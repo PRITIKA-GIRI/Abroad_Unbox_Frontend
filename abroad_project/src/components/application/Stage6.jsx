@@ -197,6 +197,7 @@ const Stage6 = () => {
           {studentUniDetail.map((uniDetail) => {
             const applied = appliedUniIds.includes(uniDetail.university);
             const disableApply = applied || isMissingEssay(uniDetail);
+
             return (
               <div key={uniDetail.id} className="mb-6">
                 <div className="bg-gradient-to-r from-white to-green-300 p-2 flex justify-between items-center">

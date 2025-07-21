@@ -98,8 +98,8 @@ const Stage3 = () => {
           Documents
         </div>
         <div className='flex flex-col'>
-          <label>10 Transcript/ Transcript I:</label>
-          <input type='file' name='transcript_i' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
+          <label >10 Transcript/ Transcript I:</label>
+          <input type='file' name='transcript_i' title='Please select a pdf file' accept=".pdf" onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
         </div>
         <div className='flex flex-col'>
           <label>11 Transcript/ Transcript II:</label>

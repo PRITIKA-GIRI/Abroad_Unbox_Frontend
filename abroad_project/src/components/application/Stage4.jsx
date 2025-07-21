@@ -245,7 +245,7 @@ const Stage4 = () => {
           { isResumeOpen && (
           <div>
             <iframe
-              className="w-full h-[400px] mt-2 mb-3"
+              className="w-full h-[400px] mt-2"
               src={videoUrl1}
               allowFullScreen
               title="Session 1 - The Mindset"
@@ -253,27 +253,19 @@ const Stage4 = () => {
             <a href={resume_sample} download="resume_sample.pdf" className="mt-5 px-3 py-2 bg-gradient-to-r from-blue-100 to-blue-300 hover:from-blue-300 hover:to-blue-500 hover:text-white rounded-2xl w-1/3 mx-auto shadow-lg">
                 Download Resume Sample
             </a>
-            <br />
-            {/* <div className="mt-3 flex items-center gap-4 w-full bg-gradient-to-r from-blue-50 to-blue-500">
-              <label>Upload Resume: </label>
-              <input
-                type="file"
-                name="resume"
-                onChange={handleFileChange}
-                className="mt-3 px-3 border border-gray-300 bg-gray-50 rounded w-full py-2 text-center"
-              />
-            </div> */}
-            <div className="mt-3 flex items-center gap-4 w-full bg-gradient-to-r from-blue-50 to-blue-300">
+          </div>
+          )}
+
+            <div className="mt -3 flex items-center gap-4 w-full bg-gradient-to-r from-blue-50 to-blue-300">
               <label className="text-center w-1/4">Upload Resume:</label>
               <input
                 type="file"
                 name="resume"
                 onChange={handleFileChange}
                 className="m-2 px-3 border border-gray-300 bg-gray-50 rounded w-full py-2 text-center"
+                required
               />
             </div>
-          </div>
-          )}
 
           <div className="relative bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold flex items-center cursor-pointer"
             onClick={() => setIsLinkedInOpen(!isLinkedInOpen)}>

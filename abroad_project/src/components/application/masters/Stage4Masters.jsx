@@ -160,21 +160,28 @@ const Stage4Masters = () => {
               />
             </div>
             <div className="flex flex-col md:flex-row gap-3 md:gap-5 mt-3">
+              { sample1 ? (
               <a
                 href={sample1}
                 download="Sample_I.pdf"
-                className="w-full md:w-1/2 p-2 rounded-full bg-yellow-300 hover:bg-yellow-400 font-semibold text-center"
+                className="w-full md:w-1/2 p-2 rounded-full bg-yellow-300 hover:bg-yellow-400 font-semibold text-center cursor-pointer"
               >
                 Download Sample I
               </a>
+              ) : (
+                <p className="w-full md:w-1/2 p-2 rounded-full bg-gray-300 text-center font-semibold">
+                  Sample I not available
+                </p>
+              )}
               <a
                 href={sample2}
                 download="Sample_II.pdf"
-                className="w-full md:w-1/2 p-2 rounded-full bg-yellow-300 hover:bg-yellow-400 font-semibold text-center"
+                className="w-full md:w-1/2 p-2 rounded-full bg-yellow-300 hover:bg-yellow-400 font-semibold text-center cursor-pointer"
               >
                 Download Sample II
               </a>
             </div>
+
             {/* Divider */}{" "}
             <div className="border-t border-gray-300 my-6"></div>
             <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold">

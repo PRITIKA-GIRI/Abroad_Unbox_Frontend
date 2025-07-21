@@ -46,7 +46,7 @@ function Nav() {
     <>
       <div className="bg-gradient-to-l from-[#006600] to-[#ffffff] px-6 py-4 flex items-center justify-between sm:px-10 sm:py-4">
         <a href='/'><img className="mr-auto w-[60px] sm:w-[70px]" src={logo} alt="Logo" /></a>
-        <nav className="hidden sm:flex px-10 py-5 mt-3 text-xl font-bold">
+        <nav className="hidden sm:flex px-10 py-5 mt-3 text-xl font-semibold">
           {/* <ul className="flex gap-10 justify-between">
             <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link>
             <a href="/login"><li className="hover:text-blue-900 hover:underline">Application</li></a>
@@ -59,7 +59,7 @@ function Nav() {
             </a>
           </ul> */}
           {isLoggedIn ? (
-            <ul className="flex gap-10 justify-between">
+            <ul className="flex gap-7 justify-between">
               {/* <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link> */}
               {role === "admin" ? (
                 <a href="/admin_dashboard">
@@ -86,10 +86,10 @@ function Nav() {
               </a>
             </ul>
           ) : (
-            <ul className="flex gap-10 justify-between">
+            <ul className="flex gap-7 justify-between">
               {/* <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link> */}
-              <a href="/application"><li className="hover:text-blue-900 hover:underline">Application</li></a>
-              <a href="/essay"><li className="hover:text-blue-900 hover:underline">Essay</li></a>
+              <a href="/login"><li className="hover:text-blue-900 hover:underline">Application</li></a>
+              <a href="/login"><li className="hover:text-blue-900 hover:underline">Essay</li></a>
               <a href="/login"><li className="hover:text-blue-900 hover:underline">SAT</li></a>
               <a href="/login"><li className="hover:text-blue-900 hover:underline">English Proficiency</li></a>
               <a href="/info"><li className="hover:text-blue-900 hover:underline">Info Session</li></a>
@@ -141,18 +141,48 @@ function Nav() {
 
       {/* Mobile Navigation (Hidden by default) */}
       <div className={`sm:hidden bg-gradient-to-l from-[#006600] to-[#ffffff] text-xl font-bold ${isMenuOpen ? 'block' : 'hidden'}`}>
-        <ul className="flex flex-col gap-5 py-5">
 
+      {isLoggedIn ? (
+            <ul className="flex flex-col gap-5 justify-between p-2">
+              {/* <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link> */}
+              {role === "admin" ? (
+                <a href="/admin_dashboard">
+                  <li className="hover:text-blue-900 hover:underline">Application</li>
+                </a>
+              ) : graduation === "undergraduate" ? (
+                <a href="/application">
+                  <li className="hover:text-blue-900 hover:underline">Application</li>
+                </a>
+              ) : (
+                <a href="/masters-application">
+                  <li className="hover:text-blue-900 hover:underline">Application</li>
+                </a>
+              )}
+              <a href="/essay"><li className="hover:text-blue-900 hover:underline">Essay</li></a>
+              <a href="/"><li className="hover:text-blue-900 hover:underline">SAT</li></a>
+              <a href="/"><li className="hover:text-blue-900 hover:underline">English Proficiency</li></a>
+              <a href="/info"><li className="hover:text-blue-900 hover:underline">Info Session</li></a>
+              {role == "admin" &&(
+                <a href="/register_student"><li className="hover:text-blue-900 hover:underline">Register Student</li></a>
+              )}
+              <a href="https://www.google.com/maps/dir/?api=1&destination=Abroad Unbox, Kaikastan Marg, Kathmandu 44600" target="_blank">
+                <li className="hover:text-blue-900 hover:underline" title='Kalikastan-29, Kathmandu, Nepal'>Navigate</li>
+              </a>
+            </ul>
+          ) : (
+
+        <ul className="flex flex-col gap-5 py-5 px-2">
           <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link>
           <a href="/login"><li className="hover:text-blue-900 hover:underline">Application</li></a>
           <a href="/login"><li className="hover:text-blue-900 hover:underline">Essay</li></a>
           <a href="/login"><li className="hover:text-blue-900 hover:underline">SAT</li></a>
           <a href="/login"><li className="hover:text-blue-900 hover:underline">English Proficiency</li></a>
-          <a href="/info"><li className="hover:text-blue-900 hover:underline">Info Session</li></a>
+          <a href="/login"><li className="hover:text-blue-900 hover:underline">Info Session</li></a>
           <a href="https://www.google.com/maps/dir/?api=1&destination=27.7172,85.3240" target="_blank">
             <li className="hover:text-blue-900 hover:underline" title='Kalikastan-29, Kathmandu, Nepal'>Navigate</li>
           </a>
         </ul>
+          )}
       </div>
     </>
   );

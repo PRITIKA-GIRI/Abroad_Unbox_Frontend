@@ -528,6 +528,7 @@ const Stage9 = () => {
             {!isPaid ? (
               <form
                 action="https://rc-epay.esewa.com.np/api/epay/main/v2/form"
+                target="_blank"
                 method="POST"
               >
                 <input type="hidden" name="amount" value="5000" />

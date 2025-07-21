@@ -1,353 +1,583 @@
+// src/components/AddUniversity.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FaEye, FaTrash } from "react-icons/fa";
+import { FaTrash, FaEye, FaSearch } from "react-icons/fa";
 import Nav from "../Nav";
+import AddBachelorUniversity from "./AddBachelorUniversity";
+import AddMasterUniversity from "./AddMasterUniversity";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const AddUniversity = () => {
-  const [loading, setLoading] = useState(false);
+export default function AddUniversity() {
+  const [level, setLevel] = useState("bachelor");
   const [universities, setUniversities] = useState([]);
-  const [formData, setFormData] = useState({
-    university_name: "",
-    early_decision: "",
-    early_action: "",
-    regular_decision: "",
-    scholarship_priority: "",
-    det: "",
-    toefl: "",
-    ielts: "",
-    pte: "",
-    gpa_acceptance: "",
-    gpa_scholarship: "",
-    sat_acceptance: "",
-    sat_scholarship: "",
-    admission: "",            // string "yes"/"no"
-    scholarship: "",          // string "yes"/"no"
-    gpa_based: "",            // string "yes"/"no"
-    sat_based: "",            // string "yes"/"no"
-    need_based: "",           // string "yes"/"no"
-    holistic_review: "",      // string "yes"/"no"
-    application_fee: "",
-    application_fee_waiver: "",
-    i20_deposit: "",
-    tuition: "",
-    living_and_tuition: "",
-    avg_scholarship: "",
-    tuition_after_scholarship: "",
-    coa_after_scholarship: "",
-    us_news_ranking: "",
-    niche_ranking: "",
-    major_ranking: "",
-    place_name: "",
-    settings: "",
-    racial_mix: "",
-    population: "",
-    population_trend: "",
-    job_and_opportunities: "",
-    crime: "",
-    college_essay: false,     // boolean
-    college_essay_titles: [""],
-  });
+  const [loadingDelete, setLoadingDelete] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [nextPage, setNextPage] = useState(null);
+  const [prevPage, setPrevPage] = useState(null);    
+  const [count, setCount] = useState(0);
 
-  // Load existing
+  // Fetch current list of universities
+  const fetchUniversities = async (
+    url = `${API_BASE_URL}/university-details/`
+  ) => {
+    try {
+      const res = await axios.get(url);
+      // const data = await res.json();
+      setUniversities(res.data.results);
+      setNextPage(res.data.next);
+      setPrevPage(res.data.previous);
+      setCount(res.data.count);
+    } catch (err) {
+      console.error("Error fetching universities:", err);
+    }
+  };
+
+  const handleSearch = () => {
+    const term = searchTerm.trim();
+    const url = term
+      ? `${API_BASE_URL}/university-details/?search=${encodeURIComponent(term)}`
+      : `${API_BASE_URL}/university-details/`;
+    fetchUniversities(url);
+  };
+
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/university-details/`)
-      .then(res => setUniversities(res.data))
-      .catch(console.error);
+    fetchUniversities();
   }, []);
 
-  // Unified change handler
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]:
-        name === "college_essay"
-          ? value === "yes"
-          : value,
-      ...(name === "college_essay" && value === "no"
-        ? { college_essay_titles: [""] }
-        : {}),
-    }));
+  // Called by child forms after successful add
+  const handleAdded = () => {
+    fetchUniversities();
   };
 
-  // Essay titles management
-  const addEssayTitle = () =>
-    setFormData(prev => ({
-      ...prev,
-      college_essay_titles: [...prev.college_essay_titles, ""],
-    }));
-  const removeEssayTitle = idx =>
-    setFormData(prev => {
-      const titles = [...prev.college_essay_titles];
-      titles.splice(idx, 1);
-      return { ...prev, college_essay_titles: titles };
-    });
-  const handleEssayTitleChange = (idx, val) =>
-    setFormData(prev => {
-      const titles = [...prev.college_essay_titles];
-      titles[idx] = val;
-      return { ...prev, college_essay_titles: titles };
-    });
-
-  // Submit
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const payload = {
-        ...formData,
-        college_essay_titles: formData.college_essay_titles.map(t => ({ title: t })),
-      };
-      await axios.post(`${API_BASE_URL}/university-details/`, payload);
-      alert("University added!");
-      // reset
-      setFormData({
-        university_name: "",
-        early_decision: "",
-        early_action: "",
-        regular_decision: "",
-        scholarship_priority: "",
-        det: "",
-        toefl: "",
-        ielts: "",
-        pte: "",
-        gpa_acceptance: "",
-        gpa_scholarship: "",
-        sat_acceptance: "",
-        sat_scholarship: "",
-        admission: "",
-        scholarship: "",
-        gpa_based: "",
-        sat_based: "",
-        need_based: "",
-        holistic_review: "",
-        application_fee: "",
-        application_fee_waiver: "",
-        i20_deposit: "",
-        tuition: "",
-        living_and_tuition: "",
-        avg_scholarship: "",
-        tuition_after_scholarship: "",
-        coa_after_scholarship: "",
-        us_news_ranking: "",
-        niche_ranking: "",
-        major_ranking: "",
-        place_name: "",
-        settings: "",
-        racial_mix: "",
-        population: "",
-        population_trend: "",
-        job_and_opportunities: "",
-        crime: "",
-        college_essay: false,
-        college_essay_titles: [""],
-      });
-      const res = await axios.get(`${API_BASE_URL}/university-details/`);
-      setUniversities(res.data);
-    } catch {
-      alert("Add failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Delete
-  const handleDelete = async id => {
-    if (!window.confirm("Delete?")) return;
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this entry?")) return;
+    setLoadingDelete(true);
     try {
       await axios.delete(`${API_BASE_URL}/university-details/${id}/`);
-      const res = await axios.get(`${API_BASE_URL}/university-details/`);
-      setUniversities(res.data);
-    } catch {
-      alert("Delete failed");
+      fetchUniversities();
+    } catch (err) {
+      console.error("Delete failed:", err);
+      alert("Failed to delete entry.");
+    } finally {
+      setLoadingDelete(false);
     }
   };
 
-  // Helpers
-  const inputField = (label, name) => (
-    <div className="flex justify-between mb-2" key={name}>
-      <label className="capitalize mr-4">{label}:</label>
-      <input
-        type="text"
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        className="border w-1/2 p-1"
-      />
-    </div>
-  );
-  const selectString = (label, name) => (
-    <div className="flex justify-between mb-2" key={name}>
-      <label className="capitalize mr-4">{label}:</label>
-      <select
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        className="border w-1/2 p-1"
-      >
-        <option value="">-- select --</option>
-        <option value="yes">Yes</option>
-        <option value="no">No</option>
-      </select>
-    </div>
-  );
+  // Placeholder for view action
+  const handleView = (uni) => {
+    // You can navigate to a detail page or open a modal here
+    console.log("View details for:", uni);
+  };
 
   return (
     <>
       <Nav />
       <div className="w-11/12 mx-auto mt-5">
-        <h2 className="text-2xl text-center font-bold mb-5">
-          Add University
-        </h2>
-        <form onSubmit={handleSubmit}>
-          {inputField("University Name", "university_name")}
+        <h2 className="text-2xl text-center font-bold mb-5">Add University</h2>
 
-          <h3 className="mt-4 font-semibold">Deadline</h3>
-          {inputField("Early Decision", "early_decision")}
-          {inputField("Early Action", "early_action")}
-          {inputField("Regular Decision", "regular_decision")}
-          {inputField("Scholarship Priority", "scholarship_priority")}
+        <div className="flex flex-col md:flex-row justify-around mb-6 gap-4">
+          <button
+            onClick={() => setLevel("bachelor")}
+            className={`px-4 py-2 rounded-lg font-semibold text-xl w-full md:w-1/2 ${
+              level === "bachelor"
+                ? "bg-yellow-600 text-white"
+                : "bg-yellow-400 hover:bg-yellow-500"
+            }`}
+          >
+            Bachelor’s
+          </button>
+          <button
+            onClick={() => setLevel("master")}
+            className={`px-4 py-2 rounded-lg font-semibold text-xl w-full md:w-1/2 ${
+              level === "master"
+                ? "bg-yellow-600 text-white"
+                : "bg-yellow-400 hover:bg-yellow-500"
+            }`}
+          >
+            Master’s
+          </button>
+        </div>
 
-          <h3 className="mt-4 font-semibold">Minimum English Proficiency</h3>
-          {inputField("DET", "det")}
-          {inputField("TOEFL", "toefl")}
-          {inputField("IELTS", "ielts")}
-          {inputField("PTE", "pte")}
+        {level === "bachelor" ? (
+          <AddBachelorUniversity onAdded={handleAdded} />
+        ) : (
+          <AddMasterUniversity onAdded={handleAdded} />
+        )}
 
-          <h3 className="mt-4 font-semibold">Minimum GPA</h3>
-          {inputField("GPA Acceptance", "gpa_acceptance")}
-          {inputField("GPA Scholarship", "gpa_scholarship")}
-
-          <h3 className="mt-4 font-semibold">Minimum SAT</h3>
-          {inputField("SAT Acceptance", "sat_acceptance")}
-          {inputField("SAT Scholarship", "sat_scholarship")}
-
-          <h3 className="mt-4 font-semibold">SAT Requirements</h3>
-          {selectString("Admission", "admission")}
-          {selectString("Scholarship", "scholarship")}
-
-          <h3 className="mt-4 font-semibold">Scholarship Requirements</h3>
-          {selectString("GPA Based", "gpa_based")}
-          {selectString("SAT Based", "sat_based")}
-          {selectString("Need Based", "need_based")}
-          {selectString("Holistic Review", "holistic_review")}
-
-          <h3 className="mt-4 font-semibold">Cost</h3>
-          {inputField("Application Fee", "application_fee")}
-          {inputField("Application Fee Waiver", "application_fee_waiver")}
-          {inputField("I20 Deposit", "i20_deposit")}
-          {inputField("Tuition", "tuition")}
-          {inputField("Living & Tuition", "living_and_tuition")}
-          {inputField("Average Scholarship", "avg_scholarship")}
-          {inputField("Tuition After Scholarship", "tuition_after_scholarship")}
-          {inputField("COA After Scholarship", "coa_after_scholarship")}
-
-          <h3 className="mt-4 font-semibold">Ranking</h3>
-          {inputField("US News Ranking", "us_news_ranking")}
-          {inputField("Niche Ranking", "niche_ranking")}
-          {inputField("Major Ranking", "major_ranking")}
-
-          <h3 className="mt-4 font-semibold">Location Details</h3>
-          {inputField("Place Name", "place_name")}
-          {inputField("Settings", "settings")}
-          {inputField("Racial Mix", "racial_mix")}
-          {inputField("Population", "population")}
-          {inputField("Population Trend", "population_trend")}
-          {inputField("Jobs & Opportunities", "job_and_opportunities")}
-          {inputField("Crime", "crime")}
-
-          <h3 className="mt-4 font-semibold">SOP</h3>
-          <div className="flex justify-between mb-2">
-            <label className="capitalize mr-4">College Essay Required:</label>
-            <select
-              name="college_essay"
-              value={formData.college_essay ? "yes" : "no"}
-              onChange={handleChange}
-              className="border w-1/2 p-1"
-            >
-              <option value="no">No</option>
-              <option value="yes">Yes</option>
-            </select>
+        {/* University list */}
+        <hr className="my-8" />
+        <h3 className="text-xl font-bold mb-4">University List</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+          <button
+            onClick={() =>
+              fetchUniversities(`${API_BASE_URL}/university-details/`)
+            }
+            className="px-4 py-2 bg-blue-300 hover:bg-blue-500 hover:text-white font-semibold rounded-lg shadow hover:shadow-xl"
+          >
+            All
+          </button>
+          <button
+            onClick={() =>
+              fetchUniversities(
+                `${API_BASE_URL}/university-details/?university_level=bachelor`
+              )
+            }
+            className="px-4 py-2 bg-blue-300 hover:bg-blue-500 hover:text-white font-semibold rounded-lg shadow hover:shadow-xl"
+          >
+            Bachelor
+          </button>
+          <button
+            onClick={() =>
+              fetchUniversities(
+                `${API_BASE_URL}/university-details/?university_level=master`
+              )
+            }
+            className="px-4 py-2 bg-blue-300 hover:bg-blue-500 hover:text-white font-semibold rounded-lg shadow hover:shadow-xl"
+          >
+            Master
+          </button>
+          <div className="flex gap-2.5 items-center">
+            <input
+              type="search"
+              name="search_uni"
+              className="border border-gray-400 rounded-lg p-2 w-full"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              placeholder="Search by University Name."
+            />
+            <span>
+              <FaSearch
+                title="Search University"
+                className="text-2xl cursor-pointer"
+                onClick={handleSearch}
+              />
+            </span>
           </div>
-
-          {formData.college_essay && (
-            <>
-              {formData.college_essay_titles.map((t, idx) => (
-                <div key={idx} className="flex items-center mb-2">
-                  <label className="w-32">Essay {idx + 1} Title:</label>
-                  <input
-                    type="text"
-                    value={t}
-                    onChange={e => handleEssayTitleChange(idx, e.target.value)}
-                    className="border p-1 flex-1"
-                  />
-                  {formData.college_essay_titles.length > 1 && (
-                    <FaTrash
-                      onClick={() => removeEssayTitle(idx)}
-                      className="ml-2 text-red-500 cursor-pointer"
+        </div>
+        {universities.length === 0 ? (
+          <p>No universities found.</p>
+        ) : (
+          <table className="w-full border-collapse mb-2">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border px-4 py-2 text-left">Name</th>
+                <th className="border px-4 py-2 text-left">Level</th>
+                <th className="border px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {universities.map((uni) => (
+                <tr key={uni.id} className="hover:bg-gray-50">
+                  <td className="border px-4 py-2">{uni.university_name}</td>
+                  <td className="border px-4 py-2 capitalize">
+                    {uni.university_level}
+                  </td>
+                  <td className="border px-4 py-2 flex space-x-4">
+                    <FaEye
+                      className="text-blue-500 cursor-pointer hover:text-blue-700"
+                      onClick={() => handleView(uni)}
                     />
-                  )}
-                </div>
-              ))}
-
-              <button
-                type="button"
-                onClick={addEssayTitle}
-                className="mb-4 bg-blue-200 hover:bg-blue-300 px-3 py-1 rounded"
-              >
-                + Add Essay
-              </button>
-            </>
-          )}
-
-          <div className="text-center">
-            <button
-              type="submit"
-              disabled={loading}
-              className="border px-5 py-3 w-[50%] my-5 rounded"
-            >
-              {loading ? "Submitting..." : "Add University"}
-            </button>
-          </div>
-        </form>
-
-        <hr />
-
-        <div className="my-6">
-          <h3 className="text-xl font-bold mb-2">University List:</h3>
-          {universities.length === 0 ? (
-            <p>No universities found.</p>
-          ) : (
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border px-3 py-2 text-left">Name</th>
-                  <th className="border px-3 py-2 text-left">Action</th>
+                    <FaTrash
+                      className={`text-red-500 cursor-pointer hover:text-red-700 ${
+                        loadingDelete ? "opacity-50 cursor-not-allowed" : ""
+                      }`}
+                      onClick={() => !loadingDelete && handleDelete(uni.id)}
+                    />
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {universities.map(uni => (
-                  <tr key={uni.id}>
-                    <td className="border px-3 py-2">{uni.university_name}</td>
-                    <td className="border px-3 py-2 gap-5">
-                      <FaTrash
-                        onClick={() => handleDelete(uni.id)}
-                        className="text-red-500 cursor-pointer hover:text-red-700"
-                      />
-                      <FaEye className="text-blue-500 cursor-pointer hover:text-blue-700"/>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        <div className="flex justify-between my-4 w-11/12 mx-auto items-center">
+          <button
+            onClick={() => prevPage && fetchUniversities(prevPage)}
+            disabled={!prevPage}
+            className="bg-blue-500 text-white px-3 py-1 rounded disabled:opacity-50"
+          >
+            {prevPage ? "Previous" : "First"}
+          </button>
+          <span className="text-gray-700">Total University: {count}</span>
+          <button
+            onClick={() => nextPage && fetchUniversities(nextPage)}
+            disabled={!nextPage}
+            className="bg-blue-500 text-white px-3 py-1 rounded disabled:opacity-50"
+          >
+            {nextPage ? "Next" : "Last"}
+          </button>
         </div>
       </div>
     </>
   );
-};
+}
 
-export default AddUniversity;
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect } from "react";
+// import axios from "axios";
+// import { FaEye, FaTrash } from "react-icons/fa";
+// import Nav from "../Nav";
+
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+// const AddUniversity = () => {
+//   const [loading, setLoading] = useState(false);
+//   const [universities, setUniversities] = useState([]);
+//   const [formData, setFormData] = useState({
+//     university_name: "",
+//     early_decision: "",
+//     early_action: "",
+//     regular_decision: "",
+//     scholarship_priority: "",
+//     det: "",
+//     toefl: "",
+//     ielts: "",
+//     pte: "",
+//     gpa_acceptance: "",
+//     gpa_scholarship: "",
+//     sat_acceptance: "",
+//     sat_scholarship: "",
+//     admission: "",            // string "yes"/"no"
+//     scholarship: "",          // string "yes"/"no"
+//     gpa_based: "",            // string "yes"/"no"
+//     sat_based: "",            // string "yes"/"no"
+//     need_based: "",           // string "yes"/"no"
+//     holistic_review: "",      // string "yes"/"no"
+//     application_fee: "",
+//     application_fee_waiver: "",
+//     i20_deposit: "",
+//     tuition: "",
+//     living_and_tuition: "",
+//     avg_scholarship: "",
+//     tuition_after_scholarship: "",
+//     coa_after_scholarship: "",
+//     us_news_ranking: "",
+//     niche_ranking: "",
+//     major_ranking: "",
+//     place_name: "",
+//     settings: "",
+//     racial_mix: "",
+//     population: "",
+//     population_trend: "",
+//     job_and_opportunities: "",
+//     crime: "",
+//     college_essay: false,     // boolean
+//     college_essay_titles: [""],
+//   });
+
+//   // Load existing
+//   useEffect(() => {
+//     axios
+//       .get(`${API_BASE_URL}/university-details/`)
+//       .then(res => setUniversities(res.data))
+//       .catch(console.error);
+//   }, []);
+
+//   // Unified change handler
+//   const handleChange = e => {
+//     const { name, value } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]:
+//         name === "college_essay"
+//           ? value === "yes"
+//           : value,
+//       ...(name === "college_essay" && value === "no"
+//         ? { college_essay_titles: [""] }
+//         : {}),
+//     }));
+//   };
+
+//   // Essay titles management
+//   const addEssayTitle = () =>
+//     setFormData(prev => ({
+//       ...prev,
+//       college_essay_titles: [...prev.college_essay_titles, ""],
+//     }));
+//   const removeEssayTitle = idx =>
+//     setFormData(prev => {
+//       const titles = [...prev.college_essay_titles];
+//       titles.splice(idx, 1);
+//       return { ...prev, college_essay_titles: titles };
+//     });
+//   const handleEssayTitleChange = (idx, val) =>
+//     setFormData(prev => {
+//       const titles = [...prev.college_essay_titles];
+//       titles[idx] = val;
+//       return { ...prev, college_essay_titles: titles };
+//     });
+
+//   // Submit
+//   const handleSubmit = async e => {
+//     e.preventDefault();
+//     setLoading(true);
+//     try {
+//       const payload = {
+//         ...formData,
+//         college_essay_titles: formData.college_essay_titles.map(t => ({ title: t })),
+//       };
+//       await axios.post(`${API_BASE_URL}/university-details/`, payload);
+//       alert("University added!");
+//       // reset
+//       setFormData({
+//         university_name: "",
+//         early_decision: "",
+//         early_action: "",
+//         regular_decision: "",
+//         scholarship_priority: "",
+//         det: "",
+//         toefl: "",
+//         ielts: "",
+//         pte: "",
+//         gpa_acceptance: "",
+//         gpa_scholarship: "",
+//         sat_acceptance: "",
+//         sat_scholarship: "",
+//         admission: "",
+//         scholarship: "",
+//         gpa_based: "",
+//         sat_based: "",
+//         need_based: "",
+//         holistic_review: "",
+//         application_fee: "",
+//         application_fee_waiver: "",
+//         i20_deposit: "",
+//         tuition: "",
+//         living_and_tuition: "",
+//         avg_scholarship: "",
+//         tuition_after_scholarship: "",
+//         coa_after_scholarship: "",
+//         us_news_ranking: "",
+//         niche_ranking: "",
+//         major_ranking: "",
+//         place_name: "",
+//         settings: "",
+//         racial_mix: "",
+//         population: "",
+//         population_trend: "",
+//         job_and_opportunities: "",
+//         crime: "",
+//         college_essay: false,
+//         college_essay_titles: [""],
+//       });
+//       const res = await axios.get(`${API_BASE_URL}/university-details/`);
+//       setUniversities(res.data);
+//     } catch {
+//       alert("Add failed");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Delete
+//   const handleDelete = async id => {
+//     if (!window.confirm("Delete?")) return;
+//     try {
+//       await axios.delete(`${API_BASE_URL}/university-details/${id}/`);
+//       const res = await axios.get(`${API_BASE_URL}/university-details/`);
+//       setUniversities(res.data);
+//     } catch {
+//       alert("Delete failed");
+//     }
+//   };
+
+//   // Helpers
+//   const inputField = (label, name) => (
+//     <div className="flex justify-between mb-2" key={name}>
+//       <label className="capitalize mr-4">{label}:</label>
+//       <input
+//         type="text"
+//         name={name}
+//         value={formData[name]}
+//         onChange={handleChange}
+//         className="border w-1/2 p-1"
+//       />
+//     </div>
+//   );
+//   const selectString = (label, name) => (
+//     <div className="flex justify-between mb-2" key={name}>
+//       <label className="capitalize mr-4">{label}:</label>
+//       <select
+//         name={name}
+//         value={formData[name]}
+//         onChange={handleChange}
+//         className="border w-1/2 p-1"
+//       >
+//         <option value="">-- select --</option>
+//         <option value="yes">Yes</option>
+//         <option value="no">No</option>
+//       </select>
+//     </div>
+//   );
+
+//   return (
+//     <>
+//       <Nav />
+//       <div className="w-11/12 mx-auto mt-5">
+//         <h2 className="text-2xl text-center font-bold mb-5">
+//           Add University
+//         </h2>
+//         <div className=" flex flex-col md:flex-row justify-around mb-3 gap-5 text-center">
+//             <button className="bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded-lg font-semibold cursor-pointer text-xl w-full md:w-1/2 ">Bachelor's</button>
+//             <butoon className="bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded-lg font-semibold cursor-pointer text-xl w-full md:w-1/2">Master's</butoon>
+//         </div>
+//         <form onSubmit={handleSubmit}>
+//           {inputField("University Name", "university_name")}
+
+//           <h3 className="mt-4 font-semibold">Deadline</h3>
+//           {inputField("Early Decision", "early_decision")}
+//           {inputField("Early Action", "early_action")}
+//           {inputField("Regular Decision", "regular_decision")}
+//           {inputField("Scholarship Priority", "scholarship_priority")}
+
+//           <h3 className="mt-4 font-semibold">Minimum English Proficiency</h3>
+//           {inputField("DET", "det")}
+//           {inputField("TOEFL", "toefl")}
+//           {inputField("IELTS", "ielts")}
+//           {inputField("PTE", "pte")}
+
+//           <h3 className="mt-4 font-semibold">Minimum GPA</h3>
+//           {inputField("GPA Acceptance", "gpa_acceptance")}
+//           {inputField("GPA Scholarship", "gpa_scholarship")}
+
+//           <h3 className="mt-4 font-semibold">Minimum SAT</h3>
+//           {inputField("SAT Acceptance", "sat_acceptance")}
+//           {inputField("SAT Scholarship", "sat_scholarship")}
+
+//           <h3 className="mt-4 font-semibold">SAT Requirements</h3>
+//           {selectString("Admission", "admission")}
+//           {selectString("Scholarship", "scholarship")}
+
+//           <h3 className="mt-4 font-semibold">Scholarship Requirements</h3>
+//           {selectString("GPA Based", "gpa_based")}
+//           {selectString("SAT Based", "sat_based")}
+//           {selectString("Need Based", "need_based")}
+//           {selectString("Holistic Review", "holistic_review")}
+
+//           <h3 className="mt-4 font-semibold">Cost</h3>
+//           {inputField("Application Fee", "application_fee")}
+//           {inputField("Application Fee Waiver", "application_fee_waiver")}
+//           {inputField("I20 Deposit", "i20_deposit")}
+//           {inputField("Tuition", "tuition")}
+//           {inputField("Living & Tuition", "living_and_tuition")}
+//           {inputField("Average Scholarship", "avg_scholarship")}
+//           {inputField("Tuition After Scholarship", "tuition_after_scholarship")}
+//           {inputField("COA After Scholarship", "coa_after_scholarship")}
+
+//           <h3 className="mt-4 font-semibold">Ranking</h3>
+//           {inputField("US News Ranking", "us_news_ranking")}
+//           {inputField("Niche Ranking", "niche_ranking")}
+//           {inputField("Major Ranking", "major_ranking")}
+
+//           <h3 className="mt-4 font-semibold">Location Details</h3>
+//           {inputField("Place Name", "place_name")}
+//           {inputField("Settings", "settings")}
+//           {inputField("Racial Mix", "racial_mix")}
+//           {inputField("Population", "population")}
+//           {inputField("Population Trend", "population_trend")}
+//           {inputField("Jobs & Opportunities", "job_and_opportunities")}
+//           {inputField("Crime", "crime")}
+
+//           <h3 className="mt-4 font-semibold">SOP</h3>
+//           <div className="flex justify-between mb-2">
+//             <label className="capitalize mr-4">College Essay Required:</label>
+//             <select
+//               name="college_essay"
+//               value={formData.college_essay ? "yes" : "no"}
+//               onChange={handleChange}
+//               className="border w-1/2 p-1"
+//             >
+//               <option value="no">No</option>
+//               <option value="yes">Yes</option>
+//             </select>
+//           </div>
+
+//           {formData.college_essay && (
+//             <>
+//               {formData.college_essay_titles.map((t, idx) => (
+//                 <div key={idx} className="flex items-center mb-2">
+//                   <label className="w-32">Essay {idx + 1} Title:</label>
+//                   <input
+//                     type="text"
+//                     value={t}
+//                     onChange={e => handleEssayTitleChange(idx, e.target.value)}
+//                     className="border p-1 flex-1"
+//                   />
+//                   {formData.college_essay_titles.length > 1 && (
+//                     <FaTrash
+//                       onClick={() => removeEssayTitle(idx)}
+//                       className="ml-2 text-red-500 cursor-pointer"
+//                     />
+//                   )}
+//                 </div>
+//               ))}
+
+//               <button
+//                 type="button"
+//                 onClick={addEssayTitle}
+//                 className="mb-4 bg-blue-200 hover:bg-blue-300 px-3 py-1 rounded"
+//               >
+//                 + Add Essay
+//               </button>
+//             </>
+//           )}
+
+//           <div className="text-center">
+//             <button
+//               type="submit"
+//               disabled={loading}
+//               className="border px-5 py-3 w-[50%] my-5 rounded"
+//             >
+//               {loading ? "Submitting..." : "Add University"}
+//             </button>
+//           </div>
+//         </form>
+
+//         <hr />
+
+//         <div className="my-6">
+//           <h3 className="text-xl font-bold mb-2">University List:</h3>
+//           {universities.length === 0 ? (
+//             <p>No universities found.</p>
+//           ) : (
+//             <table className="w-full border-collapse">
+//               <thead>
+//                 <tr className="bg-gray-100">
+//                   <th className="border px-3 py-2 text-left">Name</th>
+//                   <th className="border px-3 py-2 text-left">Action</th>
+//                 </tr>
+//               </thead>
+//               <tbody>
+//                 {universities.map(uni => (
+//                   <tr key={uni.id}>
+//                     <td className="border px-3 py-2">{uni.university_name}</td>
+//                     <td className="border px-3 py-2 gap-5">
+//                       <FaTrash
+//                         onClick={() => handleDelete(uni.id)}
+//                         className="text-red-500 cursor-pointer hover:text-red-700"
+//                       />
+//                       <FaEye className="text-blue-500 cursor-pointer hover:text-blue-700"/>
+//                     </td>
+//                   </tr>
+//                 ))}
+//               </tbody>
+//             </table>
+//           )}
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default AddUniversity;

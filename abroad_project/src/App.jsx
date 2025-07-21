@@ -39,6 +39,7 @@ import MastersApplication from "./components/application/masters/MastersApplicat
 import ViewStudent from "./components/adminView/adminDashboard/ViewStudent";
 import ViewStudentApplication from "./components/adminView/adminDashboard/ViewStudentApplication";
 import ViewStudentDetail from "./components/adminView/adminDashboard/ViewStudentDetail";
+import UpdateStudent from "./components/adminView/adminDashboard/UpdateStudent";
 
 
 function App() {
@@ -119,6 +120,8 @@ function App() {
           />
           <Route path="/view/student" element={<AdminRoute> <ViewStudent /> </AdminRoute>} />
           <Route path="/view/student/application/:id" element={<AdminRoute> <ViewStudentApplication /> </AdminRoute>} />
+          <Route path="/view/student/detail/:id" element={<AdminRoute> <ViewStudentDetail /> </AdminRoute>} />
+          <Route path="/update/student/:id" element={<AdminRoute> <UpdateStudent /> </AdminRoute>} />
           
           <Route
             path="/add_info"

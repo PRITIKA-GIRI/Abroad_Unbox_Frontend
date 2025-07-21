@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { MdOutlineExpandLess, MdOutlineExpandMore } from "react-icons/md";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const APPLIED_KEY = "stage6_applied_unis";
@@ -12,8 +13,10 @@ const Stage6Masters = () => {
   const [error, setError] = useState("");
   const [appliedUniIds, setAppliedUniIds] = useState([]);
   const [essayFiles, setEssayFiles] = useState({});
+  const [isCommonAppOpen, setIsCommonAppOpen] = useState(false);
 
   const studentID = localStorage.getItem("student_id");
+  // const std_graduation = localStorage.getItem("std_graduation");
 
   useEffect(() => {
     const saved = localStorage.getItem(APPLIED_KEY);
@@ -177,11 +180,20 @@ const Stage6Masters = () => {
 
       {/* Main Content */}
       <div className="md:w-4/5 w-full bg-white h-screen p-4 md:overflow-scroll">
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div className="bg-gradient-to-r from-white to-blue-300 p-2 w-full text-2xl font-semibold text-center">
             Applying to University
           </div>
-          <p className="px-10">This Portal will help you apply to your selected universities. Click “Apply” next to each.</p>
+          <div className="bg-gradient-to-r from-white to-blue-300 p-2 text-2xl font-semibold text-center flex items-center">
+            <p>Abroad Unbox Portal</p>
+          </div>
+          <p className="px-10">This Portal, the one you are using right now will help you
+            with applying to your selected University. Just click apply
+            next to the list of your finalized university. Your application
+            DONE.</p>
+          <p className="px-10">
+            Someone from our team will reach out to you if there is
+            anything.</p>
 
           {studentUniDetail.map((uniDetail) => {
             const applied = appliedUniIds.includes(uniDetail.university);
@@ -203,21 +215,49 @@ const Stage6Masters = () => {
                     {applied ? "Applied" : "Apply"}
                   </button>
                 </div>
-
-                <div className="mt-3 space-y-2">
-                  {uniDetail.college_essay_titles.map(({ id, title }) => (
-                    <div key={id} className="flex justify-between items-center">
-                      <p>{title}</p>
-                      <input
-                        type="file"
-                        className="border p-2 rounded-lg"
-                        onChange={(e) =>
-                          handleFileChange(uniDetail.id, id, e.target.files[0])
-                        }
-                      />
+                  
+                  {/* {isStage6Completed ? (
+                    <div className="text-red-500 text-sm mt-2">
+                      Stage 6 is already completed. You cannot apply again.
                     </div>
-                  ))}
-                </div>
+                    // <></>
+                  ) : isMissingEssay(uniDetail) ? (
+                    <div className="text-red-500 text-sm mt-2">
+                      Please upload all required essays before applying.
+                    </div>
+                  ) : ( */}
+                  <div className="flex flex-col md:flex-row gap-5 mt-2">
+                    <div className="w-full md:w-1/3 space-y-2 md:border-r border-gray-300">
+                      <p className="font-semibold underline">Duration Details:</p>
+                      <p>Early Action: {uniDetail.early_action}</p>
+                      <p>Early Decision: {uniDetail.early_decision}</p>
+                      <p>Regular Decision: {uniDetail.regular_decision}</p>
+                      <p>Scholarship Priority: {uniDetail.scholarship_priority}</p>
+                      <p className="font-semibold underline">Cost Details:</p>
+                      <p>Application Fee: {uniDetail.application_fee}</p>
+                      <p>Application Fee Waiver: {uniDetail.application_fee_waiver}</p>
+                    </div>
+
+                    <div className="w-full md:w-2/3 space-y-2">
+                      {uniDetail.college_essay_titles.map(({ id, title }) => (
+                        
+                        <div key={id} className="flex justify-between items-center">
+                          <p>{title}</p>
+                          <input
+                            type="file"
+                            className="border p-2 rounded-lg w-1/2 right-0"
+                            // accept=".pdf,.doc,.docx,.txt"
+                            accept=".pdf"
+                            onChange={(e) =>
+                              handleFileChange(uniDetail.id, id, e.target.files[0])
+                            }
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* )} */}
+                
               </div>
             );
           })}
@@ -246,14 +286,29 @@ const Stage6Masters = () => {
 
           <div className="border-t border-gray-300 my-6" />
 
-          <div className="bg-gradient-to-r from-white to-blue-300 p-2 text-2xl font-semibold text-center">
-            University Portal
+          <div className="bg-gradient-to-r from-white to-blue-300 p-2 text-2xl font-semibold text-center flex items-center cursor-pointer"
+              onClick={() => setIsCommonAppOpen((o) => !o)}>
+              <p className="text-2xl font-semibold text-center">CommonApp</p>
+              {isCommonAppOpen ? (
+                <MdOutlineExpandLess className="ml-auto text-4xl" />
+              ) : (
+                <MdOutlineExpandMore className="ml-auto text-4xl" />
+              )}
           </div>
-          <p className="px-10">You can also choose to apply from the university portal as well.</p>
-          <p className="px-10">Almost all the university is going to ask you to apply from their portal. University have similar portal with some simple tweaks.</p>
-          <p className="px-10">We have given the guideline to apply from university as well.</p>
-          
-          <div className="bg-amber-500 py-2 w-full text-2xl font-semibold text-center rounded-full">University portal tutorial</div>
+          {isCommonAppOpen && (
+          <div>
+          <p className="px-10">CommonApp allows applying to up to 20 universities. It's for undergraduates only.</p>
+          <div className="w-full mb-4">
+            <a
+              href="https://www.commonapp.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full md:w-1/2 py-3 px-5 bg-green-300 rounded-lg text-center inline-block"
+            >
+              Go To CommonApp
+            </a>
+          </div>
+          <div className="bg-blue-300 py-2 w-full text-xl font-semibold text-center">CommonApp Video Tutorial</div>
           {videoUrl && (
             <iframe
               className="w-full h-[300px] md:h-[400px] mt-2"
@@ -262,6 +317,8 @@ const Stage6Masters = () => {
               title="CommonApp Video Tutorial"
             />
           )}
+          </div>
+        )}
 
           <div className="border-t border-gray-300 my-6" />
 
@@ -269,7 +326,7 @@ const Stage6Masters = () => {
             type="submit"
             disabled={isStage6Completed || loading || appliedUniIds.length === 0}
             className={`w-full py-4 text-2xl font-semibold mt-3 ${
-              isStage6Completed || appliedUniIds.length === 0
+              isStage6Completed
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-gradient-to-l from-white to-green-300 hover:to-green-500"
             }`}
