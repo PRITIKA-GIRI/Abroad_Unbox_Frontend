@@ -127,9 +127,10 @@ const Stage1 = () => {
   const stage1Data = stagesDetail.find((item) => item.stage === "1");
   const isStage1Completed = stage1Data?.is_complete === "completed";
 
-  const videoUrl1 = stageVideo[0]?.stage1_video1;
-  const videoUrl2 = stageVideo[0]?.stage1_video2;
-  const videoUrl3 = stageVideo[0]?.stage1_video3;
+  const videoUrl1 = stageVideo[0]?.bachelors_stage1_the_mindset_video;
+  const videoUrl2 = stageVideo[0]?.bachelors_stage1_the_timeline_video;
+  const videoUrl3 = stageVideo[0]?.bachelors_stage1_career_counseling_video;
+  const videoUrl4 = stageVideo[0]?.bachelors_stage1_english_proficiency_test_video;
 
   return (
     <div className="flex md:flex-row-reverse flex-col">
@@ -335,7 +336,7 @@ const Stage1 = () => {
         <div className="gap-5 w-full mt-2">
           <iframe
             className="w-full h-[300px] md:h-[400px] mt-2"
-            src={videoUrl3}
+            src={videoUrl4}
             allowFullScreen
             title="Session 3 - Career Counseling"
           />

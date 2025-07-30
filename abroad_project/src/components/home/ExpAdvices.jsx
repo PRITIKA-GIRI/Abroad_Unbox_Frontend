@@ -54,7 +54,7 @@ const ExpAdvices = () => {
                 {role == "admin" && (
                   <FaTrash onClick={()=> handleDelete(item.id)} className="absolute right-2 top-2 text-red-500 text-xl" />
                 )}
-                <div className="h-[400px] min-w-[350px] bg-gray-400">
+                <div className="h-[400px] min-w-[350px] bg-gray-400 rounded-lg overflow-hidden">
                   <iframe
                     width="350"
                     height="400"

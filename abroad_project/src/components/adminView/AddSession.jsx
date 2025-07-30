@@ -15,10 +15,26 @@ export default function AddSession() {
   const endRef = useRef();
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
+  // const [openSessionStudent, setOpenSessionStudent] = useState(false);
+  const [sessionStudent, setSessionStudent] = useState([]);
+  const [openSessionStudentId, setOpenSessionStudentId] = useState(null);
   
   // edit state
   const [isEditing, setIsEditing] = useState(false);
   const [editId, setEditId] = useState(null);
+
+  const fetchSessionStudents = async () => {
+    if (openSessionStudentId === null) return;
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/student-sessions/?session=${openSessionStudentId}`
+      );
+      setSessionStudent(response.data);
+    } catch (err) {
+      console.error("Error fetching session students:", err);
+    }
+  };
+
 
   const fetchEvents = () => {
     axios
@@ -30,6 +46,12 @@ export default function AddSession() {
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    if (openSessionStudentId !== null) {
+      fetchSessionStudents();
+    }
+  }, [openSessionStudentId]);
 
   // helper to trim seconds from time strings
   const trimTime = (timeStr) => timeStr?.length > 5 ? timeStr.slice(0,5) : timeStr;
@@ -211,7 +233,7 @@ export default function AddSession() {
                   <a href={ev.meeting_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Join Meeting</a>
                 )} */}
                 <div className="flex self-end gap-2.5 mt-2">
-                  <FaUsersViewfinder title="View Students" className="text-green-500 cursor-pointer hover:text-green-700 text-xl" />
+                  <FaUsersViewfinder title="View Students" className="text-green-500 cursor-pointer hover:text-green-700 text-xl" onClick={() => setOpenSessionStudentId(ev.id)}/>
                   <FaEdit title="Edit Session" className="text-blue-500 cursor-pointer hover:text-blue-700 text-xl" onClick={() => openEdit(ev)} />
                   <FaTrash title="Delete Session" className="text-red-500 cursor-pointer hover:text-red-700 text-xl" onClick={() => handleDelete(ev.id)} />
                 </div>
@@ -232,14 +254,46 @@ export default function AddSession() {
                   <a href={ev.meeting_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">Meeting Link</a>
                 )} */}
                 <div className="flex self-end gap-2.5 mt-2">
-                  <FaUsersViewfinder title="View Students" className="text-green-500 cursor-pointer hover:text-green-700 text-xl" />
+                <FaUsersViewfinder title="View Students" className="text-green-500 cursor-pointer hover:text-green-700 text-xl" onClick={() => setOpenSessionStudentId(ev.id)}/>
                   <FaTrash title="Delete Session" className="text-red-500 cursor-pointer hover:text-red-700 text-xl" onClick={() => handleDelete(ev.id)} />
                 </div>
               </li>
             ))}
           </ul>
         </div>
+
       </div>
+      {openSessionStudentId !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-2/5">
+            <h2 className="text-xl font-semibold mb-4">Session Students </h2>
+            {/* <p>{openSessionStudentId}</p> */}
+            {sessionStudent.length > 0 ? (
+              <ul className="space-y-2">
+                {sessionStudent.map((student) => (
+                  <li key={student.id} className="border p-3 rounded flex flex-col gap-1 text-sm">
+                    <div><span>{student.student_name} {student.last_name}</span> | 
+                    <span className="text-yellow-600"> {student.display_range}</span></div>
+                    <div><span className="text-gray-500">{student.email}</span> |
+                    <span className="text-gray-500"> {student.contact_number}</span></div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500">No students enrolled in this session.</p>
+            )}
+
+            {/* Here you would render the students for the session */}
+            <button
+              onClick={() => setOpenSessionStudentId(null)}
+              className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      
     </>
   );
 }

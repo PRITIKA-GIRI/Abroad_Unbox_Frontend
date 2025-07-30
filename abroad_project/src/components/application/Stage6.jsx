@@ -75,7 +75,7 @@ const Stage6 = () => {
 
   const stage6Data = stagesDetail.find((item) => item.stage === "6");
   const isStage6Completed = stage6Data?.is_complete === "completed";
-  const videoUrl = stageVideo[0]?.stage6_video1;
+  const videoUrl = stageVideo[0]?.bachelors_stage6_commonapp_video;
 
   const handleFileChange = (uniDetailId, essayTitleId, file) => {
     setEssayFiles((prev) => ({

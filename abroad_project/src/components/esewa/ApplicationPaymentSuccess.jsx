@@ -9,7 +9,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const studentID = localStorage.getItem("student_id");
 
-function EsewaSuccess() {
+export default function ApplicationPaymentSuccess() {
   const location = useLocation();
   const [receipt, setReceipt] = useState(null);
   const [error, setError] = useState("");
@@ -53,6 +53,7 @@ function EsewaSuccess() {
         product_code: receipt.product_code,
         signed_field_names: receipt.signed_field_names,
         signature: receipt.signature,
+        payment_type: "Application Portal",
       };
   
       const response = await axios.post(
@@ -80,7 +81,7 @@ function EsewaSuccess() {
             Payment successful!
           </h1>
           <p className="text- center">
-            Your payment of <i>RS. 5000</i> for after visa was successful.
+            Your payment for application was successful.
           </p>
           <Link
             to="/"
@@ -99,9 +100,9 @@ function EsewaSuccess() {
 
           {receipt && (
             <>
-            <pre className="whitespace- pre-wrap overflow-scroll text-sm bg-gray-50 p-2 rounded">
+            {/* <pre className="whitespace- pre-wrap overflow-scroll text-sm bg-gray-50 p-2 rounded">
               {JSON.stringify(receipt, null, 2)}
-            </pre>
+            </pre> */}
             
             <p><strong>Transaction Code: </strong>{receipt.transaction_code}</p>
             <p><strong>Status: </strong>{receipt.status}</p>
@@ -114,5 +115,3 @@ function EsewaSuccess() {
     </>
   );
 }
-
-export default EsewaSuccess;

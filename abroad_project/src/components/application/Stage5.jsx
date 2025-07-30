@@ -86,7 +86,7 @@ const Stage5 = () => {
   const fetchUniversities = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/university-details/`);
-      setUniversities(res.data);
+      setUniversities(res.data.results || []);
     } catch (err) {
       console.error("fetchUniversities:", err);
     }
@@ -259,7 +259,8 @@ const Stage5 = () => {
 
   const isStage5Completed =
     stagesDetail.find((s) => s.stage === "5")?.is_complete === "completed";
-  const videoUrl1 = stageVideo[0]?.stage5_video1;
+    
+  const videoUrl1 = stageVideo[0]?.bachelors_stage5_university_selection_video;
 
   const selectedNames = entries.map((e) => e.university).filter(Boolean);
 

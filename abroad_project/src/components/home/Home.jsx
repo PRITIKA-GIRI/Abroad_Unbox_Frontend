@@ -174,7 +174,7 @@ function Home() {
             {details.map((detail, index) => (
               <div
                 key={index}
-                className="relative h-[420px] min-w-[350px] sm:h-[650px] md:h-[550px] sm:min-w-[600px] md:min-w-[800px] lg:min-w-[900px]"
+                className="relative rounded-lg overflow-hidden h-[420px] min-w-[350px] sm:h-[650px] md:h-[550px] sm:min-w-[600px] md:min-w-[800px] lg:min-w-[900px]"
               >
                 {/* Blurred Background Layer */}
                 <div

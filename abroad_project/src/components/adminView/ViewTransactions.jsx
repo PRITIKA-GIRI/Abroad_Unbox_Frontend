@@ -45,12 +45,13 @@ const ViewTransactions = () => {
         <caption className="text-xl md:text-2xl font-semibold text-center items-center mb-5">
           After Visa Transactions <span className='text-lg font-medium'>(No of Transactions: {data.count})</span>
         </caption>
-        <thead>
+        <thead className=''> 
           <tr className="bg-green-800 text-white">
             <th className="px-4 py-3 text-left">S.No</th>
             <th className="px-4 py-3 text-left">Student Name</th>
             <th className="px-4 py-3 text-left">Transaction Code</th>
             <th className="px-4 py-3 text-left">Date</th>
+            <th className="px-4 py-3 text-left">Payent For</th>
             <th className="px-4 py-3 text-left">Amount</th>
             <th className="px-4 py-3 text-left">Status</th>
           </tr>
@@ -67,6 +68,7 @@ const ViewTransactions = () => {
               <td className="px-4 py-4">
                 {new Date(tx.transaction_at).toLocaleString()}
               </td>
+              <td className="px-4 py-4">{tx.payment_type}</td>
               <td className="px-4 py-4">{tx.total_amount}</td>
               <td className="px-4 py-4">{tx.status}</td>
             </tr>

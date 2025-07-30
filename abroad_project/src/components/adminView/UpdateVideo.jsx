@@ -8,22 +8,41 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const UpdateVideo = () => {
   const navigate = useNavigate();
   const initialTextState = {
-    stage1_video1: "",
-    stage1_video2: "",
-    stage1_video3: "",
-    stage4_video1: "",
-    stage4_video2: "",
+    bachelors_stage1_the_mindset_video: "",
+    bachelors_stage1_the_timeline_video: "",
+    bachelors_stage1_career_counseling_video: "",
+    bachelors_stage1_english_proficiency_test_video: "",
+
+    bachelors_stage4_resume_video: "",
+    bachelors_stage4_linkedin_video: "",
+
+    bachelors_stage5_university_selection_video: "",
+    bachelors_stage6_commonapp_video: "",
+
+    bachelors_stage7_writing_email_video: "",
+    bachelors_stage7_email_timeline_video: "",
+
+    bachelors_stage8_DS160_video: "",
+    bachelors_stage8_CGI_portal_video: "",
+
+    masters_stage1_the_mindset_video: "",
+    masters_stage1_the_timeline_video: "",
+    masters_stage1_career_counseling_video: "",
+    masters_stage1_english_proficiency_test_video: "",
+
     masters_stage4_assistantship_video1_general_idea: "",
     masters_stage4_assistantship_video2_contact: "",
     masters_stage4_assistantship_video3_pro_tips: "",
     masters_stage4_video4_resume: "",
     masters_stage4_video5_linkedin: "",
-    stage5_video1: "",
-    stage6_video1: "",
-    stage7_video1: "",
-    stage7_video2: "",
-    stage8_video1: "",
-    stage8_video2: "",
+
+    masters_stage5_university_selection_video: "",
+    masters_stage6_university_portal_video: "",
+    masters_stage7_assistantship_emails_and_timeline_video: "",
+    masters_stage7_application_update_video: "",
+    masters_stage7_application_email_video: "",
+    masters_stage8_DS160_video: "",
+    masters_stage8_CGI_portal_video: "",
   };
 
   const [textData, setTextData] = useState(initialTextState);
@@ -103,7 +122,7 @@ const UpdateVideo = () => {
         );
         alert("Video links created successfully.");
       }
-      navigate("/admin_dashboard");
+      navigate("/update-stage-videos");
     } catch (err) {
       console.error("Failed to save stage videos", err);
       alert("An error occurred while saving.");

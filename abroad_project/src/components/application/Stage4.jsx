@@ -117,8 +117,8 @@ const Stage4 = () => {
     getResumeSample();
   }, []);
 
-  const videoUrl1 = stageVideo[0]?.stage4_video1;
-  const videoUrl2 = stageVideo[0]?.stage4_video2;
+  const videoUrl1 = stageVideo[0]?.bachelors_stage4_resume_video;
+  const videoUrl2 = stageVideo[0]?.bachelors_stage4_linkedin_video;
 
   // Check if Stage 3 is marked "completed" in the fetched stages array
   const stage4Data = stagesDetail.find((item) => item.stage === "4");

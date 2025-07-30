@@ -78,8 +78,8 @@ const Stage7 = () => {
     }
   };
 
-  const videoUrl1 = stageVideo[0]?.stage7_video1;
-  const videoUrl2 = stageVideo[0]?.stage7_video2;
+  const videoUrl1 = stageVideo[0]?.bachelors_stage7_writing_email_video;
+  const videoUrl2 = stageVideo[0]?.bachelors_stage7_email_timeline_video;
 
   const emailSample_i = emailSample[0]?.sample_i;
   const emailSample_ii = emailSample[0]?.sample_i;

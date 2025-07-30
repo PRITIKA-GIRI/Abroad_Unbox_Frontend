@@ -89,7 +89,7 @@ const CommitmentServices = () => {
         <div className="w-11/12 mx-auto mt-3 flex flex-row gap-3 overflow-x-scroll">
           {services.map((service, index) => (
             <div key={index} className="relative">
-              <div className="h-[400px] min-w-[350px] bg-[#e6ffe6] p-6 rounded-lg">
+              <div className="h-[400px] min-w-[350px] bg-[#e6ffe6] p-6 rounded-lg ">
                 <a href="/login">
                   <img
                     className="w-12 h-12 mx-auto"
