@@ -3,10 +3,12 @@ import CryptoJS from "crypto-js";
 const secret_key   = import.meta.env.VITE_SECRET_KEY;
 const product_code = import.meta.env.VITE_PRODUCT_CODE;
 
-export default function SatPayment() {
+import esewa from "../../assets/svg/esewa_logo.png";
 
-    const [duration, setDuration] = useState("1");
-    const [totalAmount, setTotalAmount] = useState(4000);
+export default function ApplicationPortalPayment() {
+
+    const [duration, setDuration] = useState("6"); // default 6 
+    const [totalAmount, setTotalAmount] = useState(12000);
     const [signature, setSignature] = useState("");
     const [isSignatureReady, setIsSignatureReady] = useState(false);
     const [transactionUuid, setTransactionUuid] = useState("");
@@ -14,12 +16,13 @@ export default function SatPayment() {
     const handleDurationChange = (e) => {
         const selected = e.target.value;
         setDuration(selected);
-        console.log("Selected duration:", selected);
-        {selected &&(
-            setTotalAmount(selected * 4000)
-        )}
+        if (selected === "6") {
+            setTotalAmount(12000);
+        } else if (selected === "12") {
+            setTotalAmount(15000);
+        }
     };
-
+ 
     const generateRandomString = () => {
         const strings =
           "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -52,38 +55,30 @@ export default function SatPayment() {
 
     return (
         <>
-        {/* <div className="w-11/12 mx-auto mt-5"> */}
-            <div className="flex flex-col w-full gap-5 bg-blue-300 p-4 rounded-lg items-center hover:scale-102 transition-transform duration-200 hover:shadow-2xl">
-              <div className="flex flex-col gap-3 items-center">
-                <span className="text-2xl font-bold">SAT Portal</span>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempore iure consequatur sapiente repudiandae magnam debitis expedita. Placeat consequatur culpa quibusdam, quos rem magni quia a iure dicta animi. Exercitationem, tempore!</p>
-                <div className="gap-1 flex items-center">
-                    <label className="text-lg font-semibold">Duration:</label>
-                    <select
-                        name="duration"
-                        className="bg-green-700 text-white py-1 px-2 rounded border-none"
-                        value={duration}
-                        onChange={handleDurationChange}
-                    >
-                        <option value="1">1 Month</option>
-                        <option value="2">2 Month</option>
-                        <option value="3">3 Month</option>
-                        <option value="4">4 Month</option>
-                        <option value="5">5 Month</option>
-                        <option value="6">6 Month</option>
-                        <option value="7">7 Month</option>
-                        <option value="8">8 Month</option>
-                        <option value="9">9 Month</option>
-                        <option value="10">10 Month</option>
-                        <option value="11">11 Month</option>
-                        <option value="12">12 Month</option>
-                    </select>
+        {/* <div className="w-full mt-5"> */}
+            <div className="w-full flex flex-col gap-5 bg-blue-300 p-4 rounded-xl items-center hover:scale-102 transition-transform duration-200 hover:shadow-2xl">
+
+                <div className="flex flex-col gap-3 items-center">
+                    <span className="font-bold text-2xl">Application Portal</span>
+                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio impedit dolorem alias enim deserunt reprehenderit est tempora minus doloremque quibusdam aliquam odio nostrum, natus magni ipsa illo dolor repudiandae fuga?</p>
+                    <div className="flex gap-2 ">
+                        <span className="text-lg font-semibold">Duration:</span>
+                        <select
+                            name="duration"
+                            className="bg-green-700 text-white py-1 px-2 rounded border-none"
+                            value={duration}
+                            onChange={handleDurationChange}
+                        >
+                            <option value="6">6 Month</option>
+                            <option value="12">12 Month</option>
+                        </select>
+                    </div>
+                    <div>
+                        {/* <span>Total Amount:</span> */}
+                        <span className="font-semibold text-xl  "> Rs. {totalAmount} /-</span>
+                    </div>
                 </div>
-                <div className="flex items-center gap-1">
-                    {/* <label className="font-semibold">Total Amount:</label> */}
-                    <span className="font-semibold text-xl">Rs. {totalAmount} /-</span>
-                </div>
-              </div>
+
 
                 {isSignatureReady && (
                     <form
@@ -113,7 +108,7 @@ export default function SatPayment() {
                     <input
                       type="hidden"
                       name="success_url"
-                      value="http://localhost:5173/sat-payment-success/"
+                      value="http://localhost:5173/application-payment-success/"
                     />
                     <input
                       type="hidden"

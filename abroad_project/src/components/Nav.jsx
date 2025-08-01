@@ -47,7 +47,7 @@ function Nav() {
     <>
       <div className="bg-gradient-to-l from-[#006600] to-[#ffffff] px-6 py-4 flex items-center justify-between sm:px-10 sm:py-4">
         <a href='/'><img className="mr-auto w-[60px] sm:w-[70px]" src={logo} alt="Logo" /></a>
-        <nav className="hidden sm:flex px-10 py- 5 mt-3 text-xl font-semibold">
+        <nav className="hidden sm:flex px-10 py- 5 mt-3 text-lg font-semibold">
           {/* <ul className="flex gap-10 justify-between">
             <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link>
             <a href="/login"><li className="hover:text-blue-900 hover:underline">Application</li></a>
@@ -63,9 +63,10 @@ function Nav() {
             <ul className="flex justify-between">
               {/* <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link> */}
               {role === "admin" ? (
-                <a href="/admin_dashboard">
+                // <a href="/admin_dashboard">
+                <Link to="/admin_dashboard">
                   <li className="py-2 px-4 hover:bg-blue-400 hover:text-white rounded-tl-2xl rounded-br-2xl">Application</li>
-                </a>
+                </Link>
               ) : graduation === "undergraduate" ? (
                 <a href="/application">
                   <li className="py-2 px-4 hover:bg-blue-400 hover:text-white rounded-tl-2xl rounded-br-2xl">Application</li>
@@ -158,9 +159,9 @@ function Nav() {
             <ul className="flex flex-col gap-5 justify-between p-2">
               {/* <Link to="/"><li className="hover:text-blue-900 hover:underline">Home</li></Link> */}
               {role === "admin" ? (
-                <a href="/admin_dashboard">
+                <Link to="/admin_dashboard">
                   <li className="hover:text-blue-900 hover:underline">Application</li>
-                </a>
+                </Link>
               ) : graduation === "undergraduate" ? (
                 <a href="/application">
                   <li className="hover:text-blue-900 hover:underline">Application</li>

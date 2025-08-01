@@ -43,7 +43,7 @@ import UpdateStudent from "./components/adminView/adminDashboard/UpdateStudent";
 import StudentDashboard from "./components/student_dashboard/StudentDashboard";
 import ApplicationSatPayment from "./components/esewa/ApplicationSatPayment";
 import ApplicationPaymentSuccess from "./components/esewa/ApplicationPaymentSuccess";
-
+import SatPaymentSuccess from "./components/esewa/SatPaymentSuccess";
 
 function App() {
   
@@ -66,6 +66,7 @@ function App() {
           <Route path="/student-dashboard/:id" element={<StudentDashboard />} />
           <Route path="/application-sat-payment" element={<ApplicationSatPayment />} />
           <Route path="/application-payment-success" element={<ApplicationPaymentSuccess />} />
+          <Route path="/sat-payment-success" element={<SatPaymentSuccess />} />
 
           {/* admin private routes */}
           <Route

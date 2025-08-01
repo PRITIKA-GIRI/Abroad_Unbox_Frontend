@@ -53,14 +53,13 @@ export default function DashboardSection() {
 
     return (
         <>
-        <div>
-            <div className="w-1/2">
-                <h2 className="bg-blue-400 py-4 font-semibold text-center text-xl">Student Dashboard</h2>
+            <div className="w-full">
+                <h2 className="py-4 text-xl font-semibold text-center bg-blue-400 rounded-lg">Student Dashboard</h2>
 
-                <div className="w-11/12 mt-3 mx-auto p-2 border rounded-t-lg">
+                <div className="w-11/12 p-2 mx-auto mt-3 border rounded-t-lg">
                     <h2 className="text-center border-b border-gray-300 text-lg font-semibold py-1.5">Student Profile of {studentId}</h2>
                     {studentDetail ? (
-                        <div className="space-y-2 mt-3">
+                        <div className="mt-3 space-y-2">
                             <div><strong>Name: </strong>{studentDetail.first_name} {studentDetail.last_name}</div>
                             <div><strong>Profile Number: </strong><span>{studentDetail.profile_number}</span></div>
                             <div><strong>email: </strong>{studentDetail.email}</div>
@@ -74,13 +73,12 @@ export default function DashboardSection() {
                     )}
                 </div>
 
-                <div className="w-11/12 mt-1 mx-auto p-2 border rounded-b-lg">
+                <div className="w-11/12 p-2 mx-auto mt-1 border rounded-b-lg">
                     <h2 className="text-center border-b border-gray-300 text-lg font-semibold py-1.5">Application Portal</h2>
                     <div className="mt-2"><strong>Stage Progression: </strong> <span>{currentStage}/9</span></div>
-                    <Link to="/application-sat-payment"><button className="bg-gray-200 py-2 px-4 rounded-lg shadow-lg my-3 cursor-pointer hover:bg-blue-400">Go to Application Portal</button></Link>
+                    <Link to="/application-sat-payment"><button className="px-4 py-2 my-3 bg-gray-200 rounded-lg shadow-lg cursor-pointer hover:bg-blue-400">Go to Application Portal</button></Link>
                 </div>
             </div>
-        </div>
         </>
     )
 }
