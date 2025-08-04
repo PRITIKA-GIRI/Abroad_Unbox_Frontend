@@ -383,6 +383,7 @@ const Stage3 = () => {
             {loading ? 'Submitting...' : 'Stage 3: Submit'}
           </button> */}
 
+
           {/* Submit / Completed Button */}
           <div className="mt-4">
             <button
@@ -397,6 +398,23 @@ const Stage3 = () => {
               {isStage3Completed ? "Stage 3: Completed" : "Stage 3: Submit"}
             </button>
           </div>
+
+           {/* Submit / Completed Button */}
+        <div className="mt-4">
+          <button
+            onClick={handleSubmit}
+            className={`w-full py-4 text-2xl font-semibold mt-3 ${
+              isStage3Completed
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
+            }`}
+            disabled={isStage3Completed}
+          >
+            {isStage3Completed ? "Stage 3: Completed" : "Stage 3: Submit"}
+          </button>
+        </div>
+
+
         </form>
       </div>
     </div>
