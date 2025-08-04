@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const getTodayDate = () => {
+  const today = new Date();
+  return today.toISOString().split("T")[0]; // 'yyyy-mm-dd'
+};
+
 export const stage2Schema = z
   .object({
     name: z
@@ -13,6 +18,9 @@ export const stage2Schema = z
       .min(1, "Date of Birth is required")
       .refine((val) => !isNaN(Date.parse(val)), {
         message: "Date of Birth must be a valid date",
+      })
+      .refine((val) => val !== getTodayDate(), {
+        message: "Date of Birth cannot be today's date",
       }),
     address_i: z
       .string()
