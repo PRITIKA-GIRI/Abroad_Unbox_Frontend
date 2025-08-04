@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Stage3 = () => {
@@ -33,17 +33,17 @@ const Stage3 = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const studentId = localStorage.getItem('student_id');
+    const studentId = localStorage.getItem("student_id");
     if (!studentId) {
-      alert('Student ID not found in local storage!');
+      alert("Student ID not found in local storage!");
       return;
     }
 
     const payload = new FormData();
-    payload.append('student', studentId);
+    payload.append("student", studentId);
 
     Object.entries(formData).forEach(([key, value]) => {
-      payload.append(key, value || '');
+      payload.append(key, value || "");
     });
 
     Object.entries(files).forEach(([key, file]) => {
@@ -55,22 +55,22 @@ const Stage3 = () => {
       const { data } = await axios.post(
         `${API_BASE_URL}/stage-three-submissions/`,
         payload,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        { headers: { "Content-Type": "multipart/form-data" } }
       );
-      alert('Stage 3 (three) Form submitted successfully!');
+      alert("Stage 3 (three) Form submitted successfully!");
       setFormData({});
       setFiles({});
     } catch (err) {
-      console.error('Submission error:', err.response || err.message);
-      alert('Failed to submit form.');
+      console.error("Submission error:", err.response || err.message);
+      alert("Failed to submit form.");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-      getStages();
-    }, []);
+    getStages();
+  }, []);
 
   // Check if Stage 3 is marked "completed" in the fetched stages array
   const stage3Data = stagesDetail.find((item) => item.stage === "3");
@@ -85,83 +85,177 @@ const Stage3 = () => {
           Let's build your comprehensive profile
         </p>
         <p className="font-medium mt-5">
-          Now you have a good idea of your mindset, career, and university selection;
+          Now you have a good idea of your mindset, career, and university
+          selection;
         </p>
         <p className="font-medium mt-5">
-          Please give the details of everything to the best of your knowledge. This will help us during your application.
+          Please give the details of everything to the best of your knowledge.
+          This will help us during your application.
         </p>
       </div>
 
       <div className="w-full md:w-3/4 p-4 bg-white h-svh md:overflow-scroll">
-      <form onSubmit={handleSubmit} className='flex flex-col gap-5 '>
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mb-5">
-          Documents
-        </div>
-        <div className='flex flex-col'>
-          <label >10 Transcript/ Transcript I:</label>
-          <input type='file' name='transcript_i' title='Please select a pdf file' accept=".pdf" onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
-        <div className='flex flex-col'>
-          <label>11 Transcript/ Transcript II:</label>
-          <input type='file' name='transcript_ii' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
-        <div className='flex flex-col'>
-          <label>12 Transcript/ Transcript III:</label>
-          <input type='file' name='transcript_iii' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2 ' required/>
-        </div>
-        <div className='flex flex-col'>
-          <label>Provisional:</label>
-          <input type='file' name='provisional' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2 ' required/>
-        </div>
-        <div className='flex flex-col'>
-          <label>Migration:</label>
-          <input type='file' name='migration' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
-        <div className='flex flex-col'>
-          <label>Character:</label>
-          <input type='file' name='character' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mb-5">
-          Letter of Recommendation
-        </div>
-        <div className='flex flex-col'>
-          <label>LOR I:</label>
-          <input type='file' name='lor_i' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
-        <div className='flex flex-col'>
-          <label>LOR II:</label>
-          <input type='file' name='lor_ii' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
-        <div className='flex flex-col'>
-          <label>LOR III:</label>
-          <input type='file' name='lor_iii' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5 ">
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mb-5">
+            Documents
+          </div>
+          <div className="flex flex-col">
+            <label>10 Transcript/ Transcript I:</label>
+            <input
+              type="file"
+              name="transcript_i"
+              title="Please select a pdf file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label>11 Transcript/ Transcript II:</label>
+            <input
+              type="file"
+              name="transcript_ii"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label>12 Transcript/ Transcript III:</label>
+            <input
+              type="file"
+              name="transcript_iii"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2 "
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label>Provisional:</label>
+            <input
+              type="file"
+              name="provisional"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2 "
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label>Migration:</label>
+            <input
+              type="file"
+              name="migration"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label>Character:</label>
+            <input
+              type="file"
+              name="character"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mb-5">
+            Letter of Recommendation
+          </div>
+          <div className="flex flex-col">
+            <label>LOR I:</label>
+            <input
+              type="file"
+              name="lor_i"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label>LOR II:</label>
+            <input
+              type="file"
+              name="lor_ii"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
+          <div className="flex flex-col">
+            <label>LOR III:</label>
+            <input
+              type="file"
+              name="lor_iii"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
 
-        <div className='flex flex-col'>
-          <label>LOR IV:</label>
-          <input type='file' name='lor_iv' onChange={handleFileChange} className='border border-gray-300 w-full rounded p-2' required/>
-        </div>
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg  ">
-          English Proficiency Test Score
-          <input type='file' name='eng_test_score' onChange={handleFileChange} className='w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2' required/>
-        </div>
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
-          Standardize Test Score
-          <input type='file' name='standardize_test_score' onChange={handleFileChange} className='w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2' required/>
-        </div>
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
-          Passport
-          <input type='file' name='passport' onChange={handleFileChange} className='w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2' required/>
-        </div>
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
-          Personal Essay
-          <input type='file' name='personal_essay' onChange={handleFileChange} className='w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2' required/>
-        </div>
-        <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
-          Bank Balance Certificate 
-          <input type='file' name='bank_balance' onChange={handleFileChange} className='w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2' required/>
-        </div>
-        {/* <button
+          <div className="flex flex-col">
+            <label>LOR IV:</label>
+            <input
+              type="file"
+              name="lor_iv"
+              onChange={handleFileChange}
+              className="border border-gray-300 w-full rounded p-2"
+              required
+            />
+          </div>
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg  ">
+            English Proficiency Test Score
+            <input
+              type="file"
+              name="eng_test_score"
+              onChange={handleFileChange}
+              className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
+              required
+            />
+          </div>
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
+            Standardize Test Score
+            <input
+              type="file"
+              name="standardize_test_score"
+              onChange={handleFileChange}
+              className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
+              required
+            />
+          </div>
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
+            Passport
+            <input
+              type="file"
+              name="passport"
+              onChange={handleFileChange}
+              className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
+              required
+            />
+          </div>
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
+            Personal Essay
+            <input
+              type="file"
+              name="personal_essay"
+              onChange={handleFileChange}
+              className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
+              required
+            />
+          </div>
+          <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
+            Bank Balance Certificate
+            <input
+              type="file"
+              name="bank_balance"
+              onChange={handleFileChange}
+              className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
+              required
+            />
+          </div>
+          {/* <button
             type="submit"
             disabled={loading}
             className={`bg-gradient-to-l from-[#ffffff] to-green-300 hover:to-green-500 py-4 w-full text-2xl font-semibold mt-3 ${
@@ -171,25 +265,24 @@ const Stage3 = () => {
             {loading ? 'Submitting...' : 'Stage 3: Submit'}
           </button> */}
 
-           {/* Submit / Completed Button */}
-        <div className="mt-4">
-          <button
-            onClick={() => handleSubmit(responseLink[0]?.stage)}
-            className={`w-full py-4 text-2xl font-semibold mt-3 ${
-              isStage3Completed
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
-            }`}
-            disabled={isStage3Completed}
-          >
-            {isStage3Completed ? "Stage 3: Completed" : "Stage 3: Submit"}
-          </button>
-        </div>
-
+          {/* Submit / Completed Button */}
+          <div className="mt-4">
+            <button
+              onClick={() => handleSubmit(responseLink[0]?.stage)}
+              className={`w-full py-4 text-2xl font-semibold mt-3 ${
+                isStage3Completed
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-l from-[#ffffff] to-green-300 hover:from-[#ffffff] hover:to-green-500"
+              }`}
+              disabled={isStage3Completed}
+            >
+              {isStage3Completed ? "Stage 3: Completed" : "Stage 3: Submit"}
+            </button>
+          </div>
         </form>
       </div>
     </div>
-  )
+  );
 };
 
 export default Stage3;
