@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Nav from '../Nav';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Nav from "../Nav";
+import Spinner from "./adminDashboard/Spinner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL_2 = import.meta.env.VITE_API_BASE_URL_2;
 
 const ViewTransactions = () => {
   // state holds the paginated response
@@ -12,14 +14,17 @@ const ViewTransactions = () => {
     previous: null,
     results: [],
   });
+  const [loading, setLoading] = useState(false);
 
   // fetch transactions, optionally at a specific URL
-  const getTransactions = async (url = `${API_BASE_URL}/after-visa-payments/`) => {
+  const getTransactions = async (
+    url = `${API_BASE_URL}/after-visa-payments/`
+  ) => {
     try {
       const response = await axios.get(url);
       setData(response.data);
     } catch (error) {
-      console.error('Failed to fetch payments data:', error);
+      console.error("Failed to fetch payments data:", error);
     }
   };
 
@@ -37,63 +42,112 @@ const ViewTransactions = () => {
     if (data.next) getTransactions(data.next);
   };
 
+  const handleSelect = async (event) => {
+    setLoading(true);
+    if (event.target.value === "category_selection") {
+      getTransactions();
+      setLoading(false);
+    } else {
+      const url = `${API_BASE_URL_2}/after-visa-payments/?payment_type=${encodeURIComponent(
+        event.target.value
+      )}`;
+      try {
+        const response = await axios.get(url);
+        setData(response.data);
+        setLoading(false);
+      } catch (error) {
+        console.log("failed to fetch", error);
+        setLoading(false);
+      }
+    }
+  };
+  const handleSearch = async (event) => {
+    const url = `${API_BASE_URL_2}/after-visa-payments/?search=${event.target.value}`;
+    try {
+      const response = await axios.get(url);
+      setData(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
-    <Nav />
-    <div className="p-6 w-[96%] mx-auto">
-      <table className="w-full border-collapse">
-        <caption className="text-xl md:text-2xl font-semibold text-center items-center mb-5">
-          After Visa Transactions <span className='text-lg font-medium'>(No of Transactions: {data.count})</span>
-        </caption>
-        <thead className=''> 
-          <tr className="bg-green-800 text-white">
-            <th className="px-4 py-3 text-left">S.No</th>
-            <th className="px-4 py-3 text-left">Student Name</th>
-            <th className="px-4 py-3 text-left">Transaction Code</th>
-            <th className="px-4 py-3 text-left">Date</th>
-            <th className="px-4 py-3 text-left">Payent For</th>
-            <th className="px-4 py-3 text-left">Amount</th>
-            <th className="px-4 py-3 text-left">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.results.map((tx, index) => (
-            <tr
-              key={tx.id}
-              className="border-b border-gray-300 odd:bg-gray-50 even:bg-white hover:bg-gray-100"
-            >
-              <td className="px-4 py-4">{index + 1}.</td>
-              <td className="px-4 py-4">{tx.student_name}</td>
-              <td className="px-4 py-4">{tx.transaction_code}</td>
-              <td className="px-4 py-4">
-                {new Date(tx.transaction_at).toLocaleString()}
-              </td>
-              <td className="px-4 py-4">{tx.payment_type}</td>
-              <td className="px-4 py-4">{tx.total_amount}</td>
-              <td className="px-4 py-4">{tx.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Nav />
+      <div className="p-8 w-[96%] mx-auto flex flex-col">
+        <div className="flex justify-between items-center p-4">
+          <select className="border p-2 text-sm" onChange={handleSelect}>
+            <option value="category_selection">Select Category</option>
+            <option value="Application Portal">Application Portal</option>
+            <option value="Sat Portal">Sat Portal</option>
+            <option value="After Visa">After Visa</option>
+          </select>
+          <h1 className="text-2xl font-bold">
+            Number of Transaction ({data.count})
+          </h1>
+          <input
+            type="search"
+            placeholder="search"
+            className="p-2 border"
+            onChange={handleSearch}
+          />
+        </div>
 
-      {/* Pagination Controls */}
-      <div className="mt-4 flex justify-between">
-        <button
-          onClick={handlePrev}
-          disabled={!data.previous}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Previous
-        </button>
-        <button
-          onClick={handleNext}
-          disabled={!data.next}
-          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
-        >
-          Next
-        </button>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <table className="w-full border-collapse">
+            <thead className="">
+              <tr className="bg-green-800 text-white">
+                <th className="px-4 py-3 text-left">S.No</th>
+                <th className="px-4 py-3 text-left">Student Name</th>
+                <th className="px-4 py-3 text-left">Transaction Code</th>
+                <th className="px-4 py-3 text-left">Date</th>
+                <th className="px-4 py-3 text-left">Payment For</th>
+                <th className="px-4 py-3 text-left">Amount</th>
+                <th className="px-4 py-3 text-left">Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {data.results.map((tx, index) => (
+                <tr
+                  key={tx.id}
+                  className="border-b border-gray-300 odd:bg-gray-50 even:bg-white hover:bg-gray-100"
+                >
+                  <td className="px-4 py-4">{index + 1}.</td>
+                  <td className="px-4 py-4">{tx.student_name}</td>
+                  <td className="px-4 py-4">{tx.transaction_code}</td>
+                  <td className="px-4 py-4">
+                    {new Date(tx.transaction_at).toLocaleString()}
+                  </td>
+                  <td className="px-4 py-4">{tx.payment_type}</td>
+                  <td className="px-4 py-4">{tx.total_amount}</td>
+                  <td className="px-4 py-4">{tx.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {/* Pagination Controls */}
+        <div className="mt-4 flex justify-between">
+          <button
+            onClick={handlePrev}
+            disabled={!data.previous}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <button
+            onClick={handleNext}
+            disabled={!data.next}
+            className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
-    </div>
     </>
   );
 };
