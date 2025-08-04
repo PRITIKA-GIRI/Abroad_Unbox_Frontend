@@ -174,7 +174,7 @@ const Stage3 = () => {
            {/* Submit / Completed Button */}
         <div className="mt-4">
           <button
-            onClick={() => handleSubmit(responseLink[0]?.stage)}
+            onClick={handleSubmit}
             className={`w-full py-4 text-2xl font-semibold mt-3 ${
               isStage3Completed
                 ? "bg-gray-400 cursor-not-allowed"
