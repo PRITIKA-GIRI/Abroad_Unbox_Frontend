@@ -20,6 +20,10 @@ export default function StudentDashboard() {
                 <DashboardSection studentId={id} />
                 <NewsSection />
             </div>
+            <div className="p-2 shadow-lg ">
+                <h2 className="text-center border-b border-gray-300 text-lg font-semibold py-1.5">SAT Portal</h2>
+                
+            </div>
         </div>
         </>
     )
