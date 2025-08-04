@@ -7,7 +7,7 @@ const Stage3 = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({});
   const [files, setFiles] = useState({});
-
+  const [fileErrors, setFileErrors] = useState({});
   // Assuming you store or otherwise obtain the current student's ID in localStorage
   const student_id = localStorage.getItem("student_id");
 
@@ -24,11 +24,40 @@ const Stage3 = () => {
   };
 
   const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (files.length > 0) {
-      setFiles((prev) => ({ ...prev, [name]: files[0] }));
+  const { name, files } = e.target;
+  const file = files[0];
+
+  if (file) {
+    const fileType = file.type;
+    const fileSize = file.size;
+
+    let error = "";
+
+    if (fileType !== "application/pdf") {
+      error = "Only PDF files are allowed.";
+    } else if (fileSize > 5 * 1024 * 1024) {
+      error = "File size should not exceed 5 MB.";
     }
-  };
+
+    setFileErrors((prev) => ({ ...prev, [name]: error }));
+
+    if (error) {
+      
+      e.target.value = "";
+      setFiles((prev) => {
+        const copy = { ...prev };
+        delete copy[name];
+        return copy;
+      });
+      return;
+    }
+
+    
+    setFileErrors((prev) => ({ ...prev, [name]: "" }));
+    setFiles((prev) => ({ ...prev, [name]: file }));
+  }
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,56 +139,109 @@ const Stage3 = () => {
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.transcript_i && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.transcript_i}
+              </p>
+            )}
+
           </div>
           <div className="flex flex-col">
             <label>11 Transcript/ Transcript II:</label>
             <input
               type="file"
               name="transcript_ii"
+              accept=".pdf"
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.transcript_ii && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.transcript_ii}
+              </p>
+            )}
           </div>
           <div className="flex flex-col">
             <label>12 Transcript/ Transcript III:</label>
             <input
               type="file"
               name="transcript_iii"
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2 "
               required
             />
+
+            {fileErrors.transcript_iii && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.transcript_iii}
+              </p>
+            )}
+
           </div>
           <div className="flex flex-col">
             <label>Provisional:</label>
             <input
               type="file"
               name="provisional"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2 "
               required
             />
+
+             {fileErrors.provisional && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.provisional}
+              </p>
+            )}
+
           </div>
           <div className="flex flex-col">
             <label>Migration:</label>
             <input
               type="file"
+
+              accept=".pdf"
+
               name="migration"
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.migration && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.migration}
+              </p>
+            )}
+
           </div>
           <div className="flex flex-col">
             <label>Character:</label>
             <input
               type="file"
+
+              accept=".pdf"
+
               name="character"
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.character && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.character}
+              </p>
+            )}
+
           </div>
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mb-5">
             Letter of Recommendation
@@ -169,30 +251,60 @@ const Stage3 = () => {
             <input
               type="file"
               name="lor_i"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.lor_i && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.lor_i}
+              </p>
+            )}
+
           </div>
           <div className="flex flex-col">
             <label>LOR II:</label>
             <input
               type="file"
               name="lor_ii"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.lor_ii && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.lor_ii}
+              </p>
+            )}
+
           </div>
           <div className="flex flex-col">
             <label>LOR III:</label>
             <input
               type="file"
               name="lor_iii"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.lor_iii && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.lor_iii}
+              </p>
+            )}
+
           </div>
 
           <div className="flex flex-col">
@@ -200,20 +312,40 @@ const Stage3 = () => {
             <input
               type="file"
               name="lor_iv"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="border border-gray-300 w-full rounded p-2"
               required
             />
+
+            {fileErrors.lor_iv && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.lor_iv}
+              </p>
+            )}
+
           </div>
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg  ">
             English Proficiency Test Score
             <input
               type="file"
               name="eng_test_score"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
               required
             />
+
+            {fileErrors.eng_test_score && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.eng_test_score}
+              </p>
+            )}
+
           </div>
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
             Standardize Test Score
@@ -221,39 +353,81 @@ const Stage3 = () => {
               type="file"
               name="standardize_test_score"
               onChange={handleFileChange}
+
+              accept=".pdf"
               className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
               required
             />
+            {fileErrors.standardize_test_score && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.standardize_test_score}
+              </p>
+            )}
+
+              className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
+              required
+            />
+
           </div>
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
             Passport
             <input
               type="file"
               name="passport"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
               required
             />
+
+            {fileErrors.passport && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.passport}
+              </p>
+            )}
+
           </div>
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
             Personal Essay
             <input
               type="file"
               name="personal_essay"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
               required
             />
+
+            {fileErrors.personal_essay && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.personal_essay}
+              </p>
+            )}
+
           </div>
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
             Bank Balance Certificate
             <input
               type="file"
               name="bank_balance"
+
+              accept=".pdf"
+
               onChange={handleFileChange}
               className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
               required
             />
+
+            {fileErrors.bank_balance && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.bank_balance}
+              </p>
+            )}
+
           </div>
           {/* <button
             type="submit"
@@ -279,7 +453,7 @@ const Stage3 = () => {
               {isStage3Completed ? "Stage 3: Completed" : "Stage 3: Submit"}
             </button>
           </div>
-          
+
            {/* Submit / Completed Button */}
         <div className="mt-4">
           <button
@@ -294,6 +468,7 @@ const Stage3 = () => {
             {isStage3Completed ? "Stage 3: Completed" : "Stage 3: Submit"}
           </button>
         </div>
+
 
         </form>
       </div>
