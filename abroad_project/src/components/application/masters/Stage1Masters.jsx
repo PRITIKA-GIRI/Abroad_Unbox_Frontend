@@ -120,9 +120,9 @@ const Stage1Masters = () => {
   const stage1Data = stagesDetail.find((item) => item.stage === "1");
   const isStage1Completed = stage1Data?.is_complete === "completed";
 
-  const videoUrl1 = stageVideo[0]?.stage1_video1;
-  const videoUrl2 = stageVideo[0]?.stage1_video2;
-  const videoUrl3 = stageVideo[0]?.stage1_video3;
+  const videoUrl1 = stageVideo[0]?.masters_stage1_the_mindset_video;
+  const videoUrl2 = stageVideo[0]?.masters_stage1_the_timeline_video;
+  const videoUrl3 = stageVideo[0]?.masters_stage1_career_counseling_video;
 
   return (
     <div className="flex md:flex-row-reverse flex-col">

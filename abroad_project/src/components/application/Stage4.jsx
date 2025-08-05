@@ -5,6 +5,7 @@ import { MdOutlineExpandLess, MdOutlineExpandMore } from "react-icons/md";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const Stage4 = () => {
+  const [fileErrors, setFileErrors] = useState({});
   const [stagesDetail, setStagesDetail] = useState([]);
   const [loading, setLoading] = useState(false);
   const [stageVideo, setStageVideo] = useState([]);
@@ -50,11 +51,35 @@ const Stage4 = () => {
   };
 
   const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (files.length > 0) {
-      setFiles((prev) => ({ ...prev, [name]: files[0] }));
+  const { name, files } = e.target;
+  const file = files[0];
+  let error = "";
+
+  if (file) {
+    const fileType = file.type;
+    const fileSize = file.size;
+
+    if (fileType !== "application/pdf") {
+      error = "Only PDF files are allowed.";
+    } else if (fileSize > 5 * 1024 * 1024) {
+      error = "File size should not exceed 5 MB.";
     }
-  };
+
+    if (error) {
+      setFileErrors((prev) => ({ ...prev, [name]: error }));
+      e.target.value = "";
+      setFiles((prev) => {
+        const copy = { ...prev };
+        delete copy[name];
+        return copy;
+      });
+      return;
+    }
+
+    setFileErrors((prev) => ({ ...prev, [name]: "" }));
+    setFiles((prev) => ({ ...prev, [name]: file }));
+  }
+};
 
   const handleInputChange = (index, e) => {
     const { name, value } = e.target;
@@ -191,6 +216,7 @@ const Stage4 = () => {
                 onChange={(e) => handleInputChange(index, e)}
                 className="w-full border border-gray-300 rounded p-2 mt-3"
                 placeholder="Activities Type"
+                required
               />
               <input
                 type="text"
@@ -199,6 +225,7 @@ const Stage4 = () => {
                 onChange={(e) => handleInputChange(index, e)}
                 className="w-full border border-gray-300 rounded p-2 mt-3"
                 placeholder="Position"
+                required
               />
               <input
                 type="text"
@@ -207,6 +234,7 @@ const Stage4 = () => {
                 onChange={(e) => handleInputChange(index, e)}
                 className="w-full border border-gray-300 rounded p-2 mt-3"
                 placeholder="Organization Involved With"
+                required
               />
               <textarea
                 name="roles_duties"
@@ -260,11 +288,17 @@ const Stage4 = () => {
               <label className="text-center w-1/4">Upload Resume:</label>
               <input
                 type="file"
+                accept=".pdf"
                 name="resume"
                 onChange={handleFileChange}
                 className="m-2 px-3 border border-gray-300 bg-gray-50 rounded w-full py-2 text-center"
                 required
               />
+              {fileErrors.resume && (
+              <p className="text-red-600 text-sm mt-1">
+                {fileErrors.resume}
+              </p>
+            )}
             </div>
 
           <div className="relative bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 text-center text-2xl font-semibold flex items-center cursor-pointer"

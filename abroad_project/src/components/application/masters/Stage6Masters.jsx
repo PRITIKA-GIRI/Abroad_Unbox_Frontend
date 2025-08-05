@@ -16,7 +16,6 @@ const Stage6Masters = () => {
   const [isCommonAppOpen, setIsCommonAppOpen] = useState(false);
 
   const studentID = localStorage.getItem("student_id");
-  // const std_graduation = localStorage.getItem("std_graduation");
 
   useEffect(() => {
     const saved = localStorage.getItem(APPLIED_KEY);
@@ -76,7 +75,7 @@ const Stage6Masters = () => {
 
   const stage6Data = stagesDetail.find((item) => item.stage === "6");
   const isStage6Completed = stage6Data?.is_complete === "completed";
-  const videoUrl = stageVideo[0]?.stage6_video1;
+  const videoUrl = stageVideo[0]?.bachelors_stage6_commonapp_video;
 
   const handleFileChange = (uniDetailId, essayTitleId, file) => {
     setEssayFiles((prev) => ({
@@ -198,6 +197,7 @@ const Stage6Masters = () => {
           {studentUniDetail.map((uniDetail) => {
             const applied = appliedUniIds.includes(uniDetail.university);
             const disableApply = applied || isMissingEssay(uniDetail);
+
             return (
               <div key={uniDetail.id} className="mb-6">
                 <div className="bg-gradient-to-r from-white to-green-300 p-2 flex justify-between items-center">

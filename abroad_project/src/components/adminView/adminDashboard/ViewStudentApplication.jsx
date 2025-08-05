@@ -138,8 +138,8 @@ export default function ViewStudentApplication() {
         </div>
       </div>
       {showPopup && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white p-6 rounded-lg shadow-lg w-11/12 md:w-1/2 relative">
+      <div className="fixed inset-0 bg-gray-500/20 backdrop-blur-xs bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white p-2 rounded-lg shadow-lg w-11/12 md:w-1/2 relative">
           <button
             className="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl"
             onClick={() => setShowPopup(false)}
@@ -151,7 +151,7 @@ export default function ViewStudentApplication() {
           {/* <p><strong>Stage:</strong> {popupContent.stage}</p>
           <p><strong>Student:</strong> {popupContent.studentName}</p> */}
 
-          <div className="max-h-[80dvh] overflow-y-auto p-6">
+          <div className="max-h-[80dvh] overflow-y-auto p-2">
               {popupContent.stage === "1" ? (
                   <StageOneStudentApplication studentId={id} onClose={() => setShowPopup(false)}/>
               ) : popupContent.stage === "2" ? (

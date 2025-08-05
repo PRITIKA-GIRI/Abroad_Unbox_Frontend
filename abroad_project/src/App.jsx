@@ -130,51 +130,28 @@ function App() {
           <Route path="/view/student/detail/:id" element={<AdminRoute> <ViewStudentDetail /> </AdminRoute>} />
           <Route path="/update/student/:id" element={<AdminRoute> <UpdateStudent /> </AdminRoute>} />
           
-          <Route
-            path="/add_info"
-            element={
-              <AdminRoute>
-                <AddInfo />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/stage1/add_video"
-            element={
-              <AdminRoute>
-                <Stage1AddVideo />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/stage1/edit_video/:id"
-            element={
-              <AdminRoute>
-                <Stage1EditVideo />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/stage1/view"
-            element={
-              <AdminRoute>
-                <Stage1View />
-              </AdminRoute>
-            }
-          />
-          <Route
-            path="/admin_dashboard"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
+          <Route path="/add_info" element={ <AdminRoute> <AddInfo /> </AdminRoute> } />
+
+          <Route path="/admin_dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>}/>
           <Route path="/add-university" element={ <AdminRoute> <AddUniversity /> </AdminRoute> } />
           <Route path="/add-session" element={ <AdminRoute> <AddSession /> </AdminRoute> } />
           <Route path="/update-stage-videos" element={ <AdminRoute> <UpdateVideo /> </AdminRoute> } />
           <Route path="/update-email-sample" element={ <AdminRoute> <UpdateEmailSample /> </AdminRoute> } />
-          <Route
+          
+          <Route path="/stage1/add_video" element={ <AdminRoute> <Stage1AddVideo /> </AdminRoute> } />
+          <Route path="/stage1/edit_video/:id" element={ <AdminRoute> <Stage1EditVideo /> </AdminRoute> } />
+          <Route path="/stage1/view" element={ <AdminRoute> <Stage1View /> </AdminRoute> } />
+          <Route path="/stage2/view" element={<AdminRoute><Stage2View /></AdminRoute>} />
+          <Route path="/stage3/view" element={<AdminRoute><Stage3View /></AdminRoute>} />
+          <Route path="/stage4/view" element={<AdminRoute><Stage4View /></AdminRoute>} />
+          <Route path="/stage5/view" element={<AdminRoute><Stage5View /></AdminRoute>} />
+          <Route path="/stage6/view" element={<AdminRoute><Stage6View /></AdminRoute>} />
+          <Route path="/stage7/view" element={<AdminRoute><Stage7View /></AdminRoute>} />
+          <Route path="/stage8/view" element={<AdminRoute><Stage8View /></AdminRoute>} />
+          <Route path="/stage9/view" element={<AdminRoute><Stage9View /></AdminRoute>} />
+          
+          <Route path="/view-transactions" element={<AdminRoute><ViewTransactions /></AdminRoute>} />
+          {/* <Route
             path="/stage2/view"
             element={
               <AdminRoute>
@@ -246,7 +223,7 @@ function App() {
                 <ViewTransactions/>
               </AdminRoute>
             }
-          />
+          /> */}
         </Routes>
         {/* <Footer /> */}
       </BrowserRouter>
