@@ -4,7 +4,6 @@ import Nav from "../Nav";
 import Spinner from "./adminDashboard/Spinner";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-const API_BASE_URL_2 = import.meta.env.VITE_API_BASE_URL_2;
 
 const ViewTransactions = () => {
   // state holds the paginated response
@@ -48,7 +47,7 @@ const ViewTransactions = () => {
       getTransactions();
       setLoading(false);
     } else {
-      const url = `${API_BASE_URL_2}/after-visa-payments/?payment_type=${encodeURIComponent(
+      const url = `${API_BASE_URL}/after-visa-payments/?payment_type=${encodeURIComponent(
         event.target.value
       )}`;
       try {
@@ -62,7 +61,7 @@ const ViewTransactions = () => {
     }
   };
   const handleSearch = async (event) => {
-    const url = `${API_BASE_URL_2}/after-visa-payments/?search=${event.target.value}`;
+    const url = `${API_BASE_URL}/after-visa-payments/?search=${event.target.value}`;
     try {
       const response = await axios.get(url);
       setData(response.data);

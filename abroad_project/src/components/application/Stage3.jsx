@@ -123,7 +123,7 @@ const Stage3 = () => {
         </p>
       </div>
 
-      <div className="w-full md:w-3/4 p-4 bg-white h-svh md:overflow-scroll">
+      <div className="w-full md:w-3/4 p-4 bg-white h-svh md:overflow-scroll no-scrollbar">
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 ">
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full text-2xl font-semibold text-center mb-5">
             Documents
@@ -363,10 +363,6 @@ const Stage3 = () => {
                 {fileErrors.standardize_test_score}
               </p>
             )}
-
-              className="w-full md:w-[70%] float-right text-lg font-normal bg-gray-50 p-2"
-              required
-            />
 
           </div>
           <div className="bg-gradient-to-r from-[#ffffff] to-blue-300 p-2 w-full rounded-lg text-lg ">
